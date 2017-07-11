@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="tools,linux," />
+  <meta name="keywords" content="整理,HTTPS,安全," />
 
 
 
@@ -93,16 +93,19 @@
 
 
 
-<meta name="keywords" content="tools,linux">
+<meta name="description" content="简介超文本传输安全协议（英语：Hypertext Transfer Protocol Secure，缩写：HTTPS，常称为HTTP over TLS，HTTP over SSL或HTTP Secure)。SSL，Secure Sockets Layer 的缩写，1994年由网景设计的，1999 年，互联网标准化组织接替网景公司，发布了 Transport Sockets Layer 即 TSL。">
+<meta name="keywords" content="整理,HTTPS,安全">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ubuntu桌面开发环境搭建">
-<meta property="og:url" content="http://jiaojx.xyz/2017/02/14/ubuntn-desktop-env/index.html">
+<meta property="og:title" content="Https的介绍和使用">
+<meta property="og:url" content="http://jiaojx.xyz/2017/03/21/https/index.html">
 <meta property="og:site_name" content="Alitain Blog">
-<meta property="og:image" content="http://ohtd7tndv.bkt.clouddn.com/2017-02-14%2011-26-49%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE.png">
-<meta property="og:updated_time" content="2017-02-15T03:29:25.000Z">
+<meta property="og:description" content="简介超文本传输安全协议（英语：Hypertext Transfer Protocol Secure，缩写：HTTPS，常称为HTTP over TLS，HTTP over SSL或HTTP Secure)。SSL，Secure Sockets Layer 的缩写，1994年由网景设计的，1999 年，互联网标准化组织接替网景公司，发布了 Transport Sockets Layer 即 TSL。">
+<meta property="og:image" content="http://ohtd7tndv.bkt.clouddn.com/https.png">
+<meta property="og:updated_time" content="2017-07-11T10:25:35.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ubuntu桌面开发环境搭建">
-<meta name="twitter:image" content="http://ohtd7tndv.bkt.clouddn.com/2017-02-14%2011-26-49%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE.png">
+<meta name="twitter:title" content="Https的介绍和使用">
+<meta name="twitter:description" content="简介超文本传输安全协议（英语：Hypertext Transfer Protocol Secure，缩写：HTTPS，常称为HTTP over TLS，HTTP over SSL或HTTP Secure)。SSL，Secure Sockets Layer 的缩写，1994年由网景设计的，1999 年，互联网标准化组织接替网景公司，发布了 Transport Sockets Layer 即 TSL。">
+<meta name="twitter:image" content="http://ohtd7tndv.bkt.clouddn.com/https.png">
 
 
 
@@ -130,13 +133,13 @@
 
 
 
-  <link rel="canonical" href="http://jiaojx.xyz/2017/02/14/ubuntn-desktop-env/"/>
+  <link rel="canonical" href="http://jiaojx.xyz/2017/03/21/https/"/>
 
 
 
 
 
-  <title>ubuntu桌面开发环境搭建 | Alitain Blog</title>
+  <title>Https的介绍和使用 | Alitain Blog</title>
   
 
 
@@ -255,7 +258,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://jiaojx.xyz/2017/02/14/ubuntn-desktop-env/">
+    <link itemprop="mainEntityOfPage" href="http://jiaojx.xyz/2017/03/21/https/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Alitain">
@@ -272,7 +275,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">ubuntu桌面开发环境搭建</h1>
+          <h1 class="post-title" itemprop="name headline">Https的介绍和使用</h1>
         
 
         <div class="post-meta">
@@ -284,8 +287,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-14T11:15:29+08:00">
-                2017-02-14
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-21T14:43:45+08:00">
+                2017-03-21
               </time>
             
 
@@ -307,8 +310,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux/" itemprop="url" rel="index">
-                    <span itemprop="name">linux</span>
+                  <a href="/categories/基础/" itemprop="url" rel="index">
+                    <span itemprop="name">基础</span>
                   </a>
                 </span>
 
@@ -341,48 +344,62 @@
       
 
       
-        <p><img src="http://ohtd7tndv.bkt.clouddn.com/2017-02-14%2011-26-49%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE.png" alt="ubuntu desktop"><br><a id="more"></a><br>我的本子是11年的，i5第二代处理器、4G内存，不想加固态硬盘、内存条，又没有钱换 <code>mac</code>，在 <code>windows</code> 下开发又有些吃力，所以想搭一套 <code>linux</code> 开发环境。开发环境必须具备的软件工具，像聊天工具、IDE、浏览器、翻墙工具和测试服务器环境。最好的组合应该是 <code>gentoo</code> + <code>xface</code>，可定制化高、够轻量级，但是花费的时间要久些。初步想装一个 <code>centos7</code> 的 <code>gnome</code> 版，折腾了好几天也没有装上 QQ，再加上有一些三方源需要翻墙才可以，我住的地方有运营商网络限制，所以也放弃了。之后又把目光投向ubuntu上，现在用起来得心应手。先奉上一张图（如上）。</p>
-<h3 id="系统安装"><a href="#系统安装" class="headerlink" title="系统安装"></a>系统安装</h3><p>我安装的版本是<a href="http://www.ubuntukylin.com/downloads/" target="_blank" rel="external">ubuntu kylin 16.10</a>，可以直接到官网下载，刻录到U盘。</p>
+        <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>超文本传输安全协议（英语：Hypertext Transfer Protocol Secure，缩写：HTTPS，常称为HTTP over TLS，HTTP over SSL或HTTP Secure)。<br>SSL，Secure Sockets Layer 的缩写，1994年由网景设计的，1999 年，互联网标准化组织接替网景公司，发布了 Transport Sockets Layer 即 TSL。<br>所谓 HTTPS 就是在 TCP 传输层和 HTTP 应用层之间加入了 TSL/SSL 层，用于加密和解密。</p>
+<a id="more"></a>
+<h3 id="加密"><a href="#加密" class="headerlink" title="加密"></a>加密</h3><ul>
+<li><p>对称加密</p>
+<p>  对称加密是一种最简答，也最快的加密解密方式。对称，即加密和解密都是用的相同的秘钥。常见的对称加密方法有 DES、3DES、AES、RC5、RC6 等。 https 的传输阶段就是采用对称加密的 http 传输。</p>
+</li>
+<li><p>非对称加密</p>
+<p>  加密和解密需要两个不同的秘钥。一般分为公钥和私钥，公钥用于加密，能够提供数字签名的功能，可以任意向外发布；私钥只有持有者保管，通过公钥加密的密文在不安全的网络上传输，只有私钥持有者可以解开获得明文（即使获得了密文和公钥，也无法数以年记的时间内解开）。常见的非对称加密算法有 RSA、ElGamal、背包算法、Rabin、迪菲-赫尔曼算法、椭圆曲线加密算法。 https 的握手阶段是采用的是非对称加密。</p>
+</li>
+</ul>
+<h3 id="数字证书"><a href="#数字证书" class="headerlink" title="数字证书"></a>数字证书</h3><ul>
+<li><p>wiki定义</p>
 <blockquote>
-<p>先说一下，我踩过的一个坑。刚开始我是用老毛桃来装的，把ISO文件放到U盘上，直接加载ISO。结果一直报错，重装了好几次都没有安装成功，使用Utrliso把镜像刻录到U盘才安装上。</p>
+<p>用于公开密钥基础建设的电子文件，用来证明公开密钥拥有者的身份。此文件包含了公钥信息、拥有者身份信息（主体）、以及数字证书认证机构（发行者）对这份文件的数字签名，以保证这个文件的整体内容正确无误。电脑系统或其他用户可以通过一定的程序核实证书上的内容，包括证书有否过期、数字签名是否有效，如果信任签发的机构，就可以信任证书上的密钥，凭公钥加密与拥有者进行可靠的通信。</p>
 </blockquote>
-<p>系统安装的过程就不详细描述了，图像化安装界面跟安装 <code>windows</code> 差不多，选择语言、配置时区、设置主机名，设置用户名密码等，然后下一步下一步即可。需要注意的是，选择安装介质的时候，是不是需要多系统共存以及自定义安装。</p>
-<p>我的本子上现在是4个系统共存，<code>ubuntu</code> 安装完后会自动安装 <code>grub</code>，找到所有已安装的系统，添加相应的启动项（所以，一般来说先安装 <code>window</code>，后安装 <code>linux</code>。后安装 <code>windows</code>，开机直接进入系统了，需要通过其他方式解决）。</p>
-<p> 如果选择自定义安装，一般选择一个盘作为根分区的挂载点和大小接近物理内存的盘作为交换分区。</p>
-<h3 id="系统的初始化工作"><a href="#系统的初始化工作" class="headerlink" title="系统的初始化工作"></a>系统的初始化工作</h3><ul>
-<li>更新系统</li>
+</li>
+<li><p>申请数字证书</p>
+<p>  服务端通过非对称加密算法生成一对公钥和私钥，向 Certificate Authority 即证书认证中心，简称 CA 提供拥有者身份信息和服务端公钥，通过后 CA 会颁发包含服务端公钥，拥有着身份信息和使用 CA 私钥对证书内容的摘要进行加密的密文，即数据签名。</p>
+</li>
+<li><p>如何确认数字证书有效</p>
+<ol>
+<li>验证证书是否有效<br> 客户端通过查看证书的有效时间，以及域名等来判断内容是否有效。</li>
+<li>验证证书是否可信<br> 客户端通过预存的相对应的 CA 根证书的公钥，对数字签名进行解密获取证书的摘要与通过对证书内容进行哈希运算得到的摘要进行对比，相等的话则证明数字证书是该 CA 颁发的是可信的。不相等，则客户端会提示证书不可信。</li>
+</ol>
+</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ sudo apt-get update</div><div class="line">$ sudo apt-get upgrade</div></pre></td></tr></table></figure>
-<h3 id="安装QQ，微信"><a href="#安装QQ，微信" class="headerlink" title="安装QQ，微信"></a>安装QQ，微信</h3><ul>
-<li>安装QQ</li>
-</ul>
-<p><a href="http://www.ubuntukylin.com/ukylin/forum.php?mod=viewthread&amp;tid=7688&amp;extra=page%3D1" target="_blank" rel="external">教程链接</a><br>把安装QQ放到比较靠前的位置，是因为我遇到自动安装依赖的时候出问题，导致重新安装系统才解决。</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>开始加密通信之前，客户端和服务器首先必须建立连接和交换参数，这个过程叫做握手<code>handshake</code>。<br>假定客户端叫做爱丽丝，服务器叫做鲍勃，整个握手过程可以用下图说明。<br><img src="http://ohtd7tndv.bkt.clouddn.com/https.png" alt="选自CloudFlare"><br>握手阶段分成五步。</p>
+<ol>
+<li>爱丽丝给出协议版本号、一个客户端生成的随机数<code>Client random</code>，以及客户端支持的加密方法。</li>
+<li>鲍勃确认双方使用的加密方法，并给出数字证书、以及一个服务器生成的随机数<code>Server random</code>。</li>
+<li>爱丽丝确认数字证书有效，然后生成一个新的随机数<code>Premaster secret</code>，并使用数字证书中的公钥，加密这个随机数，发给鲍勃。</li>
+<li>鲍勃使用自己的私钥，获取爱丽丝发来的随机数，即<code>Premaster secret</code>。</li>
+<li>爱丽丝和鲍勃根据约定的加密方法，使用前面的三个随机数，生成<strong>对话密钥</strong> <code>session key</code>，用来加密接下来的整个对话过程。</li>
+</ol>
+<p>为什么一定要用三个随机数来生成对话密钥，我们来看下面的解释</p>
+<blockquote>
+<p>不管是客户端还是服务器，都需要随机数，这样生成的密钥才不会每次都一样。由于SSL协议中证书是静态的，因此十分有必要引入一种随机因素来保证协商出来的密钥的随机性。<br>对于RSA密钥交换算法来说，<code>Premaster secret</code>本身就是一个随机数，再加上hello消息中的随机，三个随机数通过一个密钥导出器最终导出一个对称密钥。<br><code>Premaster secret</code>的存在在于SSL协议不信任每个主机都能产生完全随机的随机数，如果随机数不随机，那么c<code>Premaster secret</code>就有可能被猜出来，那么仅适用 <code>Premaster secret</code> 作为密钥就不合适了，因此必须引入新的随机因素，那么客户端和服务器加上<code>Premaster secret</code> 三个随机数一同生成的密钥就不容易被猜出了，一个伪随机可能完全不随机，可是是三个伪随机就十分接近随机了，每增加一个自由度，随机性增加的可不是一。</p>
+</blockquote>
+<h3 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h3><p>Let’s Encrypt 是一个免费的，自动化的，开放的 CA 机构。通过 <a href="https://certbot.eff.org" target="_blank" rel="external">certbot</a> ，选择相应的web服务和服务器版本，就可以很快的安装 nginx 的插件和证书。下面以 ubuntu 和 nginx 为例。</p>
 <ul>
-<li>安装微信</li>
+<li>安装源及软件  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ sudo apt-get update</div><div class="line">$ sudo apt-get install software-properties-common</div><div class="line">$ sudo add-apt-repository ppa:certbot/certbot</div><div class="line">$ sudo apt-get update</div><div class="line">$ sudo apt-get install python-certbot-nginx</div></pre></td></tr></table></figure>
+</li>
 </ul>
-<p>直接一条命令搞定，不过是网页版的微信，不好的一点是没有声音或图像提醒。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo apt-get install wechat</div></pre></td></tr></table></figure></p>
-<h3 id="测试服务器-LNMP-的搭建"><a href="#测试服务器-LNMP-的搭建" class="headerlink" title="测试服务器(LNMP)的搭建"></a>测试服务器(LNMP)的搭建</h3><ul>
-<li>卸载系统自带apache</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ dpkg -l | grep apache</div><div class="line">$ sudo apt-get remove apache2</div><div class="line">$ sudo apt-get autoremove</div></pre></td></tr></table></figure>
 <ul>
-<li>安装nginx</li>
+<li><p>安装证书</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo certbot --nginx certonly # 不加 certonly，可以自动配置 nginx，省略下一步</div></pre></td></tr></table></figure>
+</li>
+<li><p>配置 NGINX<br>  在相应的 server 模块中加入如下配置</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    ...</div><div class="line">    listen 443;</div><div class="line">    ssl on; </div><div class="line">    ssl_certificate /path/to/server.crt; # 证书路径</div><div class="line">    ssl_certificate_key /path/to/server.key; # 私钥路径</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo apt-get install nginx</div></pre></td></tr></table></figure>
 <ul>
-<li>安装mariadb</li>
+<li>重新生成证书  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo certbot renew --dry-run</div></pre></td></tr></table></figure>
+</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ sudo apt-get install mariadb-client-10.0</div><div class="line">$ sudo apt-get install mariadb-server-10.0</div></pre></td></tr></table></figure>
-<ul>
-<li>安装php</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo apt-get install php7.0 php7.0-fpm php7.0-mysql</div></pre></td></tr></table></figure>
-<p>稍作配置，LNMP的测试环境就搭好了，方便快捷。</p>
-<h3 id="安装PHPStorm等开发工具"><a href="#安装PHPStorm等开发工具" class="headerlink" title="安装PHPStorm等开发工具"></a>安装PHPStorm等开发工具</h3><p>像PHPStorm，Chrome，Team View，SecureCRT等这些工具都可以找到官方的deb包，然后 <code>sudo dpkg -i 包名.deb</code>安装就可以了。遇到依赖问题，<code>sudo apt-get install -f</code> 自动解决依赖就可以了。</p>
-<h3 id="安装翻墙工具"><a href="#安装翻墙工具" class="headerlink" title="安装翻墙工具"></a>安装翻墙工具</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo apt-get install openssl shadowsocks-libv-dev</div></pre></td></tr></table></figure>
-<p>装完之后使用 <code>ss-local</code> 指定自己的配置问题（服务器地址，密码和本地端口等）。</p>
-<p><code>chrome</code> 想要翻墙，必须得翻墙出去下一个proxy的扩展。&gt;_&lt;，先有鸡还是先有蛋的问题…。但是火狐浏览器，可以直接在设置里，设置sock5代理。翻墙成功，然后再去下载一个翻墙的crt扩展安装文件，打开 <code>chrome</code> 应用商店页面，把下载好的文件拖进去，扩展就安装好了。</p>
-<h3 id="安装mbuntu主题"><a href="#安装mbuntu主题" class="headerlink" title="安装mbuntu主题"></a>安装mbuntu主题</h3><p>网上有很多教程，不过 <code>mbuntu-v8</code> 版本没法修改开机画面和登录画面了。强迫症患者表示有点受不了…</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://zh.wikipedia.org/wiki/超文本传输安全协议" target="_blank" rel="external">wikipedia https</a><br><a href="https://zh.wikipedia.org/wiki/傳輸層安全協議" target="_blank" rel="external">wikipedia ssl/tsl</a><br><a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html" target="_blank" rel="external">SSL/TLS协议运行机制的概述</a><br><a href="http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html" target="_blank" rel="external">图解SSL/TLS协议</a></p>
 
       
     </div>
@@ -412,9 +429,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/tools/" rel="tag"># tools</a>
+            <a href="/tags/整理/" rel="tag"># 整理</a>
           
-            <a href="/tags/linux/" rel="tag"># linux</a>
+            <a href="/tags/HTTPS/" rel="tag"># HTTPS</a>
+          
+            <a href="/tags/安全/" rel="tag"># 安全</a>
           
         </div>
       
@@ -427,8 +446,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/01/14/initcentos-md/" rel="next" title="LAMP服务器的初始化工作">
-                <i class="fa fa-chevron-left"></i> LAMP服务器的初始化工作
+              <a href="/2017/02/20/http/" rel="next" title="Http 协议详解">
+                <i class="fa fa-chevron-left"></i> Http 协议详解
               </a>
             
           </div>
@@ -437,8 +456,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/02/20/http/" rel="prev" title="Http 协议详解">
-                Http 协议详解 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/07/04/mac-with-dinghy-and-laradock/" rel="prev" title="Mac使用dinghy和laradock搭建php运行环境">
+                Mac使用dinghy和laradock搭建php运行环境 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -600,7 +619,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#系统安装"><span class="nav-number">1.</span> <span class="nav-text">系统安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#系统的初始化工作"><span class="nav-number">2.</span> <span class="nav-text">系统的初始化工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装QQ，微信"><span class="nav-number">3.</span> <span class="nav-text">安装QQ，微信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试服务器-LNMP-的搭建"><span class="nav-number">4.</span> <span class="nav-text">测试服务器(LNMP)的搭建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装PHPStorm等开发工具"><span class="nav-number">5.</span> <span class="nav-text">安装PHPStorm等开发工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装翻墙工具"><span class="nav-number">6.</span> <span class="nav-text">安装翻墙工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装mbuntu主题"><span class="nav-number">7.</span> <span class="nav-text">安装mbuntu主题</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加密"><span class="nav-number">2.</span> <span class="nav-text">加密</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数字证书"><span class="nav-number">3.</span> <span class="nav-text">数字证书</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">4.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部署"><span class="nav-number">5.</span> <span class="nav-text">部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>
