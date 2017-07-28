@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="整理,HTTP," />
+  <meta name="keywords" content="整理,编码," />
 
 
 
@@ -93,17 +93,17 @@
 
 
 
-<meta name="description" content="超文本传输协议，英文 HyperText Transfer Protocol。互联用中应用最广泛的网络协议。">
-<meta name="keywords" content="整理,HTTP">
+<meta name="description" content="好记性不如烂笔头。之前看多很多关于编码的文章，当时应该记的挺清楚，过几天回头的就忘了。学习学习章亦春的抄代码的精神，多写写加深印象。">
+<meta name="keywords" content="整理,编码">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Http 协议详解">
-<meta property="og:url" content="http://jiaojx.xyz/2017/02/20/http/index.html">
+<meta property="og:title" content="关于编码和存储">
+<meta property="og:url" content="http://jiaojx.xyz/2017/04/05/encode/index.html">
 <meta property="og:site_name" content="Alitain Blog">
-<meta property="og:description" content="超文本传输协议，英文 HyperText Transfer Protocol。互联用中应用最广泛的网络协议。">
-<meta property="og:updated_time" content="2017-07-28T15:43:51.000Z">
+<meta property="og:description" content="好记性不如烂笔头。之前看多很多关于编码的文章，当时应该记的挺清楚，过几天回头的就忘了。学习学习章亦春的抄代码的精神，多写写加深印象。">
+<meta property="og:updated_time" content="2017-07-28T15:47:08.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Http 协议详解">
-<meta name="twitter:description" content="超文本传输协议，英文 HyperText Transfer Protocol。互联用中应用最广泛的网络协议。">
+<meta name="twitter:title" content="关于编码和存储">
+<meta name="twitter:description" content="好记性不如烂笔头。之前看多很多关于编码的文章，当时应该记的挺清楚，过几天回头的就忘了。学习学习章亦春的抄代码的精神，多写写加深印象。">
 
 
 
@@ -131,13 +131,13 @@
 
 
 
-  <link rel="canonical" href="http://jiaojx.xyz/2017/02/20/http/"/>
+  <link rel="canonical" href="http://jiaojx.xyz/2017/04/05/encode/"/>
 
 
 
 
 
-  <title>Http 协议详解 | Alitain Blog</title>
+  <title>关于编码和存储 | Alitain Blog</title>
   
 
 
@@ -256,7 +256,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://jiaojx.xyz/2017/02/20/http/">
+    <link itemprop="mainEntityOfPage" href="http://jiaojx.xyz/2017/04/05/encode/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Alitain">
@@ -273,7 +273,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Http 协议详解</h1>
+          <h1 class="post-title" itemprop="name headline">关于编码和存储</h1>
         
 
         <div class="post-meta">
@@ -285,8 +285,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-20T10:24:12+08:00">
-                2017-02-20
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-05T00:01:20+08:00">
+                2017-04-05
               </time>
             
 
@@ -342,56 +342,35 @@
       
 
       
-        <p>超文本传输协议，英文 <code>HyperText Transfer Protocol</code>。<br>互联用中应用最广泛的网络协议。</p>
+        <p>好记性不如烂笔头。之前看多很多关于编码的文章，当时应该记的挺清楚，过几天回头的就忘了。学习学习章亦春的<strong>抄代码</strong>的精神，多写写加深印象。</p>
 <a id="more"></a>
-<h3 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h3><p>请求消息</p>
+<h3 id="编码介绍"><a href="#编码介绍" class="headerlink" title="编码介绍"></a>编码介绍</h3><ul>
+<li><p>ASCII</p>
+<p>  American Standard Code for Information Interchange 的缩写，中文意思为美国信息交换标准代码。看名字就知道是美国人设计的，用一个字节(8位)来表示。其中，0x00 到 0x1F 这32个表示特殊控制字符，比如响铃等。0x20 到 0x7F 这96个字符来表示大小写的26个英文字母和一些英文符号，总共128个字符。对于英文的存储，用 ASCII 码来表示完全可以了。</p>
+</li>
+</ul>
 <ul>
-<li>请求行<br>包括<strong>请求方法</strong>，<strong>资源路径</strong>和<strong>协议版本</strong>，中间由空格隔开。<br>例如：<code>GET /image/logo.gif HTTP/1.1</code></li>
-<li>请求头<br>key：value 形式的键值对，例如 <code>Accept-Language: en</code></li>
-<li>空行</li>
-<li>消息体<br>GET请求无消息体。</li>
+<li><p>GB2312</p>
+<p>  那么问题来了，想要表示中文怎么办？所以就有了GB2312，即国标2312，是我国国家标准局1980年颁布的，1981年5月1日开始实施的。GB2312 设计的时候是兼容 ASCII 的，用两个字节来表示，分为高位字节和低位字节，高位字节从 0xA1 到 0xF7，低位字节从 0xA0 到 0xFF，一共收录了6763个汉字，还收录了包括拉丁字母、希腊字母、日文平假名及片假名字母、俄语西里尔字母在内的682个全角字符。可以看到这两个字节都是大于 0x7F 的，如果有小于这个值那就会按照 ASCII 码的方式来表示了，这些字符也就是常说的半角字符。</p>
+</li>
+<li><p>GBK</p>
+<p>  问题又来了，GB2312 竟然没有办法表示朱镕基的<strong>镕</strong>字，是不是要搞事情！所以又有了GBK编码，GBK编码不在要求低位字节大于 0x7F 了，只要高位字节大于就行。GBK编码于1995年发布，收录汉字21003个，加入了部分繁体字，采用双字节编码。GBK 向上兼容 GB2312。</p>
+</li>
+<li><p>GB18030</p>
+<p>  有人说，不对啊，汉字加起来10万左右，两个字节怎么表示的完（最多可以表示65536个），还有少数民族文字怎么办？所以，GB18030编码方案于2000年发布第一版，收录汉字27533个；2005年发布第二版，收录汉字70000余个，以及多种少数民族文字。另外，GB18030采用单字节、双字节、四字节分段编码。</p>
+</li>
+<li><p>UNICODE</p>
+<p>  中文的问题终于解决了，几乎所有的简体汉字、繁体字以及少数民族语言都可以用 GB18030 来表示了。但是如果世界各地的人想相互交流该怎么办，于是国际化标准组织重新提出新的一套编码方式，可以用来表示世界上所有字符。这个编码方式采取两个字节来表示，即使是 ASCII 编码 unicode 采取原编码不变，高位全是 0 的方式。这使得 unicode 来表示英文字符的时候要浪费一倍的空间！</p>
+</li>
+<li><p>UTF-8</p>
+<p>  一段时间以来 unicode 的编码方式很难推广，直到互联网出现，一种面向传输的 UTF (UCS Tranfer Format) 标准出现了。UTF-8 就是每次传输8个位数据，是互联网应用最广泛的一种 unicode 的实现方式，即可以表示世界上所有的符号，也可以一定程度的节省空间。 UTF-8 采用变长的编码方式，在字符在 ASCII 范围时，就采用一个字节表示，等同于 ASCII 的编码方式；但是不同于 unicode 编码，UTF-8 在表示中文的时候需要 3 个字节， 事实证明在大多数场合使用 UTF-8 比 unicode 要节省空间。 UTF-8 的编码如果最高位是 0 那就等同于 ASCII 编码，如果高位出现连续的 n 个 1，那么后面的 n - 1 个字节最高两位都是 10。</p>
+</li>
 </ul>
-<p><em>注：请求行和请求头的键值对都必须以 <code>&lt;CR&gt;&lt;LF&gt;</code> 作为结尾。在 HTTP/1.1 协议中，请求头除 Host 外，都是可选的。</em></p>
-<p>响应消息</p>
-<ul>
-<li>响应行<br>包括<strong>协议版本</strong>，<strong>状态码</strong>和<strong>状态描述</strong>，中间由空格隔开。例如 <code>HTTP/1.1 200 OK</code>。</li>
-<li>响应头<br>key: value 形式的键值对，例如 <code>Content-Type: text/html</code>。</li>
-<li>空行</li>
-<li>响应体</li>
+<h3 id="编程语言中编码的应用"><a href="#编程语言中编码的应用" class="headerlink" title="编程语言中编码的应用"></a>编程语言中编码的应用</h3><ul>
+<li><p>php 截取指定长度的中英文字符串</p>
+  <figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$str = <span class="string">'AB一二'</span>;</div><div class="line">$substr = mb_substr($str, <span class="number">0</span>, <span class="number">3</span>, <span class="string">'utf-8'</span>); <span class="comment">//截取前三位</span></div><div class="line"><span class="keyword">echo</span> $substr; <span class="comment">//输出 AB一</span></div></pre></td></tr></table></figure>
+</li>
 </ul>
-<p><em>注：响应行和响应头的键值对都必须以 <code>&lt;CR&gt;&lt;LF&gt;</code> 作为结尾</em></p>
-<h3 id="状态码"><a href="#状态码" class="headerlink" title="状态码"></a>状态码</h3><ul>
-<li>1xx消息——请求已被服务器接收，继续处理</li>
-<li>2xx成功——请求已成功被服务器接收、理解、并接受</li>
-<li>3xx重定向——需要后续操作才能完成这一请求</li>
-<li>4xx请求错误——请求含有词法错误或者无法被执行</li>
-<li>5xx服务器错误——服务器在处理某个正确请求时发生错误</li>
-</ul>
-<p>常见状态码及状态描述语<br><code>200 OK</code> 请求成功<br><code>302 Found</code> 重定向<br><code>304 Not Modified</code> 客户端原缓冲资源可用<br><code>400 Bad Request</code> 请求语法出错<br><code>401 Unauthorized</code> 请求头认证未通过<br><code>403 Forbidden</code> 资源禁止访问<br><code>404 Not Found</code> 未找到指定位置的资源<br><code>405 Method Not Allowed</code> 请求方法不适用<br><code>500 Internal Server Error</code> 服务端程序出错<br><code>502 Bad Gateway</code> 网关出错<br><code>504 Gateway Timeout</code> 网关响应超时</p>
-<h3 id="请求方法"><a href="#请求方法" class="headerlink" title="请求方法"></a>请求方法</h3><p>HTTP/1.1协议中共定义了八种方法来操作指定的资源：</p>
-<ul>
-<li><code>OPTIONS</code>：这个方法可使服务器传回该资源所支持的所有HTTP请求方法。</li>
-<li><code>HEAD</code>：与GET方法一样，都是向服务器发出指定资源的请求。只不过服务器将不传回资源的本文部分。</li>
-<li><code>GET</code>：向指定的资源发出“显示”请求。</li>
-<li><code>POST</code>：向指定资源提交数据，请求服务器进行处理（例如提交表单或者上传文件）。</li>
-<li><code>PUT</code>：向指定资源位置上传其最新内容。</li>
-<li><code>DELETE</code>：请求服务器删除Request-URI所标识的资源。</li>
-<li><code>TRACE</code>：回显服务器收到的请求，主要用于测试或诊断。</li>
-<li><code>CONNECT</code>：HTTP/1.1协议中预留给能够将连接改为管道方式的通常用于SSL加密服务器的链接。</li>
-</ul>
-<h3 id="GET-和-POST-的区别"><a href="#GET-和-POST-的区别" class="headerlink" title="GET 和 POST 的区别"></a>GET 和 POST 的区别</h3><ul>
-<li>GET 请求是以 ? 分割 URL 和传输数据，数据是以 &amp; 隔开拼接而成的。POST是把数据放到 HTTP 请求体中。在 HTTP 协议中两种方式都是不安全的。</li>
-<li>GET 原则上没有长度限制，个别浏览器和服务器会对长度有要求。POST 数据是没有限制的，取决于服务器处理程序的处理能力。</li>
-<li>GET 请求通常是幂等的，即一次请求与多次请求在服务器看来是无区别的，或者说是无副作用的。通常用来请求资源，而 POST 通常用来新增或修改服务器服务器服务器资源的。可以假想如果用 GET 方法来删除服务器资源，网络爬虫带来的后果不堪设想。</li>
-</ul>
-<h3 id="URI-和-URL-的区别"><a href="#URI-和-URL-的区别" class="headerlink" title="URI 和 URL 的区别"></a>URI 和 URL 的区别</h3><p>URI，是 <code>Uniform Resource Identifier</code> 的缩写，意思为统一资源标识符，用来唯一标识一个服务器资源。<br>URL，是 <code>Uniform Resource Locator</code> 的缩写，意思为统一资源定位符。不仅可以唯一标识一个资源，还可以通过访问定位到这个资源。URL 是 URI 的子集。</p>
-<h3 id="HTTP-版本区别"><a href="#HTTP-版本区别" class="headerlink" title="HTTP 版本区别"></a>HTTP 版本区别</h3><ul>
-<li>HTTP/0.9<br>已过时。只接受GET一种请求方法，没有在通讯中指定版本号，且不支持请求头。由于该版本不支持POST方法，因此客户端无法向服务器传递太多信息。</li>
-<li>HTTP/1.0<br>这是第一个在通讯中指定版本号的HTTP协议版本，至今仍被广泛采用，特别是在代理服务器中。 </li>
-<li>HTTP/1.1<br>持久连接被默认采用，并能很好地配合代理服务器工作。还支持以管道方式在同时发送多个请求，以便降低线路负载，提高传输速度。详见 <a href="https://tools.ietf.org/html/rfc7230" target="_blank" rel="external">RFC 7230</a></li>
-<li>HTTP/2.0<br>HTTP/2的目标包括异步连接复用，头压缩和请求反馈管线化并保留与HTTP 1.1的完全语义兼容。详见 <a href="https://tools.ietf.org/html/rfc7540" target="_blank" rel="external">RFC 7540</a></li>
-</ul>
-<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://zh.wikipedia.org/wiki/超文本传输协议" target="_blank" rel="external">http维基百科</a><br><a href="http://www.cnblogs.com/ranyonsue/p/5984001.html" target="_blank" rel="external">ranyonsue的cnblog</a><br><a href="http://www.cnblogs.com/hyddd/archive/2009/03/31/1426026.html" target="_blank" rel="external">get和post的区别</a></p>
 
       
     </div>
@@ -423,7 +402,7 @@
           
             <a href="/tags/整理/" rel="tag"># 整理</a>
           
-            <a href="/tags/HTTP/" rel="tag"># HTTP</a>
+            <a href="/tags/编码/" rel="tag"># 编码</a>
           
         </div>
       
@@ -436,8 +415,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/02/14/ubuntn-desktop-env/" rel="next" title="ubuntu桌面开发环境搭建">
-                <i class="fa fa-chevron-left"></i> ubuntu桌面开发环境搭建
+              <a href="/2017/03/21/https/" rel="next" title="Https的介绍和使用">
+                <i class="fa fa-chevron-left"></i> Https的介绍和使用
               </a>
             
           </div>
@@ -446,8 +425,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/03/21/https/" rel="prev" title="Https的介绍和使用">
-                Https的介绍和使用 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/07/04/mac-with-dinghy-and-laradock/" rel="prev" title="Mac使用dinghy和laradock搭建php运行环境">
+                Mac使用dinghy和laradock搭建php运行环境 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -609,7 +588,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#组成"><span class="nav-number">1.</span> <span class="nav-text">组成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#状态码"><span class="nav-number">2.</span> <span class="nav-text">状态码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#请求方法"><span class="nav-number">3.</span> <span class="nav-text">请求方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GET-和-POST-的区别"><span class="nav-number">4.</span> <span class="nav-text">GET 和 POST 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#URI-和-URL-的区别"><span class="nav-number">5.</span> <span class="nav-text">URI 和 URL 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP-版本区别"><span class="nav-number">6.</span> <span class="nav-text">HTTP 版本区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#编码介绍"><span class="nav-number">1.</span> <span class="nav-text">编码介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编程语言中编码的应用"><span class="nav-number">2.</span> <span class="nav-text">编程语言中编码的应用</span></a></li></ol></div>
             
 
           </div>
