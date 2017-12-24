@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="整理,HTTPS,安全," />
+  <meta name="keywords" content="异步,高性能," />
 
 
 
@@ -93,19 +93,19 @@
 
 
 
-<meta name="description" content="超文本传输安全协议（英语：Hypertext Transfer Protocol Secure，缩写：HTTPS，常称为HTTP over TLS，HTTP over SSL或HTTP Secure)。SSL，Secure Sockets Layer 的缩写，1994年由网景设计的，1999 年，互联网标准化组织接替网景公司，发布了 Transport Sockets Layer 即 TSL。所谓">
-<meta name="keywords" content="整理,HTTPS,安全">
+<meta name="description" content="异步同步和阻塞非阻塞的关系两者之间并无关系。 异步同步关注的是发生调用函数如何返回结果。同步就是立即返回结果或者等待返回结果，一有结果产生就回立刻返回。异步就是函数立刻返回，但是没有返回结果，等到结果产生的时候需要配合其他机制，比如事件，协程等将结果返回。 阻塞和非阻塞关注的是进/线程的状态。阻塞是当需要等待结果时，将进/线程挂起等结果产生以后返回。非阻塞就是不挂起进/线程，立刻返回错误（结果未产">
+<meta name="keywords" content="异步,高性能">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Https的介绍和使用">
-<meta property="og:url" content="http://jiaojx.xyz/2017/03/21/https/index.html">
+<meta property="og:title" content="关于异&#x2F;同步，（非）阻塞">
+<meta property="og:url" content="http://jiaojx.xyz/2017/12/17/asyn_syn_block_no-block/index.html">
 <meta property="og:site_name" content="Alitain Blog">
-<meta property="og:description" content="超文本传输安全协议（英语：Hypertext Transfer Protocol Secure，缩写：HTTPS，常称为HTTP over TLS，HTTP over SSL或HTTP Secure)。SSL，Secure Sockets Layer 的缩写，1994年由网景设计的，1999 年，互联网标准化组织接替网景公司，发布了 Transport Sockets Layer 即 TSL。所谓">
-<meta property="og:image" content="http://ohtd7tndv.bkt.clouddn.com/https.png">
-<meta property="og:updated_time" content="2017-07-28T15:43:51.000Z">
+<meta property="og:description" content="异步同步和阻塞非阻塞的关系两者之间并无关系。 异步同步关注的是发生调用函数如何返回结果。同步就是立即返回结果或者等待返回结果，一有结果产生就回立刻返回。异步就是函数立刻返回，但是没有返回结果，等到结果产生的时候需要配合其他机制，比如事件，协程等将结果返回。 阻塞和非阻塞关注的是进/线程的状态。阻塞是当需要等待结果时，将进/线程挂起等结果产生以后返回。非阻塞就是不挂起进/线程，立刻返回错误（结果未产">
+<meta property="og:image" content="http://ohtd7tndv.bkt.clouddn.com/linux_io.jpeg">
+<meta property="og:updated_time" content="2017-12-24T15:50:01.201Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Https的介绍和使用">
-<meta name="twitter:description" content="超文本传输安全协议（英语：Hypertext Transfer Protocol Secure，缩写：HTTPS，常称为HTTP over TLS，HTTP over SSL或HTTP Secure)。SSL，Secure Sockets Layer 的缩写，1994年由网景设计的，1999 年，互联网标准化组织接替网景公司，发布了 Transport Sockets Layer 即 TSL。所谓">
-<meta name="twitter:image" content="http://ohtd7tndv.bkt.clouddn.com/https.png">
+<meta name="twitter:title" content="关于异&#x2F;同步，（非）阻塞">
+<meta name="twitter:description" content="异步同步和阻塞非阻塞的关系两者之间并无关系。 异步同步关注的是发生调用函数如何返回结果。同步就是立即返回结果或者等待返回结果，一有结果产生就回立刻返回。异步就是函数立刻返回，但是没有返回结果，等到结果产生的时候需要配合其他机制，比如事件，协程等将结果返回。 阻塞和非阻塞关注的是进/线程的状态。阻塞是当需要等待结果时，将进/线程挂起等结果产生以后返回。非阻塞就是不挂起进/线程，立刻返回错误（结果未产">
+<meta name="twitter:image" content="http://ohtd7tndv.bkt.clouddn.com/linux_io.jpeg">
 
 
 
@@ -133,13 +133,13 @@
 
 
 
-  <link rel="canonical" href="http://jiaojx.xyz/2017/03/21/https/"/>
+  <link rel="canonical" href="http://jiaojx.xyz/2017/12/17/asyn_syn_block_no-block/"/>
 
 
 
 
 
-  <title>Https的介绍和使用 | Alitain Blog</title>
+  <title>关于异/同步，（非）阻塞 | Alitain Blog</title>
   
 
 
@@ -258,7 +258,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://jiaojx.xyz/2017/03/21/https/">
+    <link itemprop="mainEntityOfPage" href="http://jiaojx.xyz/2017/12/17/asyn_syn_block_no-block/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Alitain">
@@ -275,7 +275,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Https的介绍和使用</h1>
+          <h1 class="post-title" itemprop="name headline">关于异/同步，（非）阻塞</h1>
         
 
         <div class="post-meta">
@@ -287,8 +287,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-21T14:43:45+08:00">
-                2017-03-21
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-17T10:24:12+08:00">
+                2017-12-17
               </time>
             
 
@@ -344,68 +344,29 @@
       
 
       
-        <p>超文本传输安全协议（英语：Hypertext Transfer Protocol Secure，缩写：HTTPS，常称为HTTP over TLS，HTTP over SSL或HTTP Secure)。<br>SSL，Secure Sockets Layer 的缩写，1994年由网景设计的，1999 年，互联网标准化组织接替网景公司，发布了 Transport Sockets Layer 即 TSL。<br>所谓 HTTPS 就是在 TCP 传输层和 HTTP 应用层之间加入了 TSL/SSL 层，用于加密和解密。</p>
+        <h1 id="异步同步和阻塞非阻塞的关系"><a href="#异步同步和阻塞非阻塞的关系" class="headerlink" title="异步同步和阻塞非阻塞的关系"></a>异步同步和阻塞非阻塞的关系</h1><p>两者之间并无关系。</p>
+<p>异步同步关注的是发生调用函数如何返回结果。同步就是立即返回结果或者等待返回结果，一有结果产生就回立刻返回。异步就是函数立刻返回，但是没有返回结果，等到结果产生的时候需要配合其他机制，比如事件，协程等将结果返回。</p>
+<p>阻塞和非阻塞关注的是进/线程的状态。阻塞是当需要等待结果时，将进/线程挂起等结果产生以后返回。非阻塞就是不挂起进/线程，立刻返回错误（结果未产生）。</p>
 <a id="more"></a>
-<h3 id="加密"><a href="#加密" class="headerlink" title="加密"></a>加密</h3><ul>
-<li><p>对称加密</p>
-<p>  对称加密是一种最简答，也最快的加密解密方式。对称，即加密和解密都是用的相同的秘钥。常见的对称加密方法有 DES、3DES、AES、RC5、RC6 等。 https 的传输阶段就是采用对称加密的 http 传输。</p>
-</li>
-<li><p>非对称加密</p>
-<p>  加密和解密需要两个不同的秘钥。一般分为公钥和私钥，公钥用于加密，能够提供数字签名的功能，可以任意向外发布；私钥只有持有者保管，通过公钥加密的密文在不安全的网络上传输，只有私钥持有者可以解开获得明文（即使获得了密文和公钥，也无法数以年记的时间内解开）。常见的非对称加密算法有 RSA、ElGamal、背包算法、Rabin、迪菲-赫尔曼算法、椭圆曲线加密算法。 https 的握手阶段是采用的是非对称加密。</p>
-</li>
-</ul>
-<h3 id="数字证书"><a href="#数字证书" class="headerlink" title="数字证书"></a>数字证书</h3><ul>
-<li><p>wiki定义</p>
-<blockquote>
-<p>用于公开密钥基础建设的电子文件，用来证明公开密钥拥有者的身份。此文件包含了公钥信息、拥有者身份信息（主体）、以及数字证书认证机构（发行者）对这份文件的数字签名，以保证这个文件的整体内容正确无误。电脑系统或其他用户可以通过一定的程序核实证书上的内容，包括证书有否过期、数字签名是否有效，如果信任签发的机构，就可以信任证书上的密钥，凭公钥加密与拥有者进行可靠的通信。</p>
-</blockquote>
-</li>
-<li><p>申请数字证书</p>
-<p>  服务端通过非对称加密算法生成一对公钥和私钥，向 Certificate Authority 即证书认证中心，简称 CA 提供拥有者身份信息和服务端公钥，通过后 CA 会颁发包含服务端公钥，拥有着身份信息和使用 CA 私钥对证书内容的摘要进行加密的密文，即数据签名。</p>
-</li>
-<li><p>如何确认数字证书有效</p>
-<ol>
-<li>验证证书是否有效<br> 客户端通过查看证书的有效时间，以及域名等来判断内容是否有效。</li>
-<li>验证证书是否可信<br> 客户端通过预存的相对应的 CA 根证书的公钥，对数字签名进行解密获取证书的摘要与通过对证书内容进行哈希运算得到的摘要进行对比，相等的话则证明数字证书是该 CA 颁发的是可信的。不相等，则客户端会提示证书不可信。</li>
-</ol>
-</li>
-</ul>
-<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>开始加密通信之前，客户端和服务器首先必须建立连接和交换参数，这个过程叫做握手<code>handshake</code>。<br>假定客户端叫做爱丽丝，服务器叫做鲍勃，整个握手过程可以用下图说明。<br><img src="http://ohtd7tndv.bkt.clouddn.com/https.png" alt="选自CloudFlare"><br>握手阶段分成五步。</p>
-<ol>
-<li>爱丽丝给出协议版本号、一个客户端生成的随机数<code>Client random</code>，以及客户端支持的加密方法。</li>
-<li>鲍勃确认双方使用的加密方法，并给出数字证书、以及一个服务器生成的随机数<code>Server random</code>。</li>
-<li>爱丽丝确认数字证书有效，然后生成一个新的随机数<code>Premaster secret</code>，并使用数字证书中的公钥，加密这个随机数，发给鲍勃。</li>
-<li>鲍勃使用自己的私钥，获取爱丽丝发来的随机数，即<code>Premaster secret</code>。</li>
-<li>爱丽丝和鲍勃根据约定的加密方法，使用前面的三个随机数，生成<strong>对话密钥</strong> <code>session key</code>，用来加密接下来的整个对话过程。</li>
-</ol>
-<p>为什么一定要用三个随机数来生成对话密钥，我们来看下面的解释</p>
-<blockquote>
-<p>不管是客户端还是服务器，都需要随机数，这样生成的密钥才不会每次都一样。由于SSL协议中证书是静态的，因此十分有必要引入一种随机因素来保证协商出来的密钥的随机性。<br>对于RSA密钥交换算法来说，<code>Premaster secret</code>本身就是一个随机数，再加上hello消息中的随机，三个随机数通过一个密钥导出器最终导出一个对称密钥。<br><code>Premaster secret</code>的存在在于SSL协议不信任每个主机都能产生完全随机的随机数，如果随机数不随机，那么c<code>Premaster secret</code>就有可能被猜出来，那么仅适用 <code>Premaster secret</code> 作为密钥就不合适了，因此必须引入新的随机因素，那么客户端和服务器加上<code>Premaster secret</code> 三个随机数一同生成的密钥就不容易被猜出了，一个伪随机可能完全不随机，可是是三个伪随机就十分接近随机了，每增加一个自由度，随机性增加的可不是一。</p>
-</blockquote>
-<h3 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h3><p>Let’s Encrypt 是一个免费的，自动化的，开放的 CA 机构。通过 <a href="https://certbot.eff.org" target="_blank" rel="external">certbot</a> ，选择相应的web服务和服务器版本，就可以很快的安装 nginx 的插件和证书。下面以 ubuntu 和 nginx 为例。</p>
+<h1 id="特定场景下的同步和异步"><a href="#特定场景下的同步和异步" class="headerlink" title="特定场景下的同步和异步"></a>特定场景下的同步和异步</h1><h2 id="编程模型中的同步和异步"><a href="#编程模型中的同步和异步" class="headerlink" title="编程模型中的同步和异步"></a>编程模型中的同步和异步</h2><p>异步编程：全部通过事件机制、协程等编写或运行代码的方式，且代码不含同步阻塞的函数调用。一旦包含了同步阻塞的函数，异步模型就退化成同步模型。</p>
+<p>同步编程：代码按照指令序列的顺序来执行，以及不属于异步编程的模型。</p>
+<h2 id="I-O-模型中的同步和异步"><a href="#I-O-模型中的同步和异步" class="headerlink" title="I/O 模型中的同步和异步"></a>I/O 模型中的同步和异步</h2><p>linux 有5大 I/O 模型，他们分别是</p>
 <ul>
-<li>安装源及软件  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ sudo apt-get update</div><div class="line">$ sudo apt-get install software-properties-common</div><div class="line">$ sudo add-apt-repository ppa:certbot/certbot</div><div class="line">$ sudo apt-get update</div><div class="line">$ sudo apt-get install python-certbot-nginx</div></pre></td></tr></table></figure>
-</li>
+<li>阻塞式 I/O</li>
+<li>非阻塞式 I/O</li>
+<li>I/O 复用（select 和 poll)</li>
+<li>信号驱动式 I/O</li>
+<li>异步 I/O</li>
 </ul>
-<ul>
-<li><p>安装证书</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo certbot --nginx certonly # 不加 certonly，可以自动配置 nginx，省略下一步</div></pre></td></tr></table></figure>
-</li>
-<li><p>配置 NGINX<br>  在相应的 server 模块中加入如下配置</p>
-<pre><code>{
-    ...
-    listen 443;
-    ssl on; 
-    ssl_certificate /path/to/server.crt; # 证书路径
-    ssl_certificate_key /path/to/server.key; # 私钥路径
-}
-</code></pre></li>
-</ul>
-<ul>
-<li>重新生成证书  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo certbot renew --dry-run</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://zh.wikipedia.org/wiki/超文本传输安全协议" target="_blank" rel="external">wikipedia https</a><br><a href="https://zh.wikipedia.org/wiki/傳輸層安全協議" target="_blank" rel="external">wikipedia ssl/tsl</a><br><a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html" target="_blank" rel="external">SSL/TLS协议运行机制的概述</a><br><a href="http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html" target="_blank" rel="external">图解SSL/TLS协议</a></p>
+<p>他们的简单定义和比较如下图</p>
+<p><img src="http://ohtd7tndv.bkt.clouddn.com/linux_io.jpeg" alt="linux_io"></p>
+<p>其中，前面的四种 I/O 模型都属于同步 I/O。异步 I/O 在 linux 系统上是通过 aio 函数调用来实现的，即数据的等待阶段和从内核复制到用户空间的阶段都是由内核完成的，是真正的异步。</p>
+<p>这里的同步和异步主要区分的是，内核通知应用程序是哪种 I/O 事件（就绪事件还是完成事件），以及是由谁来完成 I/O 读写（应用程序还是内核）</p>
+<h2 id="服务器并发模型中的同步和异步"><a href="#服务器并发模型中的同步和异步" class="headerlink" title="服务器并发模型中的同步和异步"></a>服务器并发模型中的同步和异步</h2><p>并发模型中的同步和异步与编程模型中的定义相似，这里只列一下优缺点。</p>
+<p>异步模型：通过事件机制实现的异步编程，会层层回调，难以维护。如果底层实现了协程调度，可以通过同步编程来实现异步编程的效果。</p>
+<p>同步模型：目前大多数应用场景都是采用的这种编程模型，相对异步变成较为简单，调试方便，容易维护。</p>
+<p>半同步/半异步模型：业务逻辑通过同步编程模型来实现，I/O 操作通过异步变成模型来实现。结合事件模型又产生了半同步/半反应堆等的变种。</p>
+<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><p>资源中的同步：为了维护数据的一致性，例如 mysql 的主从复制，线程间信号量和锁的实现，都是为了维护数据的一致性。</p>
 
       
     </div>
@@ -435,11 +396,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/整理/" rel="tag"># 整理</a>
+            <a href="/tags/异步/" rel="tag"># 异步</a>
           
-            <a href="/tags/HTTPS/" rel="tag"># HTTPS</a>
-          
-            <a href="/tags/安全/" rel="tag"># 安全</a>
+            <a href="/tags/高性能/" rel="tag"># 高性能</a>
           
         </div>
       
@@ -452,8 +411,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/02/20/http/" rel="next" title="Http 协议详解">
-                <i class="fa fa-chevron-left"></i> Http 协议详解
+              <a href="/2017/07/04/mac-with-dinghy-and-laradock/" rel="next" title="Mac使用dinghy和laradock搭建php运行环境">
+                <i class="fa fa-chevron-left"></i> Mac使用dinghy和laradock搭建php运行环境
               </a>
             
           </div>
@@ -461,10 +420,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/04/05/encode/" rel="prev" title="关于编码和存储">
-                关于编码和存储 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -625,7 +580,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#加密"><span class="nav-number">1.</span> <span class="nav-text">加密</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数字证书"><span class="nav-number">2.</span> <span class="nav-text">数字证书</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">3.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部署"><span class="nav-number">4.</span> <span class="nav-text">部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#异步同步和阻塞非阻塞的关系"><span class="nav-number">1.</span> <span class="nav-text">异步同步和阻塞非阻塞的关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#特定场景下的同步和异步"><span class="nav-number">2.</span> <span class="nav-text">特定场景下的同步和异步</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#编程模型中的同步和异步"><span class="nav-number">2.1.</span> <span class="nav-text">编程模型中的同步和异步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#I-O-模型中的同步和异步"><span class="nav-number">2.2.</span> <span class="nav-text">I/O 模型中的同步和异步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器并发模型中的同步和异步"><span class="nav-number">2.3.</span> <span class="nav-text">服务器并发模型中的同步和异步</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他"><span class="nav-number">3.</span> <span class="nav-text">其他</span></a></li></ol></div>
             
 
           </div>
