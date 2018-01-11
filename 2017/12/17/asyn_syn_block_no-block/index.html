@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="异步,高性能," />
+  <meta name="keywords" content="异步,并发," />
 
 
 
@@ -93,18 +93,18 @@
 
 
 
-<meta name="description" content="异步同步和阻塞非阻塞的关系两者之间并无关系。 异步同步关注的是发生调用函数如何返回结果。同步就是立即返回结果或者等待返回结果，一有结果产生就回立刻返回。异步就是函数立刻返回，但是没有返回结果，等到结果产生的时候需要配合其他机制，比如事件，协程等将结果返回。 阻塞和非阻塞关注的是进/线程的状态。阻塞是当需要等待结果时，将进/线程挂起等结果产生以后返回。非阻塞就是不挂起进/线程，立刻返回错误（结果未产">
-<meta name="keywords" content="异步,高性能">
+<meta name="description" content="两者之间并无关系。 异步同步关注的是发生调用函数如何返回结果。同步就是立即返回结果或者等待返回结果，一有结果产生就回立刻返回。异步就是函数立刻返回，但是没有返回结果，等到结果产生的时候需要配合其他机制，比如事件，协程等将结果返回。 阻塞和非阻塞关注的是进/线程的状态。阻塞是当需要等待结果时，将进/线程挂起等结果产生以后返回。非阻塞就是不挂起进/线程，立刻返回错误（结果未产生）。">
+<meta name="keywords" content="异步,并发">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于异&#x2F;同步，（非）阻塞">
 <meta property="og:url" content="http://jiaojx.xyz/2017/12/17/asyn_syn_block_no-block/index.html">
 <meta property="og:site_name" content="Alitain Blog">
-<meta property="og:description" content="异步同步和阻塞非阻塞的关系两者之间并无关系。 异步同步关注的是发生调用函数如何返回结果。同步就是立即返回结果或者等待返回结果，一有结果产生就回立刻返回。异步就是函数立刻返回，但是没有返回结果，等到结果产生的时候需要配合其他机制，比如事件，协程等将结果返回。 阻塞和非阻塞关注的是进/线程的状态。阻塞是当需要等待结果时，将进/线程挂起等结果产生以后返回。非阻塞就是不挂起进/线程，立刻返回错误（结果未产">
+<meta property="og:description" content="两者之间并无关系。 异步同步关注的是发生调用函数如何返回结果。同步就是立即返回结果或者等待返回结果，一有结果产生就回立刻返回。异步就是函数立刻返回，但是没有返回结果，等到结果产生的时候需要配合其他机制，比如事件，协程等将结果返回。 阻塞和非阻塞关注的是进/线程的状态。阻塞是当需要等待结果时，将进/线程挂起等结果产生以后返回。非阻塞就是不挂起进/线程，立刻返回错误（结果未产生）。">
 <meta property="og:image" content="http://ohtd7tndv.bkt.clouddn.com/linux_io.jpeg">
-<meta property="og:updated_time" content="2017-12-24T15:50:01.201Z">
+<meta property="og:updated_time" content="2018-01-11T15:28:45.153Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于异&#x2F;同步，（非）阻塞">
-<meta name="twitter:description" content="异步同步和阻塞非阻塞的关系两者之间并无关系。 异步同步关注的是发生调用函数如何返回结果。同步就是立即返回结果或者等待返回结果，一有结果产生就回立刻返回。异步就是函数立刻返回，但是没有返回结果，等到结果产生的时候需要配合其他机制，比如事件，协程等将结果返回。 阻塞和非阻塞关注的是进/线程的状态。阻塞是当需要等待结果时，将进/线程挂起等结果产生以后返回。非阻塞就是不挂起进/线程，立刻返回错误（结果未产">
+<meta name="twitter:description" content="两者之间并无关系。 异步同步关注的是发生调用函数如何返回结果。同步就是立即返回结果或者等待返回结果，一有结果产生就回立刻返回。异步就是函数立刻返回，但是没有返回结果，等到结果产生的时候需要配合其他机制，比如事件，协程等将结果返回。 阻塞和非阻塞关注的是进/线程的状态。阻塞是当需要等待结果时，将进/线程挂起等结果产生以后返回。非阻塞就是不挂起进/线程，立刻返回错误（结果未产生）。">
 <meta name="twitter:image" content="http://ohtd7tndv.bkt.clouddn.com/linux_io.jpeg">
 
 
@@ -344,13 +344,15 @@
       
 
       
-        <h1 id="异步同步和阻塞非阻塞的关系"><a href="#异步同步和阻塞非阻塞的关系" class="headerlink" title="异步同步和阻塞非阻塞的关系"></a>异步同步和阻塞非阻塞的关系</h1><p>两者之间并无关系。</p>
+        <p>两者之间并无关系。</p>
 <p>异步同步关注的是发生调用函数如何返回结果。同步就是立即返回结果或者等待返回结果，一有结果产生就回立刻返回。异步就是函数立刻返回，但是没有返回结果，等到结果产生的时候需要配合其他机制，比如事件，协程等将结果返回。</p>
-<p>阻塞和非阻塞关注的是进/线程的状态。阻塞是当需要等待结果时，将进/线程挂起等结果产生以后返回。非阻塞就是不挂起进/线程，立刻返回错误（结果未产生）。</p>
-<a id="more"></a>
-<h1 id="特定场景下的同步和异步"><a href="#特定场景下的同步和异步" class="headerlink" title="特定场景下的同步和异步"></a>特定场景下的同步和异步</h1><h2 id="编程模型中的同步和异步"><a href="#编程模型中的同步和异步" class="headerlink" title="编程模型中的同步和异步"></a>编程模型中的同步和异步</h2><p>异步编程：全部通过事件机制、协程等编写或运行代码的方式，且代码不含同步阻塞的函数调用。一旦包含了同步阻塞的函数，异步模型就退化成同步模型。</p>
+<p>阻塞和非阻塞关注的是进/线程的状态。阻塞是当需要等待结果时，将进/线程挂起等结果产生以后返回。非阻塞就是不挂起进/线程，立刻返回错误（结果未产生）。<br><a id="more"></a></p>
+<blockquote>
+<p>注意阻塞、挂起和睡眠的关系。进程阻塞是被动的行为，例如进程需要等待 I/O 完成，系统调度将其放到阻塞队列中，如果进程长时间没有被运行，就有可能被挂起。等到 I/O 完成后，系统调度将其重新加入到就绪队列中，等待 CPU 的执行。睡眠是进程主动的行为，进入到睡眠状态。</p>
+</blockquote>
+<h2 id="特定场景下的同步和异步"><a href="#特定场景下的同步和异步" class="headerlink" title="特定场景下的同步和异步"></a>特定场景下的同步和异步</h2><h3 id="编程模型中的同步和异步"><a href="#编程模型中的同步和异步" class="headerlink" title="编程模型中的同步和异步"></a>编程模型中的同步和异步</h3><p>异步编程：全部通过事件机制、协程等编写或运行代码的方式，且代码不含同步阻塞的函数调用。一旦包含了同步阻塞的函数，异步模型就退化成同步模型。</p>
 <p>同步编程：代码按照指令序列的顺序来执行，以及不属于异步编程的模型。</p>
-<h2 id="I-O-模型中的同步和异步"><a href="#I-O-模型中的同步和异步" class="headerlink" title="I/O 模型中的同步和异步"></a>I/O 模型中的同步和异步</h2><p>linux 有5大 I/O 模型，他们分别是</p>
+<h3 id="I-O-模型中的同步和异步"><a href="#I-O-模型中的同步和异步" class="headerlink" title="I/O 模型中的同步和异步"></a>I/O 模型中的同步和异步</h3><p>linux 有5大 I/O 模型，他们分别是</p>
 <ul>
 <li>阻塞式 I/O</li>
 <li>非阻塞式 I/O</li>
@@ -362,11 +364,11 @@
 <p><img src="http://ohtd7tndv.bkt.clouddn.com/linux_io.jpeg" alt="linux_io"></p>
 <p>其中，前面的四种 I/O 模型都属于同步 I/O。异步 I/O 在 linux 系统上是通过 aio 函数调用来实现的，即数据的等待阶段和从内核复制到用户空间的阶段都是由内核完成的，是真正的异步。</p>
 <p>这里的同步和异步主要区分的是，内核通知应用程序是哪种 I/O 事件（就绪事件还是完成事件），以及是由谁来完成 I/O 读写（应用程序还是内核）</p>
-<h2 id="服务器并发模型中的同步和异步"><a href="#服务器并发模型中的同步和异步" class="headerlink" title="服务器并发模型中的同步和异步"></a>服务器并发模型中的同步和异步</h2><p>并发模型中的同步和异步与编程模型中的定义相似，这里只列一下优缺点。</p>
+<h3 id="服务器并发模型中的同步和异步"><a href="#服务器并发模型中的同步和异步" class="headerlink" title="服务器并发模型中的同步和异步"></a>服务器并发模型中的同步和异步</h3><p>并发模型中的同步和异步与编程模型中的定义相似，这里只列一下优缺点。</p>
 <p>异步模型：通过事件机制实现的异步编程，会层层回调，难以维护。如果底层实现了协程调度，可以通过同步编程来实现异步编程的效果。</p>
 <p>同步模型：目前大多数应用场景都是采用的这种编程模型，相对异步变成较为简单，调试方便，容易维护。</p>
 <p>半同步/半异步模型：业务逻辑通过同步编程模型来实现，I/O 操作通过异步变成模型来实现。结合事件模型又产生了半同步/半反应堆等的变种。</p>
-<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><p>资源中的同步：为了维护数据的一致性，例如 mysql 的主从复制，线程间信号量和锁的实现，都是为了维护数据的一致性。</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>资源中的同步：为了维护数据的一致性，例如 mysql 的主从复制，线程间信号量和锁的实现，都是为了维护数据的一致性。</p>
 
       
     </div>
@@ -398,7 +400,7 @@
           
             <a href="/tags/异步/" rel="tag"># 异步</a>
           
-            <a href="/tags/高性能/" rel="tag"># 高性能</a>
+            <a href="/tags/并发/" rel="tag"># 并发</a>
           
         </div>
       
@@ -420,6 +422,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/05/concurrency_talking/" rel="prev" title="漫谈并发">
+                漫谈并发 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -523,7 +529,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -580,7 +586,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#异步同步和阻塞非阻塞的关系"><span class="nav-number">1.</span> <span class="nav-text">异步同步和阻塞非阻塞的关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#特定场景下的同步和异步"><span class="nav-number">2.</span> <span class="nav-text">特定场景下的同步和异步</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#编程模型中的同步和异步"><span class="nav-number">2.1.</span> <span class="nav-text">编程模型中的同步和异步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#I-O-模型中的同步和异步"><span class="nav-number">2.2.</span> <span class="nav-text">I/O 模型中的同步和异步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器并发模型中的同步和异步"><span class="nav-number">2.3.</span> <span class="nav-text">服务器并发模型中的同步和异步</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他"><span class="nav-number">3.</span> <span class="nav-text">其他</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#特定场景下的同步和异步"><span class="nav-number">1.</span> <span class="nav-text">特定场景下的同步和异步</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#编程模型中的同步和异步"><span class="nav-number">1.1.</span> <span class="nav-text">编程模型中的同步和异步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#I-O-模型中的同步和异步"><span class="nav-number">1.2.</span> <span class="nav-text">I/O 模型中的同步和异步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器并发模型中的同步和异步"><span class="nav-number">1.3.</span> <span class="nav-text">服务器并发模型中的同步和异步</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他"><span class="nav-number">2.</span> <span class="nav-text">其他</span></a></li></ol></div>
             
 
           </div>
@@ -603,7 +609,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

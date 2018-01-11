@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="整理,HTTPS,安全," />
+  <meta name="keywords" content="异步,并发," />
 
 
 
@@ -93,19 +93,20 @@
 
 
 
-<meta name="description" content="超文本传输安全协议（英语：Hypertext Transfer Protocol Secure，缩写：HTTPS，常称为HTTP over TLS，HTTP over SSL或HTTP Secure)。SSL，Secure Sockets Layer 的缩写，1994年由网景设计的，1999 年，互联网标准化组织接替网景公司，发布了 Transport Sockets Layer 即 TSL。所谓">
-<meta name="keywords" content="整理,HTTPS,安全">
+<meta name="description" content="周五做了一次技术分享，整体下来感觉很失败，讲到最后觉得是在浪费别人的时间，自己都想快点结束，本来打算演示的东西都没演示，可以当做一个失败案例的范本，大家可以避免下~~&amp;gt;_&amp;lt;。其实，自己是多了很多精力去准备的，虽然分享的效果不好，但是觉得自己还是有很大收获的。首先分析下原因（加粗字体是改进措施）：">
+<meta name="keywords" content="异步,并发">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Https的介绍和使用">
-<meta property="og:url" content="http://jiaojx.xyz/2017/03/21/https/index.html">
+<meta property="og:title" content="漫谈并发">
+<meta property="og:url" content="http://jiaojx.xyz/2018/01/05/concurrency_talking/index.html">
 <meta property="og:site_name" content="Alitain Blog">
-<meta property="og:description" content="超文本传输安全协议（英语：Hypertext Transfer Protocol Secure，缩写：HTTPS，常称为HTTP over TLS，HTTP over SSL或HTTP Secure)。SSL，Secure Sockets Layer 的缩写，1994年由网景设计的，1999 年，互联网标准化组织接替网景公司，发布了 Transport Sockets Layer 即 TSL。所谓">
-<meta property="og:image" content="http://ohtd7tndv.bkt.clouddn.com/https.png">
-<meta property="og:updated_time" content="2017-07-28T15:43:51.000Z">
+<meta property="og:description" content="周五做了一次技术分享，整体下来感觉很失败，讲到最后觉得是在浪费别人的时间，自己都想快点结束，本来打算演示的东西都没演示，可以当做一个失败案例的范本，大家可以避免下~~&amp;gt;_&amp;lt;。其实，自己是多了很多精力去准备的，虽然分享的效果不好，但是觉得自己还是有很大收获的。首先分析下原因（加粗字体是改进措施）：">
+<meta property="og:image" content="http://ohtd7tndv.bkt.clouddn.com/blocking-process.png">
+<meta property="og:image" content="http://ohtd7tndv.bkt.clouddn.com/none-blocking-process.png">
+<meta property="og:updated_time" content="2018-01-11T15:30:25.353Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Https的介绍和使用">
-<meta name="twitter:description" content="超文本传输安全协议（英语：Hypertext Transfer Protocol Secure，缩写：HTTPS，常称为HTTP over TLS，HTTP over SSL或HTTP Secure)。SSL，Secure Sockets Layer 的缩写，1994年由网景设计的，1999 年，互联网标准化组织接替网景公司，发布了 Transport Sockets Layer 即 TSL。所谓">
-<meta name="twitter:image" content="http://ohtd7tndv.bkt.clouddn.com/https.png">
+<meta name="twitter:title" content="漫谈并发">
+<meta name="twitter:description" content="周五做了一次技术分享，整体下来感觉很失败，讲到最后觉得是在浪费别人的时间，自己都想快点结束，本来打算演示的东西都没演示，可以当做一个失败案例的范本，大家可以避免下~~&amp;gt;_&amp;lt;。其实，自己是多了很多精力去准备的，虽然分享的效果不好，但是觉得自己还是有很大收获的。首先分析下原因（加粗字体是改进措施）：">
+<meta name="twitter:image" content="http://ohtd7tndv.bkt.clouddn.com/blocking-process.png">
 
 
 
@@ -133,13 +134,13 @@
 
 
 
-  <link rel="canonical" href="http://jiaojx.xyz/2017/03/21/https/"/>
+  <link rel="canonical" href="http://jiaojx.xyz/2018/01/05/concurrency_talking/"/>
 
 
 
 
 
-  <title>Https的介绍和使用 | Alitain Blog</title>
+  <title>漫谈并发 | Alitain Blog</title>
   
 
 
@@ -258,7 +259,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://jiaojx.xyz/2017/03/21/https/">
+    <link itemprop="mainEntityOfPage" href="http://jiaojx.xyz/2018/01/05/concurrency_talking/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Alitain">
@@ -275,7 +276,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Https的介绍和使用</h1>
+          <h1 class="post-title" itemprop="name headline">漫谈并发</h1>
         
 
         <div class="post-meta">
@@ -287,8 +288,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-21T14:43:45+08:00">
-                2017-03-21
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-05T23:02:09+08:00">
+                2018-01-05
               </time>
             
 
@@ -344,68 +345,40 @@
       
 
       
-        <p>超文本传输安全协议（英语：Hypertext Transfer Protocol Secure，缩写：HTTPS，常称为HTTP over TLS，HTTP over SSL或HTTP Secure)。<br>SSL，Secure Sockets Layer 的缩写，1994年由网景设计的，1999 年，互联网标准化组织接替网景公司，发布了 Transport Sockets Layer 即 TSL。<br>所谓 HTTPS 就是在 TCP 传输层和 HTTP 应用层之间加入了 TSL/SSL 层，用于加密和解密。</p>
-<a id="more"></a>
-<h3 id="加密"><a href="#加密" class="headerlink" title="加密"></a>加密</h3><ul>
-<li><p>对称加密</p>
-<p>  对称加密是一种最简答，也最快的加密解密方式。对称，即加密和解密都是用的相同的秘钥。常见的对称加密方法有 DES、3DES、AES、RC5、RC6 等。 https 的传输阶段就是采用对称加密的 http 传输。</p>
-</li>
-<li><p>非对称加密</p>
-<p>  加密和解密需要两个不同的秘钥。一般分为公钥和私钥，公钥用于加密，能够提供数字签名的功能，可以任意向外发布；私钥只有持有者保管，通过公钥加密的密文在不安全的网络上传输，只有私钥持有者可以解开获得明文（即使获得了密文和公钥，也无法数以年记的时间内解开）。常见的非对称加密算法有 RSA、ElGamal、背包算法、Rabin、迪菲-赫尔曼算法、椭圆曲线加密算法。 https 的握手阶段是采用的是非对称加密。</p>
-</li>
-</ul>
-<h3 id="数字证书"><a href="#数字证书" class="headerlink" title="数字证书"></a>数字证书</h3><ul>
-<li><p>wiki定义</p>
-<blockquote>
-<p>用于公开密钥基础建设的电子文件，用来证明公开密钥拥有者的身份。此文件包含了公钥信息、拥有者身份信息（主体）、以及数字证书认证机构（发行者）对这份文件的数字签名，以保证这个文件的整体内容正确无误。电脑系统或其他用户可以通过一定的程序核实证书上的内容，包括证书有否过期、数字签名是否有效，如果信任签发的机构，就可以信任证书上的密钥，凭公钥加密与拥有者进行可靠的通信。</p>
-</blockquote>
-</li>
-<li><p>申请数字证书</p>
-<p>  服务端通过非对称加密算法生成一对公钥和私钥，向 Certificate Authority 即证书认证中心，简称 CA 提供拥有者身份信息和服务端公钥，通过后 CA 会颁发包含服务端公钥，拥有着身份信息和使用 CA 私钥对证书内容的摘要进行加密的密文，即数据签名。</p>
-</li>
-<li><p>如何确认数字证书有效</p>
+        <p>周五做了一次技术分享，整体下来感觉很失败，讲到最后觉得是在浪费别人的时间，自己都想快点结束，本来打算演示的东西都没演示，可以当做一个失败案例的范本，大家可以避免下~~&gt;_&lt;。其实，自己是多了很多精力去准备的，虽然分享的效果不好，但是觉得自己还是有很大收获的。首先分析下原因（加粗字体是改进措施）：<br><a id="more"></a></p>
 <ol>
-<li>验证证书是否有效<br> 客户端通过查看证书的有效时间，以及域名等来判断内容是否有效。</li>
-<li>验证证书是否可信<br> 客户端通过预存的相对应的 CA 根证书的公钥，对数字签名进行解密获取证书的摘要与通过对证书内容进行哈希运算得到的摘要进行对比，相等的话则证明数字证书是该 CA 颁发的是可信的。不相等，则客户端会提示证书不可信。</li>
+<li>分享之外的因素。虚拟机在扩展屏幕上的分辨率问题，导致开场了结果前8分钟都在调试设备，大家都在等着。时间浪费了不说，会搞得大家没有耐心，也影响自己的心情。梦幻般的开场，这是绝对应该避免，而且可以避免的事情。<strong>提前到场15分钟到场，准备好相关设备，提前一天预订号会议室。</strong></li>
+<li>分享的内容。由于面向的对象是部门，所以分享的内容应该分为两个层次，<strong>第一个是针对非专业领域的同学，应该把概念解释清楚，听完了有一个直观的印象。第二个是针对专业领域的同学，应该涉及一部分原理性的东西，最好针对某个细节深入探讨，听完了有一点收获</strong>。这些东西我都明白，但是在分享的时候突然发现概念没有办法通俗易懂的讲清楚。同时 swoole 设计到底层的东西很多，把一个原理性的东西讲明白还是有些难度的，所以我就把重要的几个点提了一下，导致深度不够。</li>
+<li>分享的技巧。<strong>通过合理的方式增加趣味性和互动性</strong>。</li>
 </ol>
-</li>
-</ul>
-<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>开始加密通信之前，客户端和服务器首先必须建立连接和交换参数，这个过程叫做握手<code>handshake</code>。<br>假定客户端叫做爱丽丝，服务器叫做鲍勃，整个握手过程可以用下图说明。<br><img src="http://ohtd7tndv.bkt.clouddn.com/https.png" alt="选自CloudFlare"><br>握手阶段分成五步。</p>
-<ol>
-<li>爱丽丝给出协议版本号、一个客户端生成的随机数<code>Client random</code>，以及客户端支持的加密方法。</li>
-<li>鲍勃确认双方使用的加密方法，并给出数字证书、以及一个服务器生成的随机数<code>Server random</code>。</li>
-<li>爱丽丝确认数字证书有效，然后生成一个新的随机数<code>Premaster secret</code>，并使用数字证书中的公钥，加密这个随机数，发给鲍勃。</li>
-<li>鲍勃使用自己的私钥，获取爱丽丝发来的随机数，即<code>Premaster secret</code>。</li>
-<li>爱丽丝和鲍勃根据约定的加密方法，使用前面的三个随机数，生成<strong>对话密钥</strong> <code>session key</code>，用来加密接下来的整个对话过程。</li>
-</ol>
-<p>为什么一定要用三个随机数来生成对话密钥，我们来看下面的解释</p>
-<blockquote>
-<p>不管是客户端还是服务器，都需要随机数，这样生成的密钥才不会每次都一样。由于SSL协议中证书是静态的，因此十分有必要引入一种随机因素来保证协商出来的密钥的随机性。<br>对于RSA密钥交换算法来说，<code>Premaster secret</code>本身就是一个随机数，再加上hello消息中的随机，三个随机数通过一个密钥导出器最终导出一个对称密钥。<br><code>Premaster secret</code>的存在在于SSL协议不信任每个主机都能产生完全随机的随机数，如果随机数不随机，那么c<code>Premaster secret</code>就有可能被猜出来，那么仅适用 <code>Premaster secret</code> 作为密钥就不合适了，因此必须引入新的随机因素，那么客户端和服务器加上<code>Premaster secret</code> 三个随机数一同生成的密钥就不容易被猜出了，一个伪随机可能完全不随机，可是是三个伪随机就十分接近随机了，每增加一个自由度，随机性增加的可不是一。</p>
-</blockquote>
-<h3 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h3><p>Let’s Encrypt 是一个免费的，自动化的，开放的 CA 机构。通过 <a href="https://certbot.eff.org" target="_blank" rel="external">certbot</a> ，选择相应的web服务和服务器版本，就可以很快的安装 nginx 的插件和证书。下面以 ubuntu 和 nginx 为例。</p>
 <ul>
-<li>安装源及软件  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ sudo apt-get update</div><div class="line">$ sudo apt-get install software-properties-common</div><div class="line">$ sudo add-apt-repository ppa:certbot/certbot</div><div class="line">$ sudo apt-get update</div><div class="line">$ sudo apt-get install python-certbot-nginx</div></pre></td></tr></table></figure>
-</li>
+<li>概念如果不好说清楚，可以画图来解释，直观明了。</li>
+<li>可以在ppt中提一些问题，增加互动性。</li>
+<li>开场可以展示一个很酷的结果，让大家产生兴趣，然后逐步分析酷炫的结果如何产生的。</li>
+<li>ppt的动画没什么意义，只会分散大家的注意力。</li>
+<li>段子可以适当讲一讲，在一个合适的时间讲一个合适的段子，不会枯燥。</li>
+<li>用 ppt 做展示适合使用深色背景，浅色字体。</li>
 </ul>
+<p>废话说多了，下面开始正题。<br>最近开始在研究 swoole ，发现它设计了很多底层的知识，于是看了看 TCP/IP 详解和 Linux 高性能服务器编程这两本书，也看了很多相关的博客。对并发有了一个初步的认识，这篇文章试图用直观的方式把并发相关的概念讲述清楚。</p>
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>并发指的是<strong>同一时间服务器处理请求或事务的能力</strong>。可以简单理解为服务器单位时间处理的请求数（QPS）。通过模拟用户环境的压力测试，我们可以得到一个服务器可以承受的并发量是多少。<br>当请求量超过服务器的并发量，多余的请求会再服务器端排队等待处理，如果等待队列满了，新的请求会被丢弃。接下来我们主要讨论的是如何提高服务器的并发量。</p>
+<h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><ul>
+<li>运算密集<br>在运算密集的场景下，想要提升并发量，只有通过改变算法，或者增加机器，换更快的、拥有更多核心处理器来解决。</li>
+<li>I/O 密集<br>在 I/O 密集场景下，由于 CPU 和 I/O 处理速度相差太多，在<a href="http://jiaojx.site/2017/12/17/asyn_syn_block_no-block" target="_blank" rel="external">同步阻塞</a>下，CPU 需要等待 I/O 操作完成才可以继续执行。在等待的过程中，进程是阻塞的状态，无法继续对外提供服务。除了增加更多的设备，通过异步非阻塞的 I/O 操作，可以在等待 I/O 的同时，继续处理新的请求，从而提升并发量。</li>
+</ul>
+<h2 id="并发技术"><a href="#并发技术" class="headerlink" title="并发技术"></a>并发技术</h2><p>Web Server 并发技术的发展经历了从多进/线程，到 I/O 复用，再到协程技术的应用。多进/线程序充分发挥了 CPU 的多核特性，但是由于 I/O 操作都是阻塞的，所以一旦有了比较耗时的 I/O 操作，服务器的并发处理能力还是很弱的。 直到 I/O 复用技术的应用，才大大提升了服务器并发处理能力，并且真正解决了 C10K 的问题。协程的出现，然我们可以省去繁琐的异步回调嵌套，甚至完全编写同步代码也可以在底层异步调用。</p>
+<p>为了通过画图来更直观的展示我们提供一种特殊的场景，我们假设有一台 4 核的CPU, 每个请求需要 1s，其中 0.9s 的时间是在等待网络 I/O 的完成（忽略链接创建销毁，进程创建切换销毁的耗时。实际上大多数情况下 CPU 和 I/O 操作的耗时不在一个数量级上）。</p>
 <ul>
-<li><p>安装证书</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo certbot --nginx certonly # 不加 certonly，可以自动配置 nginx，省略下一步</div></pre></td></tr></table></figure>
+<li><p>多进/线程（池）<br>先说多进程阻塞，主进程在接收到新的请求后，就派生一个子进程出来处理新的链接，处理完后结束子进程，一定程度上提高了服务器的并发处理能力。由于进程操作开销很大，线程间通信相对容易，所以就把多线程应用到并发服务器上，主线程在接收到一个新的请求后，就创建一个新的线程来处理链接。为了避免进/线程创建和销毁的开销，同时可以复用，提出了进/线程池的概念。例如 PHP-FPM 服务在启动的时候，就会创建多个进程（一般设置为同 CPU 核心数即可），有新的请求过来，直接从进程池用取出一个来用。根据上面的场景结合下面的图，我们可以看到服务器的并发数最多为4个！<br><img src="http://ohtd7tndv.bkt.clouddn.com/blocking-process.png" alt="bloking-process">    </p>
 </li>
-<li><p>配置 NGINX<br>  在相应的 server 模块中加入如下配置</p>
-<pre><code>{
-    ...
-    listen 443;
-    ssl on; 
-    ssl_certificate /path/to/server.crt; # 证书路径
-    ssl_certificate_key /path/to/server.key; # 私钥路径
-}
-</code></pre></li>
-</ul>
+<li><p>I/O 复用<br>通过 I/O 复用技术，同一个进/线程可以让内核监测多个 I/O 的状态，并在 I/O 就绪时去通知进/线程。select 系统调用最多可以监测1024个描述符， 内核通过遍历的方式来判断哪些是就绪的 I/O，并返回给用户程序。因此 select 只适合用于文件描述符较少的情况。poll 系统调用解除了文件描述符的限制，但是内核依然需要遍历，假如服务器维持了百万的链接，但是只有几个链接是活跃的，那么大部分的监测是没有用的。直到 linux 2.6 加入了 epoll，epoll_wait 系统调用是通过回调函数实现的，一有就绪的 I/O 就会触发回调函数，最终返回给用户程序，因此监测的复杂度是 O(1)。为了避免回调函数触发的过于频繁，因此适合链接数较多，但是活动链接较少的情况。I/O 复用函数需要配合多进/线程才能真正实现并发，否则即便是监测到了多个 I/O 就绪事件，也只能顺序处理。通过 I/O 复用配合多进程，我们的并发数最多可以达到将近40个。<br><img src="http://ohtd7tndv.bkt.clouddn.com/none-blocking-process.png" alt="none-bloking-process">    </p>
+</li>
+<li><p>协程<br>协程可以理解为纯用户态的线程，其通过协作而不是抢占来进行切换。相对于线程，协程所有是由程序自身控制，因此，没有线程切换的开销，执行效率极高。同时也不需要多线程的锁机制，因为只存在一个线程，不会发生资源冲突。通过多进程+协程，即可以充分利用多核，又充分发挥协程的高效率，可获得提高的性能。通过协程我们可以避免复杂的异步嵌套，编写同步代码来实现异步调用。<br>协程有两种调度方式：    </p>
 <ul>
-<li>重新生成证书  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo certbot renew --dry-run</div></pre></td></tr></table></figure>
+<li>语言上提供协程调度。即在语言的层级上，通过 generaor 来实现。 generator 内部通过 yield 为程序添加了可中断的点，结合事件机制让程序在合适的时间让出 CPU。例如 Python 中的 asynico 库，就是通过 generator + proactor 事件模型来实现的协程调度。</li>
+<li>语言底层提供协程调度。语言底层会自动把 I/O 操作重写为异步。用户编写纯同步的代码即可，完全感知不到底层会异步调用。例如，swoole 的协程客户端，在 connet(), recv(), send(), close() 等方法调用时，自动触发一次协程切换。</li>
+</ul>
 </li>
 </ul>
-<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://zh.wikipedia.org/wiki/超文本传输安全协议" target="_blank" rel="external">wikipedia https</a><br><a href="https://zh.wikipedia.org/wiki/傳輸層安全協議" target="_blank" rel="external">wikipedia ssl/tsl</a><br><a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html" target="_blank" rel="external">SSL/TLS协议运行机制的概述</a><br><a href="http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html" target="_blank" rel="external">图解SSL/TLS协议</a></p>
 
       
     </div>
@@ -435,11 +408,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/整理/" rel="tag"># 整理</a>
+            <a href="/tags/异步/" rel="tag"># 异步</a>
           
-            <a href="/tags/HTTPS/" rel="tag"># HTTPS</a>
-          
-            <a href="/tags/安全/" rel="tag"># 安全</a>
+            <a href="/tags/并发/" rel="tag"># 并发</a>
           
         </div>
       
@@ -452,8 +423,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/02/20/http/" rel="next" title="Http 协议详解">
-                <i class="fa fa-chevron-left"></i> Http 协议详解
+              <a href="/2017/12/17/asyn_syn_block_no-block/" rel="next" title="关于异/同步，（非）阻塞">
+                <i class="fa fa-chevron-left"></i> 关于异/同步，（非）阻塞
               </a>
             
           </div>
@@ -461,10 +432,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/04/05/encode/" rel="prev" title="关于编码和存储">
-                关于编码和存储 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -625,7 +592,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#加密"><span class="nav-number">1.</span> <span class="nav-text">加密</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数字证书"><span class="nav-number">2.</span> <span class="nav-text">数字证书</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">3.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部署"><span class="nav-number">4.</span> <span class="nav-text">部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概念"><span class="nav-number">1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#场景"><span class="nav-number">2.</span> <span class="nav-text">场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并发技术"><span class="nav-number">3.</span> <span class="nav-text">并发技术</span></a></li></ol></div>
             
 
           </div>
