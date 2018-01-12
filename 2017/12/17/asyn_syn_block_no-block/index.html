@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="Alitain Blog">
 <meta property="og:description" content="两者之间并无关系。 异步同步关注的是发生调用函数如何返回结果。同步就是立即返回结果或者等待返回结果，一有结果产生就回立刻返回。异步就是函数立刻返回，但是没有返回结果，等到结果产生的时候需要配合其他机制，比如事件，协程等将结果返回。 阻塞和非阻塞关注的是进/线程的状态。阻塞是当需要等待结果时，将进/线程挂起等结果产生以后返回。非阻塞就是不挂起进/线程，立刻返回错误（结果未产生）。">
 <meta property="og:image" content="http://ohtd7tndv.bkt.clouddn.com/linux_io.jpeg">
-<meta property="og:updated_time" content="2018-01-11T15:28:45.153Z">
+<meta property="og:updated_time" content="2018-01-12T23:20:33.380Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于异&#x2F;同步，（非）阻塞">
 <meta name="twitter:description" content="两者之间并无关系。 异步同步关注的是发生调用函数如何返回结果。同步就是立即返回结果或者等待返回结果，一有结果产生就回立刻返回。异步就是函数立刻返回，但是没有返回结果，等到结果产生的时候需要配合其他机制，比如事件，协程等将结果返回。 阻塞和非阻塞关注的是进/线程的状态。阻塞是当需要等待结果时，将进/线程挂起等结果产生以后返回。非阻塞就是不挂起进/线程，立刻返回错误（结果未产生）。">
@@ -369,6 +369,7 @@
 <p>同步模型：目前大多数应用场景都是采用的这种编程模型，相对异步变成较为简单，调试方便，容易维护。</p>
 <p>半同步/半异步模型：业务逻辑通过同步编程模型来实现，I/O 操作通过异步变成模型来实现。结合事件模型又产生了半同步/半反应堆等的变种。</p>
 <h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>资源中的同步：为了维护数据的一致性，例如 mysql 的主从复制，线程间信号量和锁的实现，都是为了维护数据的一致性。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.zhihu.com/question/19732473" target="_blank" rel="external">怎样理解阻塞非阻塞与同步异步的区别-知乎</a><br><a href="https://book.douban.com/subject/24722611/" target="_blank" rel="external">Linux高性能服务器编程</a><br><a href="https://book.douban.com/subject/1500149/" target="_blank" rel="external">UNIX网络编程</a></p>
 
       
     </div>
@@ -586,7 +587,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#特定场景下的同步和异步"><span class="nav-number">1.</span> <span class="nav-text">特定场景下的同步和异步</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#编程模型中的同步和异步"><span class="nav-number">1.1.</span> <span class="nav-text">编程模型中的同步和异步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#I-O-模型中的同步和异步"><span class="nav-number">1.2.</span> <span class="nav-text">I/O 模型中的同步和异步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器并发模型中的同步和异步"><span class="nav-number">1.3.</span> <span class="nav-text">服务器并发模型中的同步和异步</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他"><span class="nav-number">2.</span> <span class="nav-text">其他</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#特定场景下的同步和异步"><span class="nav-number">1.</span> <span class="nav-text">特定场景下的同步和异步</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#编程模型中的同步和异步"><span class="nav-number">1.1.</span> <span class="nav-text">编程模型中的同步和异步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#I-O-模型中的同步和异步"><span class="nav-number">1.2.</span> <span class="nav-text">I/O 模型中的同步和异步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器并发模型中的同步和异步"><span class="nav-number">1.3.</span> <span class="nav-text">服务器并发模型中的同步和异步</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他"><span class="nav-number">2.</span> <span class="nav-text">其他</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>
