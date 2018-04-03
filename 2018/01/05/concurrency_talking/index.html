@@ -93,19 +93,19 @@
 
 
 
-<meta name="description" content="周五做了一次技术分享，整体下来感觉很失败，讲到最后觉得是在浪费别人的时间，自己都想快点结束，本来打算演示的东西都没演示，可以当做一个失败案例的范本，大家可以避免下~~&amp;gt;_&amp;lt;。其实，自己是多了很多精力去准备的，虽然分享的效果不好，但是觉得自己还是有很大收获的。首先分析下原因（加粗字体是改进措施）：">
+<meta name="description" content="周五做了一次技术分享，虽然分享的效果不好，但是觉得自己还是有很大收获的。对并发有了一个感性的认识，下面是我整理的内容，欢迎批评指正。">
 <meta name="keywords" content="异步,并发">
 <meta property="og:type" content="article">
 <meta property="og:title" content="漫谈并发">
 <meta property="og:url" content="http://jiaojx.xyz/2018/01/05/concurrency_talking/index.html">
 <meta property="og:site_name" content="Alitain Blog">
-<meta property="og:description" content="周五做了一次技术分享，整体下来感觉很失败，讲到最后觉得是在浪费别人的时间，自己都想快点结束，本来打算演示的东西都没演示，可以当做一个失败案例的范本，大家可以避免下~~&amp;gt;_&amp;lt;。其实，自己是多了很多精力去准备的，虽然分享的效果不好，但是觉得自己还是有很大收获的。首先分析下原因（加粗字体是改进措施）：">
+<meta property="og:description" content="周五做了一次技术分享，虽然分享的效果不好，但是觉得自己还是有很大收获的。对并发有了一个感性的认识，下面是我整理的内容，欢迎批评指正。">
 <meta property="og:image" content="http://ohtd7tndv.bkt.clouddn.com/blocking-process.png">
 <meta property="og:image" content="http://ohtd7tndv.bkt.clouddn.com/none-blocking-process.png">
-<meta property="og:updated_time" content="2018-01-12T23:33:33.883Z">
+<meta property="og:updated_time" content="2018-04-03T13:10:04.393Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="漫谈并发">
-<meta name="twitter:description" content="周五做了一次技术分享，整体下来感觉很失败，讲到最后觉得是在浪费别人的时间，自己都想快点结束，本来打算演示的东西都没演示，可以当做一个失败案例的范本，大家可以避免下~~&amp;gt;_&amp;lt;。其实，自己是多了很多精力去准备的，虽然分享的效果不好，但是觉得自己还是有很大收获的。首先分析下原因（加粗字体是改进措施）：">
+<meta name="twitter:description" content="周五做了一次技术分享，虽然分享的效果不好，但是觉得自己还是有很大收获的。对并发有了一个感性的认识，下面是我整理的内容，欢迎批评指正。">
 <meta name="twitter:image" content="http://ohtd7tndv.bkt.clouddn.com/blocking-process.png">
 
 
@@ -355,21 +355,7 @@
       
 
       
-        <p>周五做了一次技术分享，整体下来感觉很失败，讲到最后觉得是在浪费别人的时间，自己都想快点结束，本来打算演示的东西都没演示，可以当做一个失败案例的范本，大家可以避免下~~&gt;_&lt;。其实，自己是多了很多精力去准备的，虽然分享的效果不好，但是觉得自己还是有很大收获的。首先分析下原因（加粗字体是改进措施）：<br><a id="more"></a></p>
-<ol>
-<li>分享之外的因素。虚拟机在扩展屏幕上的分辨率问题，导致开场了结果前8分钟都在调试设备，大家都在等着。时间浪费了不说，会搞得大家没有耐心，也影响自己的心情。梦幻般的开场，这是绝对应该避免，而且可以避免的事情。<strong>提前到场15分钟到场，准备好相关设备，提前一天预订号会议室。</strong></li>
-<li>分享的内容。由于面向的对象是部门，所以分享的内容应该分为两个层次，<strong>第一个是针对非专业领域的同学，应该把概念解释清楚，听完了有一个直观的印象。第二个是针对专业领域的同学，应该涉及一部分原理性的东西，最好针对某个细节深入探讨，听完了有一点收获</strong>。这些东西我都明白，但是在分享的时候突然发现概念没有办法通俗易懂的讲清楚。同时 swoole 设计到底层的东西很多，每个点单独拿出来都足够一次分享，所以我就把重要的几个点提了一下，导致深度不够。</li>
-<li>分享的技巧。<strong>通过合理的方式增加趣味性和互动性</strong>。</li>
-</ol>
-<ul>
-<li>概念如果不好说清楚，可以画图来解释，直观明了。</li>
-<li>可以在ppt中提一些问题，增加互动性。</li>
-<li>开场可以展示一个很酷的结果，让大家产生兴趣，然后逐步分析酷炫的结果如何产生的。</li>
-<li>ppt的动画没什么意义，只会分散大家的注意力。</li>
-<li>段子可以适当讲一讲，在一个合适的时间讲一个合适的段子，不会枯燥。</li>
-<li>用 ppt 做展示适合使用深色背景，浅色字体。</li>
-</ul>
-<p>废话说多了，下面开始正题。这篇文章试图用直观的方式把并发相关的概念讲述清楚。</p>
+        <p>周五做了一次技术分享，虽然分享的效果不好，但是觉得自己还是有很大收获的。对并发有了一个感性的认识，下面是我整理的内容，欢迎批评指正。<br><a id="more"></a></p>
 <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>并发指的是<strong>同一时间服务器处理请求或事务的能力</strong>。可以简单理解为服务器单位时间处理的请求数（QPS）。通过模拟用户环境的压力测试，我们可以得到一个服务器可以承受的并发量是多少。<br>当请求量超过服务器的并发量，多余的请求会再服务器端排队等待处理，如果等待队列满了，新的请求会被丢弃。接下来我们主要讨论的是如何提高服务器的并发量。</p>
 <h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><ul>
 <li>运算密集<br>在运算密集的场景下，想要提升并发量，只有通过改变算法，或者增加机器，换更快的、拥有更多核心处理器来解决。</li>
@@ -443,6 +429,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/03/mac_proxy_skills/" rel="prev" title="Mac下的科学上网">
+                Mac下的科学上网 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -546,7 +536,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -557,7 +547,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -568,7 +558,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-count">18</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
