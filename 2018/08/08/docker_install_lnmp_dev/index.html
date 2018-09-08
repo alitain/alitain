@@ -1,0 +1,781 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="docker,lnmp," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="准确的说，使用 docker 搭建的 LNMP 环境已经不算是 LNMP 了，因为 nginx、mysql、php 并不是运行在 linux 上，而是运行在 docker 平台上（实际上是运行在本机系统独立的进程空间里），而 docker 平台可以运行在个人笔记本、服务器、公有云等几乎所有的设备上，并且是跨操作系统的。下面一起来搭建一个 DNMP 环境，并将镜像推送到私有镜像服务器。Github代">
+<meta name="keywords" content="docker,lnmp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker LNMP 开发环境搭建">
+<meta property="og:url" content="http://jiaojx.xyz/2018/08/08/docker_install_lnmp_dev/index.html">
+<meta property="og:site_name" content="Alitain Blog">
+<meta property="og:description" content="准确的说，使用 docker 搭建的 LNMP 环境已经不算是 LNMP 了，因为 nginx、mysql、php 并不是运行在 linux 上，而是运行在 docker 平台上（实际上是运行在本机系统独立的进程空间里），而 docker 平台可以运行在个人笔记本、服务器、公有云等几乎所有的设备上，并且是跨操作系统的。下面一起来搭建一个 DNMP 环境，并将镜像推送到私有镜像服务器。Github代">
+<meta property="og:updated_time" content="2018-09-08T11:57:02.420Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker LNMP 开发环境搭建">
+<meta name="twitter:description" content="准确的说，使用 docker 搭建的 LNMP 环境已经不算是 LNMP 了，因为 nginx、mysql、php 并不是运行在 linux 上，而是运行在 docker 平台上（实际上是运行在本机系统独立的进程空间里），而 docker 平台可以运行在个人笔记本、服务器、公有云等几乎所有的设备上，并且是跨操作系统的。下面一起来搭建一个 DNMP 环境，并将镜像推送到私有镜像服务器。Github代">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jiaojx.xyz/2018/08/08/docker_install_lnmp_dev/"/>
+
+
+
+
+
+  <title>Docker LNMP 开发环境搭建 | Alitain Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Alitain Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">把简单的事情做好</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-resources">
+          <a href="/resources" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-link"></i> <br />
+            
+            资源
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jiaojx.xyz/2018/08/08/docker_install_lnmp_dev/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Alitain">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ohtd7tndv.bkt.clouddn.com/avatar_cartoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Alitain Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Docker LNMP 开发环境搭建</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-08T19:34:19+08:00">
+                2018-08-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/总结/" itemprop="url" rel="index">
+                    <span itemprop="name">总结</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>准确的说，使用 docker 搭建的 LNMP 环境已经不算是 LNMP 了，因为 nginx、mysql、php 并不是运行在 linux 上，而是运行在 docker 平台上（实际上是运行在本机系统独立的进程空间里），而 docker 平台可以运行在个人笔记本、服务器、公有云等几乎所有的设备上，并且是跨操作系统的。下面一起来搭建一个 DNMP 环境，并将镜像推送到私有镜像服务器。Github代码 <a href="https://github.com/alitain/dnmp" target="_blank" rel="external">alitain/dnmp</a>。</p>
+<a id="more"></a>
+<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><p>首先，我们要根据自己的操作系统，安装对应的 docker。下面以 Mac 为例，下载 <a href="https://store.docker.com/editions/community/docker-ce-desktop-mac" target="_blank" rel="external">Docker For Mac</a> 安装，成功之后从偏好设置中修改 Deamon 的设置添加中国镜像地址（否则需要翻墙）。例如 docker中国，daocloud，阿里云等镜像地址，以docker中国为例，填入 <code>https://registry.docker-cn.com</code>后，应用重启。</p>
+<p>我们可以在命令行执行 <code>docker pull library/registry</code> 查看镜像加速是否配置成功。</p>
+<h2 id="编写-Dockerfile"><a href="#编写-Dockerfile" class="headerlink" title="编写 Dockerfile"></a>编写 Dockerfile</h2><p>在<a href="https://store.docker.com" target="_blank" rel="external">docker 商店</a>中已经提供了很多官方镜像和社区镜像，但是并不一定会满足我们的需求，所以我们要基于官方镜像进行修改。考虑到 php 版本的兼容性，这里会同时部署php5，和php7两个版本。nginx 和 mysql 也会分别基于官方镜像进行修改，除此之外还会添加一个专门用于映射代码和在容器之间同步代码的一个镜像。</p>
+<p>下面以 php7 为例，简单介绍一下镜像构建流程</p>
+<p>首先，我们创建一个 <code>dnmp/php7</code> 的目录，在这个目录下新建一个 Dockerfile 文件，输入一下内容</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Dockerfile必有的语句 FROM php:7-fpm-alpine3.7 表示 library/php 官方仓库，基于3.7 alpine linux构建的php7的php-fpm镜像</span></div><div class="line"><span class="keyword">FROM</span> php:<span class="number">7</span>-fpm-alpine3.<span class="number">7</span></div><div class="line"></div><div class="line"><span class="comment"># 容器启动后执行的命令</span></div><div class="line"><span class="keyword">CMD</span> ["php-fpm"]</div><div class="line"></div><div class="line"><span class="comment"># 对外暴露的端口</span></div><div class="line"><span class="keyword">EXPOSE</span> <span class="number">9000</span></div></pre></td></tr></table></figure>
+<p>然后在 php7 目录下执行 <code>docker build . -t alitain/php7</code>，我们基于官方的php7镜像，构建了自己的镜像，并且打了一个标签叫做 <code>alitain/php7</code>。执行<code>docker image ls</code>可以看见我们刚刚构建出来的镜像。</p>
+<p>构建完成后，执行 <code>docker run -it alitain/php7 /bin/bash</code> 进入容器，执行 <code>php  -v</code>查看 php 版本。我们只继承了官方的镜像，并没有做任何修改，下面我们加入一些扩展，使镜像可以满足我们的开发需要</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">FROM</span> php:<span class="number">7</span>-fpm-alpine3.<span class="number">7</span></div><div class="line"> </div><div class="line"><span class="comment"># pecl install 安装比较慢，所以事先把源码下载下来安装</span></div><div class="line"><span class="keyword">COPY</span> exts /tmp/php-exts</div><div class="line"></div><div class="line"><span class="comment"># 修改源为阿里云</span></div><div class="line"><span class="keyword">RUN</span> sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/' /etc/apk/repositories</div><div class="line"></div><div class="line"><span class="comment"># 添加编译所需依赖</span></div><div class="line"><span class="keyword">RUN</span> apk add --no-cache autoconf gcc g++ make git</div><div class="line"></div><div class="line"><span class="comment"># 添加扩展所需依赖</span></div><div class="line"><span class="keyword">RUN</span> apk add --no-cache freetype libpng libjpeg-turbo libmcrypt libtool</div><div class="line"></div><div class="line"><span class="comment"># 安装扩展</span></div><div class="line"><span class="keyword">RUN</span> docker-php-ext-install iconv pdo_mysql</div><div class="line"></div><div class="line"><span class="comment"># 安装zip扩展</span></div><div class="line"><span class="keyword">RUN</span> apk add --no-cache zlib-dev \</div><div class="line">    &amp;&amp; docker-php-ext-install zip\</div><div class="line">    &amp;&amp; apk del zlib-dev</div><div class="line"></div><div class="line"><span class="comment"># 安装gd扩展</span></div><div class="line"><span class="keyword">RUN</span> apk add --no-cache freetype-dev libpng-dev libjpeg-turbo-dev &amp;&amp; \</div><div class="line">  docker-php-ext-configure gd \</div><div class="line">    --with-gd \</div><div class="line">    --with-freetype-dir=/usr/include/ \</div><div class="line">    --with-png-dir=/usr/include/ \</div><div class="line">    --with-jpeg-dir=/usr/include/ &amp;&amp; \</div><div class="line">  docker-php-ext-install -j$(getconf _NPROCESSORS_ONLN) gd &amp;&amp; \</div><div class="line">  apk del --no-cache freetype-dev libpng-dev libjpeg-turbo-dev</div><div class="line"></div><div class="line"><span class="comment"># 安装imagick扩展</span></div><div class="line"><span class="keyword">RUN</span> apk add --no-cache imagemagick-dev imagemagick\</div><div class="line">    &amp;&amp; pecl install /tmp/php-exts/imagick*.tgz \</div><div class="line">    &amp;&amp; docker-php-ext-enable imagick \</div><div class="line">    &amp;&amp; apk del --no-cache imagemagick-dev </div><div class="line"></div><div class="line"><span class="comment"># 安装mcrypt扩展</span></div><div class="line"><span class="keyword">RUN</span> apk add --no-cache libmcrypt-dev \</div><div class="line">    &amp;&amp; pecl install /tmp/php-exts/mcrypt*.tgz \</div><div class="line">    &amp;&amp; docker-php-ext-enable mcrypt \</div><div class="line">    &amp;&amp; apk del --no-cache libmcrypt-dev</div><div class="line"></div><div class="line"><span class="comment"># 安装redis,mongodb扩展</span></div><div class="line"><span class="keyword">RUN</span> pecl install /tmp/php-exts/redis*.tgz /tmp/php-exts/mongodb*.tgz \</div><div class="line">    &amp;&amp; docker-php-ext-enable redis mongodb</div><div class="line"></div><div class="line"><span class="comment"># 安装composer</span></div><div class="line"><span class="keyword">RUN</span> apk add --no-cache wget \</div><div class="line">    &amp;&amp; wget https://getcomposer.org/download/1.6.5/composer.phar \</div><div class="line">    &amp;&amp; mv composer.phar /usr/local/bin/composer \</div><div class="line">    &amp;&amp; chmod +x /usr/local/bin/composer \</div><div class="line">    &amp;&amp; composer config -g repo.packagist composer https://packagist.phpcomposer.com \</div><div class="line">    &amp;&amp; apk del wget</div><div class="line"></div><div class="line"><span class="comment"># 安装xdebug扩展，并修改配置</span></div><div class="line"><span class="keyword">RUN</span> pecl install /tmp/php-exts/xdebug*.tgz \</div><div class="line">    &amp;&amp; docker-php-ext-enable xdebug \</div><div class="line">    &amp;&amp; echo -e 'xdebug.remote_enable=1\nxdebug.remote_host=host.docker.internal\nxdebug.remote_port=9000\nxdebug.idekey=PHPSTORM' &gt;&gt; /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini</div><div class="line"></div><div class="line"><span class="comment"># 添加非root用户</span></div><div class="line"><span class="keyword">RUN</span> adduser -D -u 1000 alitain</div><div class="line"></div><div class="line"><span class="comment"># 切换到非root用户</span></div><div class="line"><span class="keyword">USER</span> alitain</div><div class="line"></div><div class="line"><span class="comment"># 设置工作目录</span></div><div class="line"><span class="keyword">WORKDIR</span> /var/www</div><div class="line"></div><div class="line"><span class="keyword">CMD</span> ["php-fpm"]</div><div class="line"></div><div class="line"><span class="keyword">EXPOSE</span> <span class="number">9000</span></div></pre></td></tr></table></figure>
+<p>重新执行 build 操作，新的镜像默认会把旧的镜像覆盖掉，执行 docker run 进入容器，执行 <code>php -m</code> 查看扩展是否安装正确。</p>
+<p>nginx、php5、mysql、share的构建都是类似的操作，为了满足下文的需要，构建镜像的时候，标签名称统一加上 <em>alitain/</em> 的前缀。</p>
+<h2 id="服务编排"><a href="#服务编排" class="headerlink" title="服务编排"></a>服务编排</h2><p>如何让这些容器在一起工作，并指定 nginx 对外提供服务绑定本机端口，答案就是docker-compose。很简单我们只需要在 dnmp/ 目录下新建一个docker-compose.yaml的配置文件，配置如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="attr">version:</span> <span class="string">'2'</span></div><div class="line"><span class="attr">services:</span></div><div class="line"><span class="attr">  app:</span></div><div class="line"><span class="attr">    image:</span> alitain/share </div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="bullet">      -</span> ../../code/alitain/:/var/www <span class="comment"># 代码映射目录，前面表示的本机的目录，后面是虚拟机的目录</span></div><div class="line"><span class="attr">  nginx:</span></div><div class="line"><span class="attr">    image:</span> alitain/nginx</div><div class="line"><span class="attr">    ports:</span></div><div class="line"><span class="bullet">      -</span> <span class="string">"8080:8080"</span></div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="bullet">      -</span> ./nginx/sites:/etc/nginx/sites-available <span class="comment"># nginx 配置文件和本地映射</span></div><div class="line"><span class="attr">    depends_on:</span> <span class="comment"># nginx 容器依赖启动依赖 php5 和 php7</span></div><div class="line"><span class="bullet">      -</span> php5</div><div class="line"><span class="bullet">      -</span> php7</div><div class="line"><span class="attr">    volumes_from:</span> <span class="comment"># 卷继承自 app</span></div><div class="line"><span class="bullet">      -</span> app</div><div class="line"><span class="attr">  php7:</span></div><div class="line"><span class="attr">    image:</span> alitain/php7</div><div class="line"><span class="attr">    volumes_from:</span></div><div class="line"><span class="bullet">      -</span> app</div><div class="line"><span class="attr">  php5:</span></div><div class="line"><span class="attr">    image:</span> alitain/php5</div><div class="line"><span class="attr">    volumes_from:</span></div><div class="line"><span class="bullet">      -</span> app</div><div class="line"><span class="attr">  mysql:</span></div><div class="line"><span class="attr">    image:</span> alitain/mysql</div><div class="line"><span class="attr">    ports:</span></div><div class="line"><span class="bullet">      -</span> <span class="string">"3306:3306"</span></div><div class="line"><span class="attr">    user:</span> mysql</div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="bullet">      -</span> ./mysql/data:/var/lib/mysql</div><div class="line"><span class="attr">    environment:</span></div><div class="line"><span class="attr">      MYSQL_ROOT_PASSWORD:</span> root</div></pre></td></tr></table></figure>
+<p>配置好后，执行<code>docker-compose up -d</code>就可以启动我们构建的容器了。在浏览器中访问 <a href="http://localhost:8080" target="_blank" rel="external">http://localhost:8080</a> 查看效果。</p>
+<h2 id="把镜像推送到私有镜像服务器上"><a href="#把镜像推送到私有镜像服务器上" class="headerlink" title="把镜像推送到私有镜像服务器上"></a>把镜像推送到私有镜像服务器上</h2><p>为了方便调试，我们可以把镜像服务器搭建在本地，然后删除已构建的镜像，从本地镜像服务器上拉取镜像。Docker 的镜像服务器搭建很方便，使用官方镜像服务器镜像就能够满足需要。在上面的步骤中，我们拉取过 library/registry 镜像。所以只要启动这个镜像就可以了，当然如果启动镜像的时候，镜像不存在也会从配置中的镜像服务器上一一尝试去拉取。</p>
+<p>在命令行执行 <code>docker run -d -p 5000:5000 -v /path/to/store/images:/var/lib/registry library/registry</code>启动镜像服务，-d 表示以在后台运行，-p 映射容器的 5000 端口到本地， -v 映射镜像保存目录，用户持久化保存镜像，下次启动的时候之前的镜像还在。</p>
+<p>如何让我们的镜像服务器在 docker 中生效呢，需要像前面那样修改镜像服务器配置。添加 <code>http://127.0.0.1:5000</code> 到镜像服务器配置中，由于我们没有使用 https，所以还需要再不安全服务器上添加 <code>127.0.0.1:5000</code>。</p>
+<p>接下来，我们推送镜像到镜像服务器上。首先给镜像打一个标签，以 php7 镜像为例 <code>docker tag alitain/php7 127.0.0.0:5000/alitain/php7:latest</code>，推送镜像 <code>docker push 127.0.0.0:5000/alitain/php7:latest</code>。</p>
+<p>删除我们的自定义镜像，<code>docker rmi --forece $(docker images | grep alitain | awk &#39;{print $3}&#39;)</code>。在 dnmp/ 目录下执行 <code>dockr-compose up -d</code> 查看是否可以从镜像服务器上拉取镜像并成功运行。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/docker/" rel="tag"># docker</a>
+          
+            <a href="/tags/lnmp/" rel="tag"># lnmp</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/05/design_pattern_in_php/" rel="next" title="PHP实现的23种设计模式">
+                <i class="fa fa-chevron-left"></i> PHP实现的23种设计模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  <div onclick="showGitment()" id="gitment_title" class="gitment_title">显示 Gitment 评论</div>
+  <div id="container" style="display:none"></div>
+  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+  <script>
+  const myTheme = {
+    render(state, instance) {
+      const container = document.createElement('div');
+      container.lang = "en-US";
+      container.className = 'gitment-container gitment-root-container';
+      container.appendChild(instance.renderHeader(state, instance));
+      container.appendChild(instance.renderEditor(state, instance));
+      container.appendChild(instance.renderComments(state, instance));
+      container.appendChild(instance.renderFooter(state, instance));
+      return container;
+    }
+  }
+  function showGitment() {
+    $("#gitment_title").attr("style", "display:none");
+    $("#container").attr("style", "").addClass("gitment_container");
+    var gitment = new Gitment({
+      id: window.location.pathname,
+      theme: myTheme,
+      owner: 'alitain',
+      repo: 'alitain.github.io',
+      oauth: {
+        client_id: 'b036a4f1692979a3b424',
+        client_secret: '7bbdfa2bf70ef9b01abf128f8c434a13c78a331d'
+      }
+    });
+    gitment.render('container');
+  }
+  </script>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ohtd7tndv.bkt.clouddn.com/avatar_cartoon"
+               alt="Alitain" />
+          <p class="site-author-name" itemprop="name">Alitain</p>
+           
+              <p class="site-description motion-element" itemprop="description">phper linux mysql</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前期准备"><span class="nav-number">1.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编写-Dockerfile"><span class="nav-number">2.</span> <span class="nav-text">编写 Dockerfile</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务编排"><span class="nav-number">3.</span> <span class="nav-text">服务编排</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#把镜像推送到私有镜像服务器上"><span class="nav-number">4.</span> <span class="nav-text">把镜像推送到私有镜像服务器上</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Alitain</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+      <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.1/canvas-nest.min.js"></script>
+  
+</body>
+</html>
