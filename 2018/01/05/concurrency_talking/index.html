@@ -100,13 +100,13 @@
 <meta property="og:url" content="http://jiaojx.xyz/2018/01/05/concurrency_talking/index.html">
 <meta property="og:site_name" content="Alitain Blog">
 <meta property="og:description" content="周五做了一次技术分享，虽然分享的效果不好，但是觉得自己还是有很大收获的。对并发有了一个感性的认识，下面是我整理的内容，欢迎批评指正。">
-<meta property="og:image" content="http://ohtd7tndv.bkt.clouddn.com/blocking-process.png">
-<meta property="og:image" content="http://ohtd7tndv.bkt.clouddn.com/none-blocking-process.png">
-<meta property="og:updated_time" content="2018-04-03T13:10:04.393Z">
+<meta property="og:image" content="http://static.alitain.tech/blocking-process.png">
+<meta property="og:image" content="http://static.alitain.tech/none-blocking-process.png">
+<meta property="og:updated_time" content="2019-01-10T12:32:54.450Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="漫谈并发">
 <meta name="twitter:description" content="周五做了一次技术分享，虽然分享的效果不好，但是觉得自己还是有很大收获的。对并发有了一个感性的认识，下面是我整理的内容，欢迎批评指正。">
-<meta name="twitter:image" content="http://ohtd7tndv.bkt.clouddn.com/blocking-process.png">
+<meta name="twitter:image" content="http://static.alitain.tech/blocking-process.png">
 
 
 
@@ -364,9 +364,9 @@
 <h2 id="并发技术"><a href="#并发技术" class="headerlink" title="并发技术"></a>并发技术</h2><p>Web Server 并发技术的发展经历了从多进/线程，到 I/O 复用，再到协程技术的应用。多进/线程序充分发挥了 CPU 的多核特性，但是由于 I/O 操作都是阻塞的，所以一旦有了比较耗时的 I/O 操作，服务器的并发处理能力还是很弱的。 直到 I/O 复用技术的应用，才大大提升了服务器并发处理能力，并且真正解决了 C10K 的问题。协程的出现，然我们可以省去繁琐的异步回调嵌套，甚至完全编写同步代码也可以在底层异步调用。</p>
 <p>为了通过画图来更直观的展示我们提供一种特殊的场景，我们假设有一台 4 核的CPU, 每个请求需要 1s，其中 0.9s 的时间是在等待网络 I/O 的完成（忽略链接创建销毁，进程创建切换销毁的耗时。实际上大多数情况下 CPU 和 I/O 操作的耗时不在一个数量级上）。</p>
 <ul>
-<li><p>多进/线程（池）<br>先说多进程阻塞，主进程在接收到新的请求后，就派生一个子进程出来处理新的链接，处理完后结束子进程，一定程度上提高了服务器的并发处理能力。由于进程操作开销很大，线程间通信相对容易，所以就把多线程应用到并发服务器上，主线程在接收到一个新的请求后，就创建一个新的线程来处理链接。为了避免进/线程创建和销毁的开销，同时可以复用，提出了进/线程池的概念。例如 PHP-FPM 服务在启动的时候，就会创建多个进程（一般设置为同 CPU 核心数即可），有新的请求过来，直接从进程池用取出一个来用。根据上面的场景结合下面的图，我们可以看到服务器的并发数最多为4个！<br><img src="http://ohtd7tndv.bkt.clouddn.com/blocking-process.png" alt="bloking-process">    </p>
+<li><p>多进/线程（池）<br>先说多进程阻塞，主进程在接收到新的请求后，就派生一个子进程出来处理新的链接，处理完后结束子进程，一定程度上提高了服务器的并发处理能力。由于进程操作开销很大，线程间通信相对容易，所以就把多线程应用到并发服务器上，主线程在接收到一个新的请求后，就创建一个新的线程来处理链接。为了避免进/线程创建和销毁的开销，同时可以复用，提出了进/线程池的概念。例如 PHP-FPM 服务在启动的时候，就会创建多个进程（一般设置为同 CPU 核心数即可），有新的请求过来，直接从进程池用取出一个来用。根据上面的场景结合下面的图，我们可以看到服务器的并发数最多为4个！<br><img src="http://static.alitain.tech/blocking-process.png" alt="bloking-process">    </p>
 </li>
-<li><p>I/O 复用<br>通过 I/O 复用技术，同一个进/线程可以让内核监测多个 I/O 的状态，并在 I/O 就绪时去通知进/线程。select 系统调用最多可以监测1024个描述符， 内核通过遍历的方式来判断哪些是就绪的 I/O，并返回给用户程序。因此 select 只适合用于文件描述符较少的情况。poll 系统调用解除了文件描述符的限制，但是内核依然需要遍历，假如服务器维持了百万的链接，但是只有几个链接是活跃的，那么大部分的监测是没有用的。直到 linux 2.6 加入了 epoll，epoll_wait 系统调用是通过回调函数实现的，一有就绪的 I/O 就会触发回调函数，最终返回给用户程序，因此监测的复杂度是 O(1)。为了避免回调函数触发的过于频繁，因此适合链接数较多，但是活动链接较少的情况。I/O 复用函数需要配合多进/线程才能真正实现并发，否则即便是监测到了多个 I/O 就绪事件，也只能顺序处理。通过 I/O 复用配合多进程，我们的并发数最多可以达到将近40个。<br><img src="http://ohtd7tndv.bkt.clouddn.com/none-blocking-process.png" alt="none-bloking-process">    </p>
+<li><p>I/O 复用<br>通过 I/O 复用技术，同一个进/线程可以让内核监测多个 I/O 的状态，并在 I/O 就绪时去通知进/线程。select 系统调用最多可以监测1024个描述符， 内核通过遍历的方式来判断哪些是就绪的 I/O，并返回给用户程序。因此 select 只适合用于文件描述符较少的情况。poll 系统调用解除了文件描述符的限制，但是内核依然需要遍历，假如服务器维持了百万的链接，但是只有几个链接是活跃的，那么大部分的监测是没有用的。直到 linux 2.6 加入了 epoll，epoll_wait 系统调用是通过回调函数实现的，一有就绪的 I/O 就会触发回调函数，最终返回给用户程序，因此监测的复杂度是 O(1)。为了避免回调函数触发的过于频繁，因此适合链接数较多，但是活动链接较少的情况。I/O 复用函数需要配合多进/线程才能真正实现并发，否则即便是监测到了多个 I/O 就绪事件，也只能顺序处理。通过 I/O 复用配合多进程，我们的并发数最多可以达到将近40个。<br><img src="http://static.alitain.tech/none-blocking-process.png" alt="none-bloking-process">    </p>
 </li>
 <li><p>协程<br>协程可以理解为纯用户态的线程，其通过协作而不是抢占来进行切换。相对于线程，协程所有是由程序自身控制，因此，没有线程切换的开销，执行效率极高。同时也不需要多线程的锁机制，因为只存在一个线程，不会发生资源冲突。通过多进程+协程，即可以充分利用多核，又充分发挥协程的高效率，可获得提高的性能。通过协程我们可以避免复杂的异步嵌套，编写同步代码来实现异步调用。<br>协程有两种调度方式：    </p>
 <ul>
@@ -616,7 +616,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2018</span>
+  <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
