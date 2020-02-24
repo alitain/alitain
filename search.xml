@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>使用 owncloud 搭建企业云盘系统</title>
+    <url>/2020/02/11/owncloud/</url>
+    <content><![CDATA[<p>owncloud 是国外一款有比较有名气的开源云盘系统，旨在为企业提供文件安全存储、便捷访问、高效管理的数据使用方式。这篇文章会简单介绍一下 owncloud 的特性，如何快速搭建系统，备份文件，以及接入企业内部登录认证。</p>
+<a id="more"></a>
+
+<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><a href="https://owncloud.com/" target="_blank" rel="noopener">owncloud</a> 最基础的功能就是文件上传、同步、分享。用户首次登录会创建一个属于自己的目录，可以下载同步客户端于云目录实时同步。上传的文件可以通过用户组进行共享，共享的目录也可以通过客户端实时同步。同时，还可以创建公共链接，任何人都可以通过链接去访问分享的目录或者文件。除此之外，owncloud 还提供了很多其他特性，当然有些特性只有企业版才会支持，下面只列出了部分，更多请访问<a href="https://owncloud.com/features/" target="_blank" rel="noopener">官网</a></p>
+<ul>
+<li><strong>外置存储</strong> 可以使用挂载到 linux 的存储设备（nas，san等等）和云存储（FTP，Swift，S3，DropBox等）</li>
+<li><strong>灵活的API</strong> owncloud 开放的架构，使得开发者很容易通过 REST API 扩展 owncloud 的功能，例如文件管理、用户管理、文件分享等</li>
+<li><strong>访客模式</strong> 未登录的用户可以通过分享的公开链接访问文件</li>
+<li><strong>密码策略</strong> 可以为公开链接设置访问密码和有效期，到期密码自动失效；管理员可以设置密码复杂度</li>
+<li><strong>双因子验证</strong> 除了用户名/密码外，还可以通过额外的令牌来验证。例如，通过手机获取改令牌登录系统</li>
+<li><strong>端到端加密</strong> 用户可以创建基于客户端加密的文件，系统管理员和第三方基础设施管理员都无法获取数据</li>
+</ul>
+<h3 id="搭建"><a href="#搭建" class="headerlink" title="搭建"></a>搭建</h3><p>本文实验选择的版本是最新的社区版 production 10.3.2 。官方推荐的系统环境是 LAMP（Linux + Apache + Mysql + PHP），截止到发文时间 PHP 支持的版本是 7.1、7.2、7.3。我们的服务器都是 LNMP 的架构，所以使用了 nginx 来作为 web server，nginx 的示例配置文件可以在官方文档中找到。具体的安装过程很简单，这里就不多做描述了，如果觉得搭建环境装扩展很繁琐，官方也提供了 docker 镜像。更多请访问<a href="https://doc.owncloud.org/server/10.4/admin_manual/installation/" target="_blank" rel="noopener">官方安装教程</a></p>
+<p>安装完以后，通过连接 <a href="http://your_server_name/owncloud" target="_blank" rel="noopener">http://your_server_name/owncloud</a> 即可访问 owncloud 的配置界面，设置管理员密码、文件存储目录、数据配置，后台会通过 config.example.php 生成一份新的配置文件。</p>
+<blockquote>
+<p>如果通过源码方式安装的，有一些设置也是必要的。例如，php.ini 及 nginx 的上传文件最大限制，PHP 环境变量的设置，STMP 服务器的设置等等</p>
+</blockquote>
+<h3 id="文件备份"><a href="#文件备份" class="headerlink" title="文件备份"></a>文件备份</h3><p>由于硬件资源限制，文件备份并没有使用外置存储，而采用了 rsync + inotify 的方式来实时同步系统的存储目录。 rsync 是可以实现两台服务器之间增量同步文件的命令，inotify 可以监听的文件的变化，通过不断监听系统存储目录的变化，使用 rsync 命令将文件变化增量同步到另外一台服务上。并且把这个操作封装成一个服务，开机自动重启。假设两台服务器使用 root 账号，具体操作如下：</p>
+<ol>
+<li>实现免密 ssh 登录，在 owncloud 服务器上执行 <code>ssh-keygen -t rsa -f /root/rsync-key -N &#39;&#39;</code> 生成密钥，将公钥拷贝到要备份服务器的用户目录下的 <code>/root/.ssh/authorized_keys</code> 中，可以试下是否可以免密登录成功</li>
+<li>在备份服务器上创建一个同步目录，并分配权限 <code>mkdir /home/owncloud</code></li>
+<li>在 owncloud 服务新建一个 shell 脚本，假如存放在 /data/scripts/ 目录下，file-sync.sh，给文件加上可执行权限，可以执行一下看是否需成功</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="literal">true</span>; <span class="keyword">do</span></span><br><span class="line">  inotifywait -r -e modify,attrib,close_write,move,create,delete /data/owncloud</span><br><span class="line">  rsync -avz -e <span class="string">"ssh -i /root/rsync-key -o StrictHostKeyChecking=no"</span> /data/owncloud/ root@backup_server_ip:/home/owncloud/ --delete</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+<p>4.新建 service 文件，<code>vi /etc/systemd/system/file-sync.service</code>，贴上下面的代码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description &#x3D; SyncService</span><br><span class="line">After &#x3D; network.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">PIDFile &#x3D; &#x2F;run&#x2F;syncservice&#x2F;syncservice.pid</span><br><span class="line">User &#x3D; root</span><br><span class="line">Group &#x3D; root</span><br><span class="line">ExecStartPre &#x3D; &#x2F;bin&#x2F;mkdir &#x2F;run&#x2F;syncservice</span><br><span class="line">ExecStartPre &#x3D; &#x2F;bin&#x2F;chown -R root:root &#x2F;run&#x2F;syncservice</span><br><span class="line">ExecStart &#x3D; &#x2F;bin&#x2F;bash &#x2F;data&#x2F;scripts&#x2F;file-sync.sh</span><br><span class="line">ExecReload &#x3D; &#x2F;bin&#x2F;kill -s HUP $MAINPID</span><br><span class="line">ExecStop &#x3D; &#x2F;bin&#x2F;kill -s TERM $MAINPID</span><br><span class="line">ExecStopPost &#x3D; &#x2F;bin&#x2F;rm -rf &#x2F;run&#x2F;syncservice</span><br><span class="line">PrivateTmp &#x3D; true</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy &#x3D; multi-user.target</span><br></pre></td></tr></table></figure>
+
+<p>5.启动服务，<code>systemctl deamon-reload</code> 加载新的服务，<code>systemctl enable file-sync.servcie</code> 设置开启启动，<code>systemctl start file-sync.servcie</code> 启动文件同步服务</p>
+<h3 id="自定义登录"><a href="#自定义登录" class="headerlink" title="自定义登录"></a>自定义登录</h3><p>综合考虑了一下，owncloud 支持 oauth2 的三方认证，但是内部并不支持这个协议。为了省去给每个人都创建账号的麻烦同时尽量减少对系统的改动，决定采用内部的统一登录认证方式，认证成功之后自动创建一个新的用户。通过一两天的源码研究，决定改动一下源码来实现这种登录方式，现在看来也是实现成本最低的一种方式。改动如下：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//core/Controllers/LoginController.php</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">tryLogin</span><span class="params">($user, $password, $redirect_url, $timezone = null)</span> </span>&#123;</span><br><span class="line">		$originalUser = $user;</span><br><span class="line">		<span class="comment">// <span class="doctag">TODO:</span> Add all the insane error handling</span></span><br><span class="line">		$loginResult = <span class="keyword">$this</span>-&gt;userSession-&gt;login($user, $password);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> ($loginResult !== <span class="keyword">true</span>) &#123;</span><br><span class="line">			$users = <span class="keyword">$this</span>-&gt;userManager-&gt;getByEmail($user);</span><br><span class="line">			<span class="comment">// we only allow login by email if unique</span></span><br><span class="line">			<span class="keyword">if</span> (\count($users) === <span class="number">1</span>) &#123;</span><br><span class="line">				$user = $users[<span class="number">0</span>]-&gt;getUID();</span><br><span class="line">				$loginResult = <span class="keyword">$this</span>-&gt;userSession-&gt;login($user, $password);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//从这个地方开始，添加内部登录验证</span></span><br><span class="line">	    <span class="keyword">if</span> ($loginResult !== <span class="keyword">true</span>) &#123;</span><br><span class="line">		    <span class="keyword">if</span> (strstr($user, <span class="string">'@'</span>)) &#123;</span><br><span class="line">		        $email = $user;</span><br><span class="line">		        $user = substr($user, <span class="number">0</span>, strpos($user, <span class="string">'@'</span>));</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		        $email = $user . <span class="string">'@yourcompany.com'</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (!<span class="keyword">$this</span>-&gt;userManager-&gt;userExists($user)) &#123;</span><br><span class="line">                $loginResult = <span class="keyword">$this</span>-&gt;auth($email, $password); <span class="comment">//内部登录验证</span></span><br><span class="line">                <span class="keyword">if</span> ($loginResult) &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="keyword">$this</span>-&gt;userManager-&gt;createUser($user, $password); <span class="comment">// 创建用户，并设置密码</span></span><br><span class="line">                        $newUser = <span class="keyword">$this</span>-&gt;userManager-&gt;get($user);</span><br><span class="line">                        $newUser-&gt;setEMailAddress($email); <span class="comment">// 设置邮箱</span></span><br><span class="line">                        $loginResult = <span class="keyword">$this</span>-&gt;userSession-&gt;login($user, $password); <span class="comment">// 新用户登录</span></span><br><span class="line">                    &#125; <span class="keyword">catch</span> (\<span class="keyword">Exception</span> $e) &#123;</span><br><span class="line">                        $loginResult = <span class="keyword">false</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//结束</span></span><br><span class="line">		<span class="keyword">if</span> ($loginResult !== <span class="keyword">true</span>) &#123;</span><br><span class="line">			<span class="keyword">$this</span>-&gt;session-&gt;set(<span class="string">'loginMessages'</span>, [</span><br><span class="line">				[<span class="string">'invalidpassword'</span>], []</span><br><span class="line">			]);</span><br><span class="line">			$args = [];</span><br><span class="line">			<span class="comment">// Read current user and append if possible - we need to return the unmodified user otherwise we will leak the login name</span></span><br><span class="line">			<span class="keyword">if</span> ($user !== <span class="keyword">null</span>) &#123;</span><br><span class="line">				$args[<span class="string">'user'</span>] = $originalUser;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="comment">// keep the redirect url</span></span><br><span class="line">			<span class="keyword">if</span> (!<span class="keyword">empty</span>($redirect_url)) &#123;</span><br><span class="line">				$args[<span class="string">'redirect_url'</span>] = $redirect_url;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">new</span> RedirectResponse(<span class="keyword">$this</span>-&gt;urlGenerator-&gt;linkToRoute(<span class="string">'core.login.showLoginForm'</span>, $args));</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">/* <span class="doctag">@var</span> $userObject IUser */</span></span><br><span class="line">		$userObject = <span class="keyword">$this</span>-&gt;userSession-&gt;getUser();</span><br><span class="line">		<span class="comment">// <span class="doctag">TODO:</span> remove password checks from above and let the user session handle failures</span></span><br><span class="line">		<span class="comment">// requires https://github.com/owncloud/core/pull/24616</span></span><br><span class="line">		<span class="keyword">$this</span>-&gt;userSession-&gt;createSessionToken(<span class="keyword">$this</span>-&gt;request, $userObject-&gt;getUID(), $user, $password);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// User has successfully logged in, now remove the password reset link, when it is available</span></span><br><span class="line">		<span class="keyword">$this</span>-&gt;config-&gt;deleteUserValue($userObject-&gt;getUID(), <span class="string">'owncloud'</span>, <span class="string">'lostpassword'</span>);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Save the timezone</span></span><br><span class="line">		<span class="keyword">if</span> ($timezone !== <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="keyword">$this</span>-&gt;config-&gt;setUserValue($userObject-&gt;getUID(), <span class="string">'core'</span>, <span class="string">'timezone'</span>, $timezone);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;twoFactorManager-&gt;isTwoFactorAuthenticated($userObject)) &#123;</span><br><span class="line">			<span class="keyword">$this</span>-&gt;twoFactorManager-&gt;prepareTwoFactorLogin($userObject);</span><br><span class="line">			<span class="keyword">if</span> ($redirect_url !== <span class="keyword">null</span>) &#123;</span><br><span class="line">				<span class="keyword">return</span> <span class="keyword">new</span> RedirectResponse(<span class="keyword">$this</span>-&gt;urlGenerator-&gt;linkToRoute(<span class="string">'core.TwoFactorChallenge.selectChallenge'</span>, [</span><br><span class="line">					<span class="string">'redirect_url'</span> =&gt; $redirect_url</span><br><span class="line">				]));</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">new</span> RedirectResponse(<span class="keyword">$this</span>-&gt;urlGenerator-&gt;linkToRoute(<span class="string">'core.TwoFactorChallenge.selectChallenge'</span>));</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> ($redirect_url !== <span class="keyword">null</span> &amp;&amp; <span class="keyword">$this</span>-&gt;userSession-&gt;isLoggedIn()) &#123;</span><br><span class="line">			$location = <span class="keyword">$this</span>-&gt;urlGenerator-&gt;getAbsoluteURL(\urldecode($redirect_url));</span><br><span class="line">			<span class="comment">// Deny the redirect if the URL contains a @</span></span><br><span class="line">			<span class="comment">// This prevents unvalidated redirects like ?redirect_url=:user@domain.com</span></span><br><span class="line">			<span class="keyword">if</span> (\strpos($location, <span class="string">'@'</span>) === <span class="keyword">false</span>) &#123;</span><br><span class="line">				<span class="keyword">return</span> <span class="keyword">new</span> RedirectResponse($location);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> RedirectResponse(<span class="keyword">$this</span>-&gt;getDefaultUrl());</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 内部认证</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> $email</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> $password</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> bool</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">auth</span><span class="params">($email, $password)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="string">'auth failed'</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>php</category>
+      </categories>
+      <tags>
+        <tag>php</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Docker 环境下的 PHPSTORM DEBUG</title>
+    <url>/2019/02/23/docker_phpstorm_xdebug/</url>
+    <content><![CDATA[<p>开发环境下快速定位程序问题最好的方式就是 DEBUG 了，可以清楚查看程序调用堆栈及变量的值。本文将带来在 Docker 环境下配合 PHPSTORM 如何快速 DEBUG，并通过以下两种方式 DEBUG 程序</p>
+<ul>
+<li>通过 外部URL DEBUG 程序（包括浏览器，Postman 等)</li>
+<li>通过命令行 DEBUG 程序</li>
+</ul>
+<a id="more"></a>
+
+<h3 id="docker-环境配置"><a href="#docker-环境配置" class="headerlink" title="docker 环境配置"></a>docker 环境配置</h3><p>如何快速搭建一套 php 的 docker 开发环境，本文就不详细描述了，可以查看<a href="/2018/08/08/docker_install_lnmp_dev/">Docker LNMP开发环境</a>这篇文章。</p>
+<p>如果你是基于<a href="/2018/08/08/docker_install_lnmp_dev/">Docker LNMP开发环境</a>搭建的开发环境，就可以跳过这部分直接看下一节的内容。否则，就需要首先在 docker 的 php 环境需要安装 xdebug 扩展，可以参考上面的这篇文章。环境问题解决好以后，主要需要修改的地方就是 <code>php.ini</code> 配置文件了，打开配置文件，加入以下配置</p>
+<figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="attr">xdebug.remote_enable</span>=<span class="number">1</span></span><br><span class="line"><span class="attr">xdebug.remote_host</span>=host.docker.internal</span><br><span class="line"><span class="attr">xdebug.remote_port</span>=<span class="number">9000</span></span><br><span class="line"><span class="attr">xdebug.idekey</span>=PHPSTORM</span><br></pre></td></tr></table></figure>
+<p>配置中的 <code>host.docker.internal</code> 表示的是 docker 所在宿主机的 ip 地址，也就是 IDE 所在环境的地址。配置好以后，执行 <code>php -i</code> 检查配置是否生效。</p>
+<h3 id="PHPSTORM-IDE-配置"><a href="#PHPSTORM-IDE-配置" class="headerlink" title="PHPSTORM IDE 配置"></a>PHPSTORM IDE 配置</h3><p>打开 <code>Preferences</code> &gt; <code>Language &amp; Frameworks</code>  &gt; <code>PHP</code> &gt; <code>Servers</code>，点击 <strong>+</strong> 号，添加 server 配置，输入名称及程序对应的 host或者ip。尤其需要注意的地方，需要勾上 <code>Using path Map</code> 选择本机程序目录和服务器目录相对应就可以了，如下：</p>
+<p><img src="http://static.alitain.tech/blog/xdebug/phpstorm_server_setting.png" alt="phpstorm_server_setting"></p>
+<p>之后点击确定。DEBUG 的配置保持默认，注意监听 <code>9000</code> 端口。</p>
+<p>然后，打开 <code>RUN</code> &gt; <code>Edit Configurations</code>，点击 <strong>+</strong> 号选择 <code>PHP Remote Debug</code> ，选择刚才配置好的 server ，IDEKEY 填入 <code>PHPSTORM</code> 跟 xdebug 的配置保持一致。如下：<br><img src="http://static.alitain.tech/blog/xdebug/phpstorm_remote_debug_setting.png" alt="phpstorm_remote_debug_setting"><br>之后点击 DEBUG 开始监听，在程序合适的地方打上断点。</p>
+<h3 id="浏览器-DEBUG"><a href="#浏览器-DEBUG" class="headerlink" title="浏览器 DEBUG"></a>浏览器 DEBUG</h3><p>浏览器当然会选 Chrome ，通过科学上网安装 <code>Xdebug Helper</code>扩展，如果你是 Mac 用户可以通过 <a href="/2018/04/03/mac_proxy_skills/">Mac 下的科学上网</a> 开查看如何配置科学上网。安装完以后，右击刚安装好的浏览器上方的小虫子，配置 IDE key，IDE 选择 PHPSTORM，key 填入 <code>PHPSTORM</code> 点击 save。如下</p>
+<p><img src="http://static.alitain.tech/blog/xdebug/chrome_xdebug_setting.png" alt="chrome_xdebug_setting"></p>
+<p>点击小虫子，选择 DEBUG，这时候小虫子会变绿。然后点击访问，顺利的话，你的 IDE 会自动切换到你的面前，停留在断点的位置。</p>
+<p><img src="http://static.alitain.tech/blog/xdebug/phpstorm_begin_debug.png" alt="phpstorm_begin_debug"></p>
+<h3 id="CLI（命令行）DEBUG"><a href="#CLI（命令行）DEBUG" class="headerlink" title="CLI（命令行）DEBUG"></a>CLI（命令行）DEBUG</h3><blockquote>
+<p>在 DEBUG 之前一定要确保配置好的 IDE DEBUG 是处于监听状态的<br>必须在容器内执行脚本</p>
+</blockquote>
+<p>进入容器，执行 <code>export XDEBUG_CONFIG=&quot;IDEKEY=PHPSTORM&quot;</code>，在相应的控制台程序或运行脚本中打上断点，执行脚本，然后就开始 debug 你的程序吧!</p>
+<p>取消设置也很简单，执行<code>unset XDEBUG_CONFIG</code>。</p>
+<h3 id="原理小觑"><a href="#原理小觑" class="headerlink" title="原理小觑"></a>原理小觑</h3><p>首先，我们配置好了带有 xdebug 扩展的 php 环境。当接收到环境变量（cookie 或者 env）中 IDEKEY 为 PHPSTORM 的请求后，就会将请求的控制权交给 IDE 去处理。注意在调试期间不接受新的 DEBUG 请求。所以，我们也很容易通过 Postman 来触发调试，只需要在 cookie 中添加响应的键值对就可以达到目的。</p>
+]]></content>
+      <categories>
+        <category>php</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>phpstorm</tag>
+        <tag>xdebug</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Docker LNMP 开发环境搭建</title>
+    <url>/2018/08/08/docker_install_lnmp_dev/</url>
+    <content><![CDATA[<p>准确的说，使用 docker 搭建的 LNMP 环境已经不算是 LNMP 了，因为 nginx、mysql、php 并不是运行在 linux 上，而是运行在 docker 平台上（实际上是运行在本机系统独立的进程空间里），而 docker 平台可以运行在个人笔记本、服务器、公有云等几乎所有的设备上，并且是跨操作系统的。下面一起来搭建一个 DNMP 环境，并将镜像推送到私有镜像服务器。Github代码 <a href="https://github.com/alitain/dnmp" target="_blank" rel="noopener">alitain/dnmp</a>。</p>
+<a id="more"></a>
+
+<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><p>首先，我们要根据自己的操作系统，安装对应的 docker。下面以 Mac 为例，下载 <a href="https://store.docker.com/editions/community/docker-ce-desktop-mac" target="_blank" rel="noopener">Docker For Mac</a> 安装，成功之后从偏好设置中修改 Deamon 的设置添加中国镜像地址（否则需要翻墙）。例如 docker中国，daocloud，阿里云等镜像地址，以docker中国为例，填入 <code>https://registry.docker-cn.com</code>后，应用重启。</p>
+<p>我们可以在命令行执行 <code>docker pull library/registry</code> 查看镜像加速是否配置成功。</p>
+<h2 id="编写-Dockerfile"><a href="#编写-Dockerfile" class="headerlink" title="编写 Dockerfile"></a>编写 Dockerfile</h2><p>在<a href="https://store.docker.com" target="_blank" rel="noopener">docker 商店</a>中已经提供了很多官方镜像和社区镜像，但是并不一定会满足我们的需求，所以我们要基于官方镜像进行修改。考虑到 php 版本的兼容性，这里会同时部署php5，和php7两个版本。nginx 和 mysql 也会分别基于官方镜像进行修改，除此之外还会添加一个专门用于映射代码和在容器之间同步代码的一个镜像。</p>
+<p>下面以 php7 为例，简单介绍一下镜像构建流程</p>
+<p>首先，我们创建一个 <code>dnmp/php7</code> 的目录，在这个目录下新建一个 Dockerfile 文件，输入一下内容</p>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Dockerfile必有的语句 FROM php:7-fpm-alpine3.7 表示 library/php 官方仓库，基于3.7 alpine linux构建的php7的php-fpm镜像</span></span><br><span class="line"><span class="keyword">FROM</span> php:<span class="number">7</span>-fpm-alpine3.<span class="number">7</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 容器启动后执行的命令</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [<span class="string">"php-fpm"</span>]</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 对外暴露的端口</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">9000</span></span><br></pre></td></tr></table></figure>
+<p>然后在 php7 目录下执行 <code>docker build . -t alitain/php7</code>，我们基于官方的php7镜像，构建了自己的镜像，并且打了一个标签叫做 <code>alitain/php7</code>。执行<code>docker image ls</code>可以看见我们刚刚构建出来的镜像。</p>
+<p>构建完成后，执行 <code>docker run -it alitain/php7 /bin/bash</code> 进入容器，执行 <code>php  -v</code>查看 php 版本。我们只继承了官方的镜像，并没有做任何修改，下面我们加入一些扩展，使镜像可以满足我们的开发需要</p>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> php:<span class="number">7</span>-fpm-alpine3.<span class="number">7</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># pecl install 安装比较慢，所以事先把源码下载下来安装</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> exts /tmp/php-exts</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改源为阿里云</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> sed -i <span class="string">'s/dl-cdn.alpinelinux.org/mirrors.aliyun.com/'</span> /etc/apk/repositories</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加编译所需依赖</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apk add --no-cache autoconf gcc g++ make git</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加扩展所需依赖</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apk add --no-cache freetype libpng libjpeg-turbo libmcrypt libtool</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装扩展</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> docker-php-ext-install iconv pdo_mysql</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装zip扩展</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apk add --no-cache zlib-dev \</span></span><br><span class="line"><span class="bash">    &amp;&amp; docker-php-ext-install zip\</span></span><br><span class="line"><span class="bash">    &amp;&amp; apk del zlib-dev</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装gd扩展</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apk add --no-cache freetype-dev libpng-dev libjpeg-turbo-dev &amp;&amp; \</span></span><br><span class="line"><span class="bash">  docker-php-ext-configure gd \</span></span><br><span class="line"><span class="bash">    --with-gd \</span></span><br><span class="line"><span class="bash">    --with-freetype-dir=/usr/include/ \</span></span><br><span class="line"><span class="bash">    --with-png-dir=/usr/include/ \</span></span><br><span class="line"><span class="bash">    --with-jpeg-dir=/usr/include/ &amp;&amp; \</span></span><br><span class="line"><span class="bash">  docker-php-ext-install -j$(getconf _NPROCESSORS_ONLN) gd &amp;&amp; \</span></span><br><span class="line"><span class="bash">  apk del --no-cache freetype-dev libpng-dev libjpeg-turbo-dev</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装imagick扩展</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apk add --no-cache imagemagick-dev imagemagick\</span></span><br><span class="line"><span class="bash">    &amp;&amp; pecl install /tmp/php-exts/imagick*.tgz \</span></span><br><span class="line"><span class="bash">    &amp;&amp; docker-php-ext-enable imagick \</span></span><br><span class="line"><span class="bash">    &amp;&amp; apk del --no-cache imagemagick-dev </span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装mcrypt扩展</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apk add --no-cache libmcrypt-dev \</span></span><br><span class="line"><span class="bash">    &amp;&amp; pecl install /tmp/php-exts/mcrypt*.tgz \</span></span><br><span class="line"><span class="bash">    &amp;&amp; docker-php-ext-enable mcrypt \</span></span><br><span class="line"><span class="bash">    &amp;&amp; apk del --no-cache libmcrypt-dev</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装redis,mongodb扩展</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> pecl install /tmp/php-exts/redis*.tgz /tmp/php-exts/mongodb*.tgz \</span></span><br><span class="line"><span class="bash">    &amp;&amp; docker-php-ext-enable redis mongodb</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装composer</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apk add --no-cache wget \</span></span><br><span class="line"><span class="bash">    &amp;&amp; wget https://getcomposer.org/download/1.6.5/composer.phar \</span></span><br><span class="line"><span class="bash">    &amp;&amp; mv composer.phar /usr/<span class="built_in">local</span>/bin/composer \</span></span><br><span class="line"><span class="bash">    &amp;&amp; chmod +x /usr/<span class="built_in">local</span>/bin/composer \</span></span><br><span class="line"><span class="bash">    &amp;&amp; composer config -g repo.packagist composer https://packagist.phpcomposer.com \</span></span><br><span class="line"><span class="bash">    &amp;&amp; apk del wget</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装xdebug扩展，并修改配置</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> pecl install /tmp/php-exts/xdebug*.tgz \</span></span><br><span class="line"><span class="bash">    &amp;&amp; docker-php-ext-enable xdebug \</span></span><br><span class="line"><span class="bash">    &amp;&amp; <span class="built_in">echo</span> -e <span class="string">'xdebug.remote_enable=1\nxdebug.remote_host=host.docker.internal\nxdebug.remote_port=9000\nxdebug.idekey=PHPSTORM'</span> &gt;&gt; /usr/<span class="built_in">local</span>/etc/php/conf.d/docker-php-ext-xdebug.ini</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加非root用户</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> adduser -D -u 1000 alitain</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 切换到非root用户</span></span><br><span class="line"><span class="keyword">USER</span> alitain</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置工作目录</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /var/www</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [<span class="string">"php-fpm"</span>]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">9000</span></span><br></pre></td></tr></table></figure>
+
+<p>重新执行 build 操作，新的镜像默认会把旧的镜像覆盖掉，执行 docker run 进入容器，执行 <code>php -m</code> 查看扩展是否安装正确。</p>
+<p>nginx、php5、mysql、share的构建都是类似的操作，为了满足下文的需要，构建镜像的时候，标签名称统一加上 <em>alitain/</em> 的前缀。</p>
+<h2 id="服务编排"><a href="#服务编排" class="headerlink" title="服务编排"></a>服务编排</h2><p>如何让这些容器在一起工作，并指定 nginx 对外提供服务绑定本机端口，答案就是docker-compose。很简单我们只需要在 dnmp/ 目录下新建一个docker-compose.yaml的配置文件，配置如下：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">'2'</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">app:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">alitain/share</span> </span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">../../code/alitain/:/var/www</span> <span class="comment"># 代码映射目录，前面表示的本机的目录，后面是虚拟机的目录</span></span><br><span class="line">  <span class="attr">nginx:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">alitain/nginx</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">"8080:8080"</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./nginx/sites:/etc/nginx/sites-available</span> <span class="comment"># nginx 配置文件和本地映射</span></span><br><span class="line">    <span class="attr">depends_on:</span> <span class="comment"># nginx 容器依赖启动依赖 php5 和 php7</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">php5</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">php7</span></span><br><span class="line">    <span class="attr">volumes_from:</span> <span class="comment"># 卷继承自 app</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">app</span></span><br><span class="line">  <span class="attr">php7:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">alitain/php7</span></span><br><span class="line">    <span class="attr">volumes_from:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">app</span></span><br><span class="line">  <span class="attr">php5:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">alitain/php5</span></span><br><span class="line">    <span class="attr">volumes_from:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">app</span></span><br><span class="line">  <span class="attr">mysql:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">alitain/mysql</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">"3306:3306"</span></span><br><span class="line">    <span class="attr">user:</span> <span class="string">mysql</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./mysql/data:/var/lib/mysql</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">MYSQL_ROOT_PASSWORD:</span> <span class="string">root</span></span><br></pre></td></tr></table></figure>
+
+<p>配置好后，执行<code>docker-compose up -d</code>就可以启动我们构建的容器了。在浏览器中访问 <a href="http://localhost:8080" target="_blank" rel="noopener">http://localhost:8080</a> 查看效果。</p>
+<h2 id="把镜像推送到私有镜像服务器上"><a href="#把镜像推送到私有镜像服务器上" class="headerlink" title="把镜像推送到私有镜像服务器上"></a>把镜像推送到私有镜像服务器上</h2><p>为了方便调试，我们可以把镜像服务器搭建在本地，然后删除已构建的镜像，从本地镜像服务器上拉取镜像。Docker 的镜像服务器搭建很方便，使用官方镜像服务器镜像就能够满足需要。在上面的步骤中，我们拉取过 library/registry 镜像。所以只要启动这个镜像就可以了，当然如果启动镜像的时候，镜像不存在也会从配置中的镜像服务器上一一尝试去拉取。</p>
+<p>在命令行执行 <code>docker run -d -p 5000:5000 -v /path/to/store/images:/var/lib/registry library/registry</code>启动镜像服务，-d 表示以在后台运行，-p 映射容器的 5000 端口到本地， -v 映射镜像保存目录，用户持久化保存镜像，下次启动的时候之前的镜像还在。</p>
+<p>如何让我们的镜像服务器在 docker 中生效呢，需要像前面那样修改镜像服务器配置。添加 <code>http://127.0.0.1:5000</code> 到镜像服务器配置中，由于我们没有使用 https，所以还需要再不安全服务器上添加 <code>127.0.0.1:5000</code>。</p>
+<p>接下来，我们推送镜像到镜像服务器上。首先给镜像打一个标签，以 php7 镜像为例 <code>docker tag alitain/php7 127.0.0.0:5000/alitain/php7:latest</code>，推送镜像 <code>docker push 127.0.0.0:5000/alitain/php7:latest</code>。</p>
+<p>删除我们的自定义镜像，<code>docker rmi --forece $(docker images | grep alitain | awk &#39;{print $3}&#39;)</code>。在 dnmp/ 目录下执行 <code>dockr-compose up -d</code> 查看是否可以从镜像服务器上拉取镜像并成功运行。</p>
+]]></content>
+      <categories>
+        <category>总结</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>lnmp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>PHP实现的23种设计模式</title>
+    <url>/2018/05/05/design_pattern_in_php/</url>
+    <content><![CDATA[<p>最近利用空余时间，把《设计模式（可复用面向对象软件的基础）》这本书看了看，用 PHP 把23种设计模式重新实现了一遍。部分实现参考了<a href="https://github.com/domnikl/DesignPatternsPHP" target="_blank" rel="noopener">DesignPatternsPHP</a>上面的代码，虽然例子都很简单，但是也可以体现出来设计模式的思想。花费这么大时间和精力写一遍的目的，就是希望在使用的时候是够把所有的模式快速在脑海里回忆一遍，选择最佳的实现方式。</p>
+<a id="more"></a>
+
+<p>设计模式的思想在工程软件和框架这些复杂的面向对象的系统上体现的比较突出，工程软件例如 IDE 等，框架就有很多了，比如 PHP 的 Laravel，Yii等。框架一般都会有一个应用实例和 IOC 容器，这就是单例模式的体现；框架中的事件机制大都是通过观察者模式实现的；Laravel 中的 MiddleWare 和 Yii 中的 Filter 都可以看作是责任链模式的实现；Laravel中的 Facade类其实就是外观模式的实现等等。注意，<em>框架中的AR（活动记录），DAO（数据访问对象），IOC（控制反转），Service Locator（服务定位器），MVC这些属于架构模式，不属于本文要讲的设计模式的范畴</em>。</p>
+<h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>关于设计模式的定义，在比较了书上和维基百科的定义后，还是把百度百科上的原话拿过来用了，比较通俗易懂：</p>
+<blockquote>
+<p>设计模式（Design pattern）代表了最佳的实践，通常被有经验的面向对象的软件开发人员所采用。设计模式是软件开发人员在软件开发过程中面临的一般问题的解决方案。这些解决方案是众多软件开发人员经过相当长的一段时间的试验和错误总结出来的。</p>
+</blockquote>
+<h3 id="原则"><a href="#原则" class="headerlink" title="原则"></a>原则</h3><ul>
+<li><strong>单一职责原则</strong>：一个类只负责一个功能领域中的相应职责，或者可以定义为：就一个类而言，应该只有一个引起它变化的原因。</li>
+<li><strong>开闭原则</strong>：一个软件实体应当对扩展开放，对修改关闭。即软件实体应尽量在不修改原有代码的情况下进行扩展。</li>
+<li><strong>里式替换原则</strong>：所有引用基类（父类）的地方必须能透明地使用其子类的对象。</li>
+<li><strong>依赖倒置原则</strong>：抽象不应该依赖于细节，细节应当依赖于抽象。换言之，要针对接口编程，而不是针对实现编程。</li>
+<li><strong>接口隔离原则</strong>：使用多个专门的接口，而不使用单一的总接口，即客户端不应该依赖那些它不需要的接口。</li>
+<li><strong>迪米特法则</strong>：一个软件实体应当尽可能少地与其他实体发生相互作用。</li>
+</ul>
+<p>设计模式就是实现了这些原则，从而达到了代码复用、增加可维护性的目的。</p>
+<h3 id="基本模式"><a href="#基本模式" class="headerlink" title="基本模式"></a>基本模式</h3><h4 id="Creational-（创建型）"><a href="#Creational-（创建型）" class="headerlink" title="Creational （创建型）"></a>Creational （创建型）</h4><ul>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/creational/abstract_factory.md" target="_blank" rel="noopener">Abstract Factory （抽象工厂）</a>：提供一个创建一些类相关或相互依赖对象的接口，而无需指定它们具体的类。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/creational/builder.md" target="_blank" rel="noopener">Builder （生成器）</a>：将一个复杂对象的构建与它的表示分离，使得同样的构建构建过程可以创建不同的表示。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/creational/factory_method.md" target="_blank" rel="noopener">Factory Method （工厂方法）</a>：定一个用于创建对象的接口，让子类决定将哪一个类实例化。使得类的实例化延迟到子类。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/creational/prototype.md" target="_blank" rel="noopener">Prototype （原型）</a>：用原型实例指定创建对象的种类，并且通过拷贝这个原型来创建新的对象。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/creational/singleton.md" target="_blank" rel="noopener">Singleton （单例）</a>：保证一个类仅有一个实例，并提供一个访问它的全局访问点。</li>
+</ul>
+<h4 id="Structural-（结构型）"><a href="#Structural-（结构型）" class="headerlink" title="Structural （结构型）"></a>Structural （结构型）</h4><ul>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/adapter.md" target="_blank" rel="noopener">Adapter （适配器）</a>：将一个类的接口转换成客户希望的另外一个接口。适配器模式使得原有接口不兼容而不能在一起工作的类可以在一起工作。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/bridge.md" target="_blank" rel="noopener">Bridge （桥接）</a>：将抽象部分与实现部分分离，使它们都可以独立的变化。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/composite.md" target="_blank" rel="noopener">Composite （组合）</a>：将对象组合成树形结构以表示“整体-部分”的层次结构。组合模式使得对单个对象和复合对象的使用具有一致性。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/decorator.md" target="_blank" rel="noopener">Decorator （装饰）</a>：动态地给一个对象添加一些额外的职责。就扩展功能而言，装饰器模式比生成子类的方式更加灵活。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/facade.md" target="_blank" rel="noopener">Facade （外观）</a>：为子系统的一组接口提供一个一致的界面，外观模式定义了一个高层接口，使得这一系统更加容易使用。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/flyweight.md" target="_blank" rel="noopener">FlyWeight （享元）</a>：运用共享技术有效地支持大量细粒度的对象。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/proxy.md" target="_blank" rel="noopener">Proxy （代理）</a>：为其他对象提供一个代理以控制对这个对象的访问。</li>
+</ul>
+<h4 id="Behavioral-（行为型）"><a href="#Behavioral-（行为型）" class="headerlink" title="Behavioral （行为型）"></a>Behavioral （行为型）</h4><ul>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/chain_of_responsibility.md" target="_blank" rel="noopener">Chain of responsibility （责任链）</a>：为解除请求的发送者和接受者之间的耦合，而使多个对象都有机会处理这个请求。将这些请求连城一条链，并沿着这条链传递该请求，直到有一个对象处理它。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/command.md" target="_blank" rel="noopener">Command （命令）</a>：将一个请求封装成一个对象，从而使你可用不同得请求对客户进行参数化；对请求排队或记录请求日志，以及支持可撤销的操作。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/interpreter.md" target="_blank" rel="noopener">Interpreter （解释器）</a>：给定一个语言，定义它的文法的一中表示，并一个一个解释器，该解释器使用该表示来解释语言中的句子。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/iterator.md" target="_blank" rel="noopener">Iterator （迭代器）</a>：提供一个方法顺序访问一个聚合对象中各个元素，而又不许暴露该对象的内部表示。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/mediator.md" target="_blank" rel="noopener">Mediator （中介）</a>：用一个中介对象来封装一些类的对象交互。中介者使各对象不需要显式地相互引用，从而使其耦合松散，而且可以独立地改变他们之间的交互。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/memento.md" target="_blank" rel="noopener">Memento （备忘录）</a>：在不破坏封装性的前体系，捕获一个对象的内部状态，并在该请求之外保存这个状态。这样以后就可以将该对象恢复到保存的状态。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/observer.md" target="_blank" rel="noopener">Observer （观察者）</a>：定义对象间的一种一对多的依赖关系，以便当一个对象的状态发生改变时，所有依赖于它的对象都得到通知并自动刷新。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/state.md" target="_blank" rel="noopener">State （状态）</a>：允许一个对象在其内部状态改变时改变它的行为。对象看起来似乎修改了它所属的类。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/strategy.md" target="_blank" rel="noopener">Strategy （策略）</a>：定义一系列的算法，把他们一个个封装起来，并且使它们可以相互替换。策略模式使得算法的变化可以独立于使用它们的客户端。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/template_method.md" target="_blank" rel="noopener">Template Method （模板方法）</a>：定一个操作中的算法的骨架，而将一些步骤延迟到子类中。模板方法使得子类可以不改变一个算法的结构即可重定义改算法的某些特定步骤。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/visitor.md" target="_blank" rel="noopener">Visitor （访问者）</a>：表示一个作用于某对象结构中的各元素的操作。它使你可以在不改变类的前提下定义作用于这些元素的操作。</li>
+</ul>
+<h3 id="关系图"><a href="#关系图" class="headerlink" title="关系图"></a>关系图</h3><p><img src="http://static.alitain.tech/design_pattern_relationship.png" alt="design_pattern_internal_relationship"></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://baike.baidu.com/item/设计模式" target="_blank" rel="noopener">百度百科</a><br><a href="https://blog.csdn.net/lovelion/article/category/738450" target="_blank" rel="noopener">刘伟技术博客</a><br><a href="https://book.douban.com/subject/1052241/" target="_blank" rel="noopener">设计模式（可复用面向对象软件的基础）</a></p>
+]]></content>
+      <categories>
+        <category>基础</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mac下的科学上网</title>
+    <url>/2018/04/03/mac_proxy_skills/</url>
+    <content><![CDATA[<p>相信每个程序猿都和 GWF 有过一段小故事。上大学的时候，想要翻墙大都是用 GoAgent 和 Chrome 的代理扩展，免费的 GoAgent 盛行一时。最近几乎看不到它的身影了，现在是 Shadowsocks 的天下了。本文记录了自己在 Mac 下的一些翻墙技巧，部分对其他系统也使用，希望大家都可以变得身手矫捷。</p>
+<a id="more"></a>
+
+<blockquote>
+<p>本文假设你已经有了一个外网的 vpn 账号，否则下面的都是扯犊子。获取 vpn 账号的方式有很多，购买账号，自己在外网搭建服务器，使用公司的账号等等。</p>
+</blockquote>
+<h3 id="代理工具"><a href="#代理工具" class="headerlink" title="代理工具"></a>代理工具</h3><p>大多数的童鞋可能都用的 Shadowsocks 的 GUI 客户端，方便快捷，开启全局代理其他应用也可以很容易翻墙，没毛病。今天，我要给大家介绍的是命令行的翻墙工具，Mac 下安装、配置、启动都很简单，让你忘记翻墙的过程。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">brew install shadowsocks-libev <span class="comment"># 安装</span></span><br><span class="line">vi /usr/<span class="built_in">local</span>/etc/shadowsocks-libev.json <span class="comment"># 编辑配置文件</span></span><br><span class="line">brew services <span class="built_in">enable</span> shadowsocks-libev <span class="comment"># 开机启动</span></span><br><span class="line">brew services start shadowsocks-libev <span class="comment"># 启动</span></span><br></pre></td></tr></table></figure>
+
+<p>编辑配置文件填入服务器 ip，密码，加密方式，本地地址，本地端口。本地端口可以设置1080， 本地地址不设置默认 127.0.0.1。</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"server"</span>:<span class="string">"your.vpn.server"</span>,</span><br><span class="line">    <span class="attr">"server_port"</span>:<span class="string">"your.vpn.server.port"</span>,</span><br><span class="line">    <span class="attr">"local_port"</span>:<span class="number">1080</span>,</span><br><span class="line">    <span class="attr">"password"</span>:<span class="string">"your.vpn.server.password"</span>,</span><br><span class="line">    <span class="attr">"timeout"</span>:<span class="number">600</span>,</span><br><span class="line">    <span class="attr">"method"</span>:<span class="string">"your.vpn.server.method"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编辑完成后可以直接启动，然后继续下面的步骤。</p>
+<h3 id="浏览器测试"><a href="#浏览器测试" class="headerlink" title="浏览器测试"></a>浏览器测试</h3><p>由于 Chrome 的代理扩展也需要翻墙才能下载，所以我们先可以用 Firefox 直接设置 Socks5 代理。打开首选项&gt;网络代理&gt;设置&gt; 然后选择 Socks 主机，ip 填入127.0.0.1，端口填入 1080。最后点击确定。然后访问 <a href="http://www.google.com" target="_blank" rel="noopener">www.google.com</a> 如果访问不成功，检查配置哪里有问题。</p>
+<h3 id="其他软件翻墙"><a href="#其他软件翻墙" class="headerlink" title="其他软件翻墙"></a>其他软件翻墙</h3><p>除了通过Mac 的网络设置，在网卡上设置全局代理之外。有一款软件可以提供应用级别的代理设置，叫做 <a href="http://www.tidalpool.ca/macproxy/" target="_blank" rel="noopener">MacProxy</a>，需要翻墙下载。可惜的是这是一款付费的软件，不过我很辛苦地找到了一个破解的虚拟机。<a href="https://pan.baidu.com/s/1Jr-al3_g107sfAk8ywKjPQ" target="_blank" rel="noopener">下载地址</a>  密码:smz2，注意仅供学习交流。设置界面如图所示：<br><img src="http://www.tidalpool.ca/macproxy/images/screenshots/rules.png" alt="blog_macproxy"></p>
+<p>举个例子，想让 twitter翻墙，就只需要添加一条规则，让他走我们设置好的代理。也可以 host的规则，例如设置 safari 访问 *.google.com 的时候走代理。看，是不是很方便！</p>
+<h3 id="控制台翻墙"><a href="#控制台翻墙" class="headerlink" title="控制台翻墙"></a>控制台翻墙</h3><p>想在命令行翻墙下载东西怎么办？我推荐通过 proxychains，Mac 下安装。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">brew install proxychains4 <span class="comment"># 安装</span></span><br><span class="line">vi /usr/<span class="built_in">local</span>/etc/proxychains.json <span class="comment"># 在配置文件最后添加 socks5 127.0.0.1 1080 即可</span></span><br></pre></td></tr></table></figure>
+
+<p>然后在要执行的操作前，加 proxychains4 比如说下载 google 主页，git克隆一个国内比较慢的项目。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">proxychains4 wget www.google.com</span><br><span class="line">proxychains4 git <span class="built_in">clone</span> https://github.com/xxx/xxx</span><br></pre></td></tr></table></figure>
+
+<h3 id="虚拟机（linux控制台）翻墙"><a href="#虚拟机（linux控制台）翻墙" class="headerlink" title="虚拟机（linux控制台）翻墙"></a>虚拟机（linux控制台）翻墙</h3><ul>
+<li>其实虚拟机翻墙很容易。首先搞清楚用虚拟机和宿主机之间用的什么网络模式，一般桥接和共享物理网络比较多，NAT暂时没有试过。</li>
+<li>通过虚拟机的网络设置或者 ifconfig 查看宿主机和虚拟机相通的宿主 ip 是什么，比如 宿主机有一个网卡的 ip是 10.111.20.12，虚拟机的 ip 是 10.111.20.13。</li>
+<li>同样在虚拟机上安装 proxychains，如果虚拟机是 ubuntu 的话，直接使用 <code>sudo apt-get install proxychains</code> 就可以。打开配置文件在最后添加 <code>socks5 10.111.20.12 1080</code>。</li>
+<li>最后最重要的一步，修改宿主机上的 shadowsocks-libev的配置文件，设置 local_address的 ip 为 <em>0.0.0.0</em>，然后重启 shadowsocks-libev。其实就是接收本机上任意网卡上的数据。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>工具</category>
+      </categories>
+      <tags>
+        <tag>Mac</tag>
+        <tag>翻墙</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>漫谈并发</title>
+    <url>/2018/01/05/concurrency_talking/</url>
+    <content><![CDATA[<p>周五做了一次技术分享，虽然分享的效果不好，但是觉得自己还是有很大收获的。对并发有了一个感性的认识，下面是我整理的内容，欢迎批评指正。</p>
+<a id="more"></a>
+
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>并发指的是<strong>同一时间服务器处理请求或事务的能力</strong>。可以简单理解为服务器单位时间处理的请求数（QPS）。通过模拟用户环境的压力测试，我们可以得到一个服务器可以承受的并发量是多少。<br>当请求量超过服务器的并发量，多余的请求会再服务器端排队等待处理，如果等待队列满了，新的请求会被丢弃。接下来我们主要讨论的是如何提高服务器的并发量。</p>
+<h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><ul>
+<li>运算密集<br>在运算密集的场景下，想要提升并发量，只有通过改变算法，或者增加机器，换更快的、拥有更多核心处理器来解决。</li>
+<li>I/O 密集<br>在 I/O 密集场景下，由于 CPU 和 I/O 处理速度相差太多，在<a href="http://jiaojx.site/2017/12/17/asyn_syn_block_no-block" target="_blank" rel="noopener">同步阻塞</a>下，CPU 需要等待 I/O 操作完成才可以继续执行。在等待的过程中，进程是阻塞的状态，无法继续对外提供服务。除了增加更多的设备，通过异步非阻塞的 I/O 操作，可以在等待 I/O 的同时，继续处理新的请求，从而提升并发量。</li>
+</ul>
+<h2 id="并发技术"><a href="#并发技术" class="headerlink" title="并发技术"></a>并发技术</h2><p>Web Server 并发技术的发展经历了从多进/线程，到 I/O 复用，再到协程技术的应用。多进/线程序充分发挥了 CPU 的多核特性，但是由于 I/O 操作都是阻塞的，所以一旦有了比较耗时的 I/O 操作，服务器的并发处理能力还是很弱的。 直到 I/O 复用技术的应用，才大大提升了服务器并发处理能力，并且真正解决了 C10K 的问题。协程的出现，然我们可以省去繁琐的异步回调嵌套，甚至完全编写同步代码也可以在底层异步调用。</p>
+<p>为了通过画图来更直观的展示我们提供一种特殊的场景，我们假设有一台 4 核的CPU, 每个请求需要 1s，其中 0.9s 的时间是在等待网络 I/O 的完成（忽略链接创建销毁，进程创建切换销毁的耗时。实际上大多数情况下 CPU 和 I/O 操作的耗时不在一个数量级上）。</p>
+<ul>
+<li><p>多进/线程（池）<br>先说多进程阻塞，主进程在接收到新的请求后，就派生一个子进程出来处理新的链接，处理完后结束子进程，一定程度上提高了服务器的并发处理能力。由于进程操作开销很大，线程间通信相对容易，所以就把多线程应用到并发服务器上，主线程在接收到一个新的请求后，就创建一个新的线程来处理链接。为了避免进/线程创建和销毁的开销，同时可以复用，提出了进/线程池的概念。例如 PHP-FPM 服务在启动的时候，就会创建多个进程（一般设置为同 CPU 核心数即可），有新的请求过来，直接从进程池用取出一个来用。根据上面的场景结合下面的图，我们可以看到服务器的并发数最多为4个！<br><img src="http://static.alitain.tech/blocking-process.png" alt="bloking-process">    </p>
+</li>
+<li><p>I/O 复用<br>通过 I/O 复用技术，同一个进/线程可以让内核监测多个 I/O 的状态，并在 I/O 就绪时去通知进/线程。select 系统调用最多可以监测1024个描述符， 内核通过遍历的方式来判断哪些是就绪的 I/O，并返回给用户程序。因此 select 只适合用于文件描述符较少的情况。poll 系统调用解除了文件描述符的限制，但是内核依然需要遍历，假如服务器维持了百万的链接，但是只有几个链接是活跃的，那么大部分的监测是没有用的。直到 linux 2.6 加入了 epoll，epoll_wait 系统调用是通过回调函数实现的，一有就绪的 I/O 就会触发回调函数，最终返回给用户程序，因此监测的复杂度是 O(1)。为了避免回调函数触发的过于频繁，因此适合链接数较多，但是活动链接较少的情况。I/O 复用函数需要配合多进/线程才能真正实现并发，否则即便是监测到了多个 I/O 就绪事件，也只能顺序处理。通过 I/O 复用配合多进程，我们的并发数最多可以达到将近40个。<br><img src="http://static.alitain.tech/none-blocking-process.png" alt="none-bloking-process">    </p>
+</li>
+<li><p>协程<br>协程可以理解为纯用户态的线程，其通过协作而不是抢占来进行切换。相对于线程，协程所有是由程序自身控制，因此，没有线程切换的开销，执行效率极高。同时也不需要多线程的锁机制，因为只存在一个线程，不会发生资源冲突。通过多进程+协程，即可以充分利用多核，又充分发挥协程的高效率，可获得提高的性能。通过协程我们可以避免复杂的异步嵌套，编写同步代码来实现异步调用。<br>协程有两种调度方式：    </p>
+<ul>
+<li>语言上提供协程调度。即在语言的层级上，通过 generaor 来实现。 generator 内部通过 yield 为程序添加了可中断的点，结合事件机制让程序在合适的时间让出 CPU。例如 Python 中的 asynico 库，就是通过 generator + proactor 事件模型来实现的协程调度。</li>
+<li>语言底层提供协程调度。语言底层会自动把 I/O 操作重写为异步。用户编写纯同步的代码即可，完全感知不到底层会异步调用。例如，swoole 的协程客户端，在 connet(), recv(), send(), close() 等方法调用时，自动触发一次协程切换。</li>
+</ul>
+</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://rango.swoole.com/archives/508" target="_blank" rel="noopener">PHP并发IO编程之路-韩天峰的博客</a><br><a href="https://book.douban.com/subject/24722611/" target="_blank" rel="noopener">Linux高性能服务器编程</a></p>
+]]></content>
+      <categories>
+        <category>基础</category>
+      </categories>
+      <tags>
+        <tag>异步</tag>
+        <tag>并发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>关于异/同步，（非）阻塞</title>
+    <url>/2017/12/17/asyn_syn_block_no-block/</url>
+    <content><![CDATA[<p>两者之间并无关系。</p>
+<p>异步同步关注的是发生调用函数如何返回结果。同步就是立即返回结果或者等待返回结果，一有结果产生就回立刻返回。异步就是函数立刻返回，但是没有返回结果，等到结果产生的时候需要配合其他机制，比如事件，协程等将结果返回。</p>
+<p>阻塞和非阻塞关注的是进/线程的状态。阻塞是当需要等待结果时，将进/线程挂起等结果产生以后返回。非阻塞就是不挂起进/线程，立刻返回错误（结果未产生）。</p>
+<a id="more"></a>
+
+<blockquote>
+<p>注意阻塞、挂起和睡眠的关系。进程阻塞是被动的行为，例如进程需要等待 I/O 完成，系统调度将其放到阻塞队列中，如果进程长时间没有被运行，就有可能被挂起。等到 I/O 完成后，系统调度将其重新加入到就绪队列中，等待 CPU 的执行。睡眠是进程主动的行为，进入到睡眠状态。</p>
+</blockquote>
+<h2 id="特定场景下的同步和异步"><a href="#特定场景下的同步和异步" class="headerlink" title="特定场景下的同步和异步"></a>特定场景下的同步和异步</h2><h3 id="编程模型中的同步和异步"><a href="#编程模型中的同步和异步" class="headerlink" title="编程模型中的同步和异步"></a>编程模型中的同步和异步</h3><p>异步编程：全部通过事件机制、协程等编写或运行代码的方式，且代码不含同步阻塞的函数调用。一旦包含了同步阻塞的函数，异步模型就退化成同步模型。</p>
+<p>同步编程：代码按照指令序列的顺序来执行，以及不属于异步编程的模型。</p>
+<h3 id="I-O-模型中的同步和异步"><a href="#I-O-模型中的同步和异步" class="headerlink" title="I/O 模型中的同步和异步"></a>I/O 模型中的同步和异步</h3><p>linux 有5大 I/O 模型，他们分别是</p>
+<ul>
+<li>阻塞式 I/O</li>
+<li>非阻塞式 I/O</li>
+<li>I/O 复用（select 和 poll)</li>
+<li>信号驱动式 I/O</li>
+<li>异步 I/O</li>
+</ul>
+<p>他们的简单定义和比较如下图</p>
+<p><img src="http://static.alitain.tech/linux_io.jpeg" alt="linux_io"></p>
+<p>其中，前面的四种 I/O 模型都属于同步 I/O。异步 I/O 在 linux 系统上是通过 aio 函数调用来实现的，即数据的等待阶段和从内核复制到用户空间的阶段都是由内核完成的，是真正的异步。</p>
+<p>这里的同步和异步主要区分的是，内核通知应用程序是哪种 I/O 事件（就绪事件还是完成事件），以及是由谁来完成 I/O 读写（应用程序还是内核）</p>
+<h3 id="服务器并发模型中的同步和异步"><a href="#服务器并发模型中的同步和异步" class="headerlink" title="服务器并发模型中的同步和异步"></a>服务器并发模型中的同步和异步</h3><p>并发模型中的同步和异步与编程模型中的定义相似，这里只列一下优缺点。</p>
+<p>异步模型：通过事件机制实现的异步编程，会层层回调，难以维护。如果底层实现了协程调度，可以通过同步编程来实现异步编程的效果。</p>
+<p>同步模型：目前大多数应用场景都是采用的这种编程模型，相对异步变成较为简单，调试方便，容易维护。</p>
+<p>半同步/半异步模型：业务逻辑通过同步编程模型来实现，I/O 操作通过异步变成模型来实现。结合事件模型又产生了半同步/半反应堆等的变种。</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>资源中的同步：为了维护数据的一致性，例如 mysql 的主从复制，线程间信号量和锁的实现，都是为了维护数据的一致性。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.zhihu.com/question/19732473" target="_blank" rel="noopener">怎样理解阻塞非阻塞与同步异步的区别-知乎</a><br><a href="https://book.douban.com/subject/24722611/" target="_blank" rel="noopener">Linux高性能服务器编程</a><br><a href="https://book.douban.com/subject/1500149/" target="_blank" rel="noopener">UNIX网络编程</a></p>
+]]></content>
+      <categories>
+        <category>基础</category>
+      </categories>
+      <tags>
+        <tag>异步</tag>
+        <tag>并发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mac使用dinghy和laradock搭建php运行环境</title>
+    <url>/2017/07/04/mac-with-dinghy-and-laradock/</url>
+    <content><![CDATA[<p>   每次更换一个工作用的电脑，都需要很长的时间来搭建本地的运行环境。有时候，为了安装一个扩展会折腾半天，而且可能需要安装多个版本的 php。有人说，集成运行环境不是很好嘛，一次搞定所有的要求。是的，对于新手来说，使用集成包就足够了。但是集成境包不容易满足定制化的需求，比如某个扩展没有，还是得手动编译安装，而且这种方式有点太 low 了。 对于 mac 来说，需要卸载自带的 php ，然后使用 php 安装器来管理多个版本，这可能会影响本地系统。<br>这篇博客主要跟大家带来使用 docker 来搭建本地运行环境，docker 号称 <em>build once, run anywhere</em>，用于生产环境也可以哦。等你换一个电脑，从网上 down 下来自己的配置文件，剩下就是网速和时间的问题了。喝一杯咖啡，环境就搭建好了。</p>
+<a id="more"></a>
+
+<h3 id="安装docker"><a href="#安装docker" class="headerlink" title="安装docker"></a>安装docker</h3><ul>
+<li><p>安装<a href="https://brew.sh" target="_blank" rel="noopener">Homebrew</a> </p>
+<p>  Homebrew 可以说填补了 mac 包管理工具的空缺，安装起来非常简单。</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;usr&#x2F;bin&#x2F;ruby -e &quot;$(curl -fsSL https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Homebrew&#x2F;install&#x2F;master&#x2F;install)&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装 docker    </p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">brew install docker docker-machine docker-compose</span><br></pre></td></tr></table></figure>
+<p>  Docker 和传统意义的虚拟机相比，Docker 运行在进程的命名空间内，并没有提供操作系统层的抽象，直接使用主机的资源。<br>docker-machine 有点类似虚拟机了，Docker 可以运行在其中。由于 Mac 文件系统的限制，Docker 运行在 Mac OS 上有明显延迟，这也就是后面要用 dinghy 加速的原因。<br>docker-compose 单独的容器只可以提供比较单一的服务，通过 docker-compose 来管理容器，定义容器之间的依赖关系等，来满足应用级别的需要。<br><a href="https://docs.docker.com" target="_blank" rel="noopener">官方文档</a>   </p>
+<blockquote>
+<p>或者可以通过 Docker For Mac 的安装包进行安装，也很简单。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="使用laradock"><a href="#使用laradock" class="headerlink" title="使用laradock"></a>使用laradock</h3><ul>
+<li><p><a href="https://laradock.io" target="_blank" rel="noopener">laradock</a> </p>
+<p>  laradock 是通过 docker-compose 来构建的，旨在方便地提供 laravel 的运行环境。做适当的修改可以很方便的当做 php 的开发环境。</p>
+</li>
+<li><p>安装    </p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;laradock&#x2F;laradock.git</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>简介</p>
+<p>  进入到 laradock 的目录，看到有很多文件夹和文件，其中最重要的就是 env-example,docker-compose.yml以及各个目录里的 Dockerfile 文件了。env-example 的环境配置文件的样例，后两者有很多变量都是在这个文件中定义的。</p>
+</li>
+<li><p>初运行</p>
+<p>  启动 docker，进入到 laradock 的目录，执行</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cp env-example .env  </span><br><span class="line">docker-compose up -d mysql redis nginx # 启动相关容器</span><br><span class="line">docker-compose ps # 查看进程</span><br><span class="line">docker-compose exec 容器名字 sh # 进入相关容器</span><br></pre></td></tr></table></figure>
+<p>  通过ps可以看到有6个进程启动了，分别是 <strong>application, workspace, php-fpm, nginx, redis, mysql</strong>。 其中 php-fpm 是 nginx 所依赖的容器， appliction 代表整个应用，workspace 是主要用来执行 php-cli 命令的容器，例如 artisan, composer, phpunit等。</p>
+</li>
+<li><p>配置</p>
+<p>  例如 文件的目录关系如下:  </p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;dev</span><br><span class="line">-  laradock</span><br><span class="line">-  code</span><br><span class="line">-    project-1</span><br><span class="line">-    project-2</span><br></pre></td></tr></table></figure>
+<p>  打开 .env 文件，修改 APPLICATION 的值为项目文件的相对路径，<code>APPLICATION=../code/</code> 这个路径会映射到 worksapce 容器的 /var/www/ 目录上，（注意任何修改配置文件都需要执行 <code>docker-compose build 容器名字</code> 重新构建相关容器）。进入 <code>nginx/sites</code> 目录，执行 <code>cp project-1.conf.example project-1.conf</code>，修改 docker 让它可以挂载 /dev 目录后，执行    <code>docker-compose restart nginx</code>    重启 nginx ,本地绑定 host <code>127.0.0.1 project-1.dev</code>，在浏览器中输入 <code>http://project-1.dev</code> 应该就可以看到效果了。</p>
+</li>
+</ul>
+<h3 id="编译自己的扩展"><a href="#编译自己的扩展" class="headerlink" title="编译自己的扩展"></a>编译自己的扩展</h3><ul>
+<li><p>定好的扩展</p>
+<p>  一般的扩展作者都已经提供了，在 .env 中找到相关的配置选项打开或关闭。</p>
+</li>
+<li><p>未定义的扩展</p>
+<p>  如果没有定义我们需要的扩展就需要，就需要我们动手来编译扩展了。比如我们 php-cli 需要 zmq 扩展，首先打开 .env 文件在 WORKSPACE 下面加入 <code>WORKSPACE_INSTALL_ZMP=true</code> 然后打开 docker_composer.yml 在 workspace 的 args 中加入 <code>INSTALL_ZMQ=${WORKSPACE_INSTALL_ZMQ}</code> 然后保存，打开 workspace/Dockerfile-71 （假如我们用的是 php 7.1)，找一个合适的位置添加</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ARG INSTALL_ZMQ&#x3D;false</span><br><span class="line">ENV INSTALL_ZMQ $&#123;INSTALL_ZMQ&#125;</span><br><span class="line">RUN if [ $&#123;INSTALL_ZMQ&#125; &#x3D; true ]; then \</span><br><span class="line">  # Install the ZMQ extension</span><br><span class="line">  RUN apt-get -yqq install wget &amp;&amp; \</span><br><span class="line">    wget https:&#x2F;&#x2F;github.com&#x2F;zeromq&#x2F;libzmq&#x2F;releases&#x2F;download&#x2F;v4.2.1&#x2F;zeromq-4.2.1.tar.gz &amp;&amp; \</span><br><span class="line">    tar -zxvf zeromq-4.2.1.tar.gz &amp;&amp; \</span><br><span class="line">    apt-get -yqq remove wget &amp;&amp; \</span><br><span class="line">    cd zeromq-4.2.1 &amp;&amp; \</span><br><span class="line">    .&#x2F;configure &amp;&amp; \</span><br><span class="line">    make &amp;&amp; make install &amp;&amp; \</span><br><span class="line">    pecl install zmq-beta &amp;&amp; \</span><br><span class="line">    echo &quot;extension&#x3D;zmq.so&quot; &gt;&gt; &#x2F;etc&#x2F;php&#x2F;7.1&#x2F;cli&#x2F;conf.d&#x2F;40-zmq.ini &amp;&amp; \</span><br><span class="line">    cd .. ;</span><br><span class="line">;fi</span><br></pre></td></tr></table></figure>
+<p>  保存后，重新编译启动 workspace ，进入容器后执行 <code>php -m</code> 发现扩展装上了。</p>
+</li>
+</ul>
+<h3 id="使用dinghy加速mac"><a href="#使用dinghy加速mac" class="headerlink" title="使用dinghy加速mac"></a>使用dinghy加速mac</h3><ul>
+<li><p><a href="https://github.com/codekitchen/dinghy" target="_blank" rel="noopener">dinghy</a>  </p>
+<p>  主要用来在 MAC 上加速 docker 的虚拟机。</p>
+</li>
+<li><p>安装</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">brew tap codekitchen&#x2F;dinghy &amp;&amp; brew install dinghy</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装虚拟机</p>
+<p>  xhyve, virtualbox, vmware fusion, parallels desktop 这四个均可，以parallels desktop 为例。只有 vmware 支持的比较好，其他三个都需要安装驱动。下面以 parallels 为例。  </p>
+</li>
+<li><p>安装 driver </p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">brew install docker-machine-parallels</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建虚拟机</p>
+<p>  <code>dinghy create --provider parallels</code>    成创建后可以看到都是 running 的状态，可以按要求加入相关环境变量，以便启动 docker 的时候可以找到 dinghy。同时还应该加上挂载目录的配置：</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export DINGHY_HOST_MOUNT_DIR&#x3D;&#x2F;dev&#x2F;</span><br><span class="line">export DINGHY_GUEST_MOUNT_DIR&#x3D;&#x2F;dev&#x2F;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置 dns 和 http-proxy</p>
+<p>  当运行 <code>docker-compose up -d nginx</code> 的时候，你会发现启动失败，提示 80 和 443 被占用了。是 http-proxy 占用了，这个是默认被打开的。dinghy 很有趣，当打开 dns revole 的时候，默认所有的 .docker 为二级域名的域名都会被 dinghy 的 dns 解析，这个可以被修改，我们打开 <code>$HOME/.dinghy/preferences.yml</code>，在下面加入<br><code>:dinghy_domain: dev</code>，所有以 .dev 为二级域名的域名都会被 dinghy 解析。并通过 http-proxy 代理来访问其它容器（如果本地绑定了 host 需要去掉）。下面开始配置：<br>  打开 docker-compose.yml 找到 nginx 的配置选项，去掉 80 和 443 端口的映射。添加新的配置项</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">environment:</span><br><span class="line">- VIRTUAL_HOST&#x3D;$&#123;DINGHY_VIRTUAL_HOST&#125;</span><br></pre></td></tr></table></figure>
+<p>  然后再 .env 中加入 <code>DINGHY_VIRTUAL_HOST=project-1.dev</code> 多个域名可以用逗号隔开，重新构建 nginx， <code>docker-compose build nginx</code>，然后重启 dinghy。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>tools</category>
+      </categories>
+      <tags>
+        <tag>unix</tag>
+        <tag>php</tag>
+        <tag>tools</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>关于编码和存储</title>
+    <url>/2017/04/05/encode/</url>
+    <content><![CDATA[<p>好记性不如烂笔头。之前看多很多关于编码的文章，当时应该记的挺清楚，过几天回头的就忘了。学习学习章亦春的<strong>抄代码</strong>的精神，多写写加深印象。</p>
+<a id="more"></a>
+
+<h3 id="编码介绍"><a href="#编码介绍" class="headerlink" title="编码介绍"></a>编码介绍</h3><ul>
+<li><p>ASCII</p>
+<p>  American Standard Code for Information Interchange 的缩写，中文意思为美国信息交换标准代码。看名字就知道是美国人设计的，用一个字节(8位)来表示。其中，0x00 到 0x1F 这32个表示特殊控制字符，比如响铃等。0x20 到 0x7F 这96个字符来表示大小写的26个英文字母和一些英文符号，总共128个字符。对于英文的存储，用 ASCII 码来表示完全可以了。</p>
+</li>
+</ul>
+<ul>
+<li><p>GB2312</p>
+<p>  那么问题来了，想要表示中文怎么办？所以就有了GB2312，即国标2312，是我国国家标准局1980年颁布的，1981年5月1日开始实施的。GB2312 设计的时候是兼容 ASCII 的，用两个字节来表示，分为高位字节和低位字节，高位字节从 0xA1 到 0xF7，低位字节从 0xA0 到 0xFF，一共收录了6763个汉字，还收录了包括拉丁字母、希腊字母、日文平假名及片假名字母、俄语西里尔字母在内的682个全角字符。可以看到这两个字节都是大于 0x7F 的，如果有小于这个值那就会按照 ASCII 码的方式来表示了，这些字符也就是常说的半角字符。</p>
+</li>
+<li><p>GBK</p>
+<p>  问题又来了，GB2312 竟然没有办法表示朱镕基的<strong>镕</strong>字，是不是要搞事情！所以又有了GBK编码，GBK编码不在要求低位字节大于 0x7F 了，只要高位字节大于就行。GBK编码于1995年发布，收录汉字21003个，加入了部分繁体字，采用双字节编码。GBK 向上兼容 GB2312。</p>
+</li>
+<li><p>GB18030</p>
+<p>  有人说，不对啊，汉字加起来10万左右，两个字节怎么表示的完（最多可以表示65536个），还有少数民族文字怎么办？所以，GB18030编码方案于2000年发布第一版，收录汉字27533个；2005年发布第二版，收录汉字70000余个，以及多种少数民族文字。另外，GB18030采用单字节、双字节、四字节分段编码。</p>
+</li>
+<li><p>UNICODE</p>
+<p>  中文的问题终于解决了，几乎所有的简体汉字、繁体字以及少数民族语言都可以用 GB18030 来表示了。但是如果世界各地的人想相互交流该怎么办，于是国际化标准组织重新提出新的一套编码方式，可以用来表示世界上所有字符。这个编码方式采取两个字节来表示，即使是 ASCII 编码 unicode 采取原编码不变，高位全是 0 的方式。这使得 unicode 来表示英文字符的时候要浪费一倍的空间！</p>
+</li>
+<li><p>UTF-8</p>
+<p>  一段时间以来 unicode 的编码方式很难推广，直到互联网出现，一种面向传输的 UTF (UCS Tranfer Format) 标准出现了。UTF-8 就是每次传输8个位数据，是互联网应用最广泛的一种 unicode 的实现方式，即可以表示世界上所有的符号，也可以一定程度的节省空间。 UTF-8 采用变长的编码方式，在字符在 ASCII 范围时，就采用一个字节表示，等同于 ASCII 的编码方式；但是不同于 unicode 编码，UTF-8 在表示中文的时候需要 3 个字节， 事实证明在大多数场合使用 UTF-8 比 unicode 要节省空间。 UTF-8 的编码如果最高位是 0 那就等同于 ASCII 编码，如果高位出现连续的 n 个 1，那么后面的 n - 1 个字节最高两位都是 10。</p>
+</li>
+</ul>
+<h3 id="编程语言中编码的应用"><a href="#编程语言中编码的应用" class="headerlink" title="编程语言中编码的应用"></a>编程语言中编码的应用</h3><ul>
+<li><p>php 截取指定长度的中英文字符串</p>
+  <figure class="highlight php"><table><tr><td class="code"><pre><span class="line">$str = <span class="string">'AB一二'</span>;</span><br><span class="line">$substr = mb_substr($str, <span class="number">0</span>, <span class="number">3</span>, <span class="string">'utf-8'</span>); <span class="comment">//截取前三位</span></span><br><span class="line"><span class="keyword">echo</span> $substr; <span class="comment">//输出 AB一</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>基础</category>
+      </categories>
+      <tags>
+        <tag>整理</tag>
+        <tag>编码</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Https的介绍和使用</title>
+    <url>/2017/03/21/https/</url>
+    <content><![CDATA[<p>超文本传输安全协议（英语：Hypertext Transfer Protocol Secure，缩写：HTTPS，常称为HTTP over TLS，HTTP over SSL或HTTP Secure)。<br>SSL，Secure Sockets Layer 的缩写，1994年由网景设计的，1999 年，互联网标准化组织接替网景公司，发布了 Transport Sockets Layer 即 TSL。<br>所谓 HTTPS 就是在 TCP 传输层和 HTTP 应用层之间加入了 TSL/SSL 层，用于加密和解密。</p>
+<a id="more"></a>
+
+<h3 id="加密"><a href="#加密" class="headerlink" title="加密"></a>加密</h3><ul>
+<li><p>对称加密</p>
+<p>  对称加密是一种最简答，也最快的加密解密方式。对称，即加密和解密都是用的相同的秘钥。常见的对称加密方法有 DES、3DES、AES、RC5、RC6 等。 https 的传输阶段就是采用对称加密的 http 传输。</p>
+</li>
+<li><p>非对称加密</p>
+<p>  加密和解密需要两个不同的秘钥。一般分为公钥和私钥，公钥用于加密，能够提供数字签名的功能，可以任意向外发布；私钥只有持有者保管，通过公钥加密的密文在不安全的网络上传输，只有私钥持有者可以解开获得明文（即使获得了密文和公钥，也无法数以年记的时间内解开）。常见的非对称加密算法有 RSA、ElGamal、背包算法、Rabin、迪菲-赫尔曼算法、椭圆曲线加密算法。 https 的握手阶段是采用的是非对称加密。</p>
+</li>
+</ul>
+<h3 id="数字证书"><a href="#数字证书" class="headerlink" title="数字证书"></a>数字证书</h3><ul>
+<li><p>wiki定义</p>
+<blockquote>
+<p>用于公开密钥基础建设的电子文件，用来证明公开密钥拥有者的身份。此文件包含了公钥信息、拥有者身份信息（主体）、以及数字证书认证机构（发行者）对这份文件的数字签名，以保证这个文件的整体内容正确无误。电脑系统或其他用户可以通过一定的程序核实证书上的内容，包括证书有否过期、数字签名是否有效，如果信任签发的机构，就可以信任证书上的密钥，凭公钥加密与拥有者进行可靠的通信。</p>
+</blockquote>
+</li>
+<li><p>申请数字证书</p>
+<p>  服务端通过非对称加密算法生成一对公钥和私钥，向 Certificate Authority 即证书认证中心，简称 CA 提供拥有者身份信息和服务端公钥，通过后 CA 会颁发包含服务端公钥，拥有着身份信息和使用 CA 私钥对证书内容的摘要进行加密的密文，即数据签名。</p>
+</li>
+<li><p>如何确认数字证书有效</p>
+<ol>
+<li>验证证书是否有效<br> 客户端通过查看证书的有效时间，以及域名等来判断内容是否有效。</li>
+<li>验证证书是否可信<br> 客户端通过预存的相对应的 CA 根证书的公钥，对数字签名进行解密获取证书的摘要与通过对证书内容进行哈希运算得到的摘要进行对比，相等的话则证明数字证书是该 CA 颁发的是可信的。不相等，则客户端会提示证书不可信。</li>
+</ol>
+</li>
+</ul>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>开始加密通信之前，客户端和服务器首先必须建立连接和交换参数，这个过程叫做握手<code>handshake</code>。<br>假定客户端叫做爱丽丝，服务器叫做鲍勃，整个握手过程可以用下图说明。<br><img src="http://static.alitain.tech/https.png" alt="选自CloudFlare"><br>握手阶段分成五步。</p>
+<ol>
+<li>爱丽丝给出协议版本号、一个客户端生成的随机数<code>Client random</code>，以及客户端支持的加密方法。</li>
+<li>鲍勃确认双方使用的加密方法，并给出数字证书、以及一个服务器生成的随机数<code>Server random</code>。</li>
+<li>爱丽丝确认数字证书有效，然后生成一个新的随机数<code>Premaster secret</code>，并使用数字证书中的公钥，加密这个随机数，发给鲍勃。</li>
+<li>鲍勃使用自己的私钥，获取爱丽丝发来的随机数，即<code>Premaster secret</code>。</li>
+<li>爱丽丝和鲍勃根据约定的加密方法，使用前面的三个随机数，生成<strong>对话密钥</strong> <code>session key</code>，用来加密接下来的整个对话过程。</li>
+</ol>
+<p>为什么一定要用三个随机数来生成对话密钥，我们来看下面的解释</p>
+<blockquote>
+<p>不管是客户端还是服务器，都需要随机数，这样生成的密钥才不会每次都一样。由于SSL协议中证书是静态的，因此十分有必要引入一种随机因素来保证协商出来的密钥的随机性。<br>对于RSA密钥交换算法来说，<code>Premaster secret</code>本身就是一个随机数，再加上hello消息中的随机，三个随机数通过一个密钥导出器最终导出一个对称密钥。<br><code>Premaster secret</code>的存在在于SSL协议不信任每个主机都能产生完全随机的随机数，如果随机数不随机，那么c<code>Premaster secret</code>就有可能被猜出来，那么仅适用 <code>Premaster secret</code> 作为密钥就不合适了，因此必须引入新的随机因素，那么客户端和服务器加上<code>Premaster secret</code> 三个随机数一同生成的密钥就不容易被猜出了，一个伪随机可能完全不随机，可是是三个伪随机就十分接近随机了，每增加一个自由度，随机性增加的可不是一。</p>
+</blockquote>
+<h3 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h3><p>Let’s Encrypt 是一个免费的，自动化的，开放的 CA 机构。通过 <a href="https://certbot.eff.org" target="_blank" rel="noopener">certbot</a> ，选择相应的web服务和服务器版本，就可以很快的安装 nginx 的插件和证书。下面以 ubuntu 和 nginx 为例。</p>
+<ul>
+<li><p>安装源及软件</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install software-properties-common</span><br><span class="line">$ sudo add-apt-repository ppa:certbot&#x2F;certbot</span><br><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install python-certbot-nginx</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装证书</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo certbot --nginx certonly # 不加 certonly，可以自动配置 nginx，省略下一步</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置 NGINX<br>  在相应的 server 模块中加入如下配置</p>
+<pre><code>{
+    ...
+    listen 443;
+    ssl on; 
+    ssl_certificate /path/to/server.crt; # 证书路径
+    ssl_certificate_key /path/to/server.key; # 私钥路径
+}</code></pre></li>
+</ul>
+<ul>
+<li>重新生成证书  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo certbot renew --dry-run</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://zh.wikipedia.org/wiki/超文本传输安全协议" target="_blank" rel="noopener">wikipedia https</a><br><a href="https://zh.wikipedia.org/wiki/傳輸層安全協議" target="_blank" rel="noopener">wikipedia ssl/tsl</a><br><a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html" target="_blank" rel="noopener">SSL/TLS协议运行机制的概述</a><br><a href="http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html" target="_blank" rel="noopener">图解SSL/TLS协议</a></p>
+]]></content>
+      <categories>
+        <category>基础</category>
+      </categories>
+      <tags>
+        <tag>整理</tag>
+        <tag>HTTPS</tag>
+        <tag>安全</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Http 协议详解</title>
+    <url>/2017/02/20/http/</url>
+    <content><![CDATA[<p>超文本传输协议，英文 <code>HyperText Transfer Protocol</code>。<br>互联用中应用最广泛的网络协议。</p>
+<a id="more"></a>
+
+<h3 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h3><p>请求消息</p>
+<ul>
+<li>请求行<br>包括<strong>请求方法</strong>，<strong>资源路径</strong>和<strong>协议版本</strong>，中间由空格隔开。<br>例如：<code>GET /image/logo.gif HTTP/1.1</code></li>
+<li>请求头<br>key：value 形式的键值对，例如 <code>Accept-Language: en</code></li>
+<li>空行</li>
+<li>消息体<br>GET请求无消息体。</li>
+</ul>
+<p><em>注：请求行和请求头的键值对都必须以 <code>&lt;CR&gt;&lt;LF&gt;</code> 作为结尾。在 HTTP/1.1 协议中，请求头除 Host 外，都是可选的。</em></p>
+<p>响应消息</p>
+<ul>
+<li>响应行<br>包括<strong>协议版本</strong>，<strong>状态码</strong>和<strong>状态描述</strong>，中间由空格隔开。例如 <code>HTTP/1.1 200 OK</code>。</li>
+<li>响应头<br>key: value 形式的键值对，例如 <code>Content-Type: text/html</code>。</li>
+<li>空行</li>
+<li>响应体</li>
+</ul>
+<p><em>注：响应行和响应头的键值对都必须以 <code>&lt;CR&gt;&lt;LF&gt;</code> 作为结尾</em></p>
+<h3 id="状态码"><a href="#状态码" class="headerlink" title="状态码"></a>状态码</h3><ul>
+<li>1xx消息——请求已被服务器接收，继续处理</li>
+<li>2xx成功——请求已成功被服务器接收、理解、并接受</li>
+<li>3xx重定向——需要后续操作才能完成这一请求</li>
+<li>4xx请求错误——请求含有词法错误或者无法被执行</li>
+<li>5xx服务器错误——服务器在处理某个正确请求时发生错误</li>
+</ul>
+<p>常见状态码及状态描述语<br><code>200 OK</code> 请求成功<br><code>302 Found</code> 重定向<br><code>304 Not Modified</code> 客户端原缓冲资源可用<br><code>400 Bad Request</code> 请求语法出错<br><code>401 Unauthorized</code> 请求头认证未通过<br><code>403 Forbidden</code> 资源禁止访问<br><code>404 Not Found</code> 未找到指定位置的资源<br><code>405 Method Not Allowed</code> 请求方法不适用<br><code>500 Internal Server Error</code> 服务端程序出错<br><code>502 Bad Gateway</code> 网关出错<br><code>504 Gateway Timeout</code> 网关响应超时</p>
+<h3 id="请求方法"><a href="#请求方法" class="headerlink" title="请求方法"></a>请求方法</h3><p>HTTP/1.1协议中共定义了八种方法来操作指定的资源：</p>
+<ul>
+<li><code>OPTIONS</code>：这个方法可使服务器传回该资源所支持的所有HTTP请求方法。</li>
+<li><code>HEAD</code>：与GET方法一样，都是向服务器发出指定资源的请求。只不过服务器将不传回资源的本文部分。</li>
+<li><code>GET</code>：向指定的资源发出“显示”请求。</li>
+<li><code>POST</code>：向指定资源提交数据，请求服务器进行处理（例如提交表单或者上传文件）。</li>
+<li><code>PUT</code>：向指定资源位置上传其最新内容。</li>
+<li><code>DELETE</code>：请求服务器删除Request-URI所标识的资源。</li>
+<li><code>TRACE</code>：回显服务器收到的请求，主要用于测试或诊断。</li>
+<li><code>CONNECT</code>：HTTP/1.1协议中预留给能够将连接改为管道方式的通常用于SSL加密服务器的链接。</li>
+</ul>
+<h3 id="GET-和-POST-的区别"><a href="#GET-和-POST-的区别" class="headerlink" title="GET 和 POST 的区别"></a>GET 和 POST 的区别</h3><ul>
+<li>GET 请求是以 ? 分割 URL 和传输数据，数据是以 &amp; 隔开拼接而成的。POST是把数据放到 HTTP 请求体中。在 HTTP 协议中两种方式都是不安全的。</li>
+<li>GET 原则上没有长度限制，个别浏览器和服务器会对长度有要求。POST 数据是没有限制的，取决于服务器处理程序的处理能力。</li>
+<li>GET 请求通常是幂等的，即一次请求与多次请求在服务器看来是无区别的，或者说是无副作用的。通常用来请求资源，而 POST 通常用来新增或修改服务器服务器服务器资源的。可以假想如果用 GET 方法来删除服务器资源，网络爬虫带来的后果不堪设想。</li>
+</ul>
+<h3 id="URI-和-URL-的区别"><a href="#URI-和-URL-的区别" class="headerlink" title="URI 和 URL 的区别"></a>URI 和 URL 的区别</h3><p>URI，是 <code>Uniform Resource Identifier</code> 的缩写，意思为统一资源标识符，用来唯一标识一个服务器资源。<br>URL，是 <code>Uniform Resource Locator</code> 的缩写，意思为统一资源定位符。不仅可以唯一标识一个资源，还可以通过访问定位到这个资源。URL 是 URI 的子集。</p>
+<h3 id="HTTP-版本区别"><a href="#HTTP-版本区别" class="headerlink" title="HTTP 版本区别"></a>HTTP 版本区别</h3><ul>
+<li>HTTP/0.9<br>已过时。只接受GET一种请求方法，没有在通讯中指定版本号，且不支持请求头。由于该版本不支持POST方法，因此客户端无法向服务器传递太多信息。</li>
+<li>HTTP/1.0<br>这是第一个在通讯中指定版本号的HTTP协议版本，至今仍被广泛采用，特别是在代理服务器中。 </li>
+<li>HTTP/1.1<br>持久连接被默认采用，并能很好地配合代理服务器工作。还支持以管道方式在同时发送多个请求，以便降低线路负载，提高传输速度。详见 <a href="https://tools.ietf.org/html/rfc7230" target="_blank" rel="noopener">RFC 7230</a></li>
+<li>HTTP/2.0<br>HTTP/2的目标包括异步连接复用，头压缩和请求反馈管线化并保留与HTTP 1.1的完全语义兼容。详见 <a href="https://tools.ietf.org/html/rfc7540" target="_blank" rel="noopener">RFC 7540</a></li>
+</ul>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://zh.wikipedia.org/wiki/超文本传输协议" target="_blank" rel="noopener">http维基百科</a><br><a href="http://www.cnblogs.com/ranyonsue/p/5984001.html" target="_blank" rel="noopener">ranyonsue的cnblog</a><br><a href="http://www.cnblogs.com/hyddd/archive/2009/03/31/1426026.html" target="_blank" rel="noopener">get和post的区别</a></p>
+]]></content>
+      <categories>
+        <category>基础</category>
+      </categories>
+      <tags>
+        <tag>整理</tag>
+        <tag>HTTP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ubuntu桌面开发环境搭建</title>
+    <url>/2017/02/14/ubuntn-desktop-env/</url>
+    <content><![CDATA[<p><img src="http://static.alitain.tech/ubuntu_desktop_dev.png" alt="ubuntu desktop"></p>
+<a id="more"></a>
+<p>我的本子是11年的，i5第二代处理器、4G内存，不想加固态硬盘、内存条，又没有钱换 <code>mac</code>，在 <code>windows</code> 下开发又有些吃力，所以想搭一套 <code>linux</code> 开发环境。开发环境必须具备的软件工具，像聊天工具、IDE、浏览器、翻墙工具和测试服务器环境。最好的组合应该是 <code>gentoo</code> + <code>xface</code>，可定制化高、够轻量级，但是花费的时间要久些。初步想装一个 <code>centos7</code> 的 <code>gnome</code> 版，折腾了好几天也没有装上 QQ，再加上有一些三方源需要翻墙才可以，我住的地方有运营商网络限制，所以也放弃了。之后又把目光投向ubuntu上，现在用起来得心应手。先奉上一张图（如上）。</p>
+<h3 id="系统安装"><a href="#系统安装" class="headerlink" title="系统安装"></a>系统安装</h3><p>我安装的版本是<a href="http://www.ubuntukylin.com/downloads/" target="_blank" rel="noopener">ubuntu kylin 16.10</a>，可以直接到官网下载，刻录到U盘。</p>
+<blockquote>
+<p>先说一下，我踩过的一个坑。刚开始我是用老毛桃来装的，把ISO文件放到U盘上，直接加载ISO。结果一直报错，重装了好几次都没有安装成功，使用Utrliso把镜像刻录到U盘才安装上。</p>
+</blockquote>
+<p>系统安装的过程就不详细描述了，图像化安装界面跟安装 <code>windows</code> 差不多，选择语言、配置时区、设置主机名，设置用户名密码等，然后下一步下一步即可。需要注意的是，选择安装介质的时候，是不是需要多系统共存以及自定义安装。</p>
+<p>我的本子上现在是4个系统共存，<code>ubuntu</code> 安装完后会自动安装 <code>grub</code>，找到所有已安装的系统，添加相应的启动项（所以，一般来说先安装 <code>window</code>，后安装 <code>linux</code>。后安装 <code>windows</code>，开机直接进入系统了，需要通过其他方式解决）。</p>
+<p> 如果选择自定义安装，一般选择一个盘作为根分区的挂载点和大小接近物理内存的盘作为交换分区。</p>
+<h3 id="系统的初始化工作"><a href="#系统的初始化工作" class="headerlink" title="系统的初始化工作"></a>系统的初始化工作</h3><ul>
+<li>更新系统</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get upgrade</span></span><br></pre></td></tr></table></figure>
+<h3 id="安装QQ，微信"><a href="#安装QQ，微信" class="headerlink" title="安装QQ，微信"></a>安装QQ，微信</h3><ul>
+<li>安装QQ</li>
+</ul>
+<p><a href="http://www.ubuntukylin.com/ukylin/forum.php?mod=viewthread&tid=7688&extra=page%3D1" target="_blank" rel="noopener">教程链接</a><br>把安装QQ放到比较靠前的位置，是因为我遇到自动安装依赖的时候出问题，导致重新安装系统才解决。</p>
+<ul>
+<li>安装微信</li>
+</ul>
+<p>直接一条命令搞定，不过是网页版的微信，不好的一点是没有声音或图像提醒。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get install wechat</span><br></pre></td></tr></table></figure>
+
+<h3 id="测试服务器-LNMP-的搭建"><a href="#测试服务器-LNMP-的搭建" class="headerlink" title="测试服务器(LNMP)的搭建"></a>测试服务器(LNMP)的搭建</h3><ul>
+<li>卸载系统自带apache</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> dpkg -l | grep apache</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get remove apache2</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get autoremove</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>安装nginx</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nginx</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>安装mariadb</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get install mariadb-client-10.0</span><br><span class="line">$ sudo apt-get install mariadb-server-10.0</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>安装php</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get install php7.0 php7.0-fpm php7.0-mysql</span><br></pre></td></tr></table></figure>
+
+<p>稍作配置，LNMP的测试环境就搭好了，方便快捷。</p>
+<h3 id="安装PHPStorm等开发工具"><a href="#安装PHPStorm等开发工具" class="headerlink" title="安装PHPStorm等开发工具"></a>安装PHPStorm等开发工具</h3><p>像PHPStorm，Chrome，Team View，SecureCRT等这些工具都可以找到官方的deb包，然后 <code>sudo dpkg -i 包名.deb</code>安装就可以了。遇到依赖问题，<code>sudo apt-get install -f</code> 自动解决依赖就可以了。</p>
+<h3 id="安装翻墙工具"><a href="#安装翻墙工具" class="headerlink" title="安装翻墙工具"></a>安装翻墙工具</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get install openssl shadowsocks-libv-dev</span><br></pre></td></tr></table></figure>
+<p>装完之后使用 <code>ss-local</code> 指定自己的配置问题（服务器地址，密码和本地端口等）。</p>
+<p><code>chrome</code> 想要翻墙，必须得翻墙出去下一个proxy的扩展。&gt;_&lt;，先有鸡还是先有蛋的问题…。但是火狐浏览器，可以直接在设置里，设置sock5代理。翻墙成功，然后再去下载一个翻墙的crt扩展安装文件，打开 <code>chrome</code> 应用商店页面，把下载好的文件拖进去，扩展就安装好了。</p>
+<h3 id="安装mbuntu主题"><a href="#安装mbuntu主题" class="headerlink" title="安装mbuntu主题"></a>安装mbuntu主题</h3><p>网上有很多教程，不过 <code>mbuntu-v8</code> 版本没法修改开机画面和登录画面了。强迫症患者表示有点受不了…</p>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>tools</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>LAMP服务器的初始化工作</title>
+    <url>/2017/01/14/initcentos-md/</url>
+    <content><![CDATA[<p>技术大大要求记录下的笔记，自己从网上查了一些资料弄明白了什么含义，写一篇日志记录一下。（环境:Centos7+php7+MariaDB10+Nginx1.9）</p>
+<a id="more"></a>
+
+<h3 id="修改hostname"><a href="#修改hostname" class="headerlink" title="修改hostname"></a>修改hostname</h3><p>搞到一台新的服务器，二话不说名字先换掉。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> vi /etc/hostname</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="修改磁盘参数"><a href="#修改磁盘参数" class="headerlink" title="修改磁盘参数"></a>修改磁盘参数</h3><p>Linux默认是开启 atime 的，每次访问一次 inode 节点都会在服务器上添加一条访问记录。在 fstab 中的第四列中添加 noatime ，可以提升性能。详见 <a href="https://en.wikipedia.org/wiki/Fstab" target="_blank" rel="noopener">wiki</a></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> vi /etc/fstab</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="修改内核参数"><a href="#修改内核参数" class="headerlink" title="修改内核参数"></a>修改内核参数</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> vi /etc/sysctl.conf</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vm.swappiness &#x3D; 0</span><br><span class="line">net.ipv4.neigh.default.gc_stale_time&#x3D;120</span><br><span class="line">net.ipv4.conf.all.rp_filter&#x3D;0</span><br><span class="line">net.ipv4.conf.default.rp_filter&#x3D;0</span><br><span class="line">net.ipv4.conf.default.arp_announce &#x3D; 2</span><br><span class="line">net.ipv4.conf.all.arp_announce&#x3D;2</span><br><span class="line">net.ipv4.tcp_max_tw_buckets &#x3D; 5000</span><br><span class="line">net.ipv4.tcp_syncookies &#x3D; 1</span><br><span class="line">net.ipv4.tcp_max_syn_backlog &#x3D; 1024</span><br><span class="line">net.ipv4.tcp_synack_retries &#x3D; 2</span><br><span class="line">net.ipv6.conf.all.disable_ipv6 &#x3D; 1</span><br><span class="line">net.ipv6.conf.default.disable_ipv6 &#x3D; 1</span><br><span class="line">net.ipv6.conf.lo.disable_ipv6 &#x3D; 1</span><br><span class="line">net.ipv4.conf.lo.arp_announce&#x3D;2</span><br><span class="line"># Decrease TIME_WAIT seconds</span><br><span class="line">net.ipv4.tcp_fin_timeout &#x3D; 15</span><br><span class="line"></span><br><span class="line"># Recycle and Reuse TIME_WAIT sockets faster</span><br><span class="line">net.ipv4.tcp_tw_recycle &#x3D; 1</span><br><span class="line">net.ipv4.tcp_tw_reuse &#x3D; 1</span><br><span class="line">net.core.somaxconn&#x3D;65535</span><br><span class="line">vm.overcommit_memory &#x3D; 1</span><br><span class="line">net.ipv6.conf.all.disable_ipv6 &#x3D; 1</span><br><span class="line">net.ipv6.conf.default.disable_ipv6 &#x3D; 1</span><br><span class="line"></span><br><span class="line">fs.file-max&#x3D;209708</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>fs.file-max</code> 这个参数表示进程可以同时打开的最大句柄数，这个参数直接限制最大并发连接数，需要根据实际情况配置。<br><code>tcp_tw_reuse</code> 这个参数设置为1，表示允许将TIME-WAIT状态的socket重新用于新的tcp链接，这对服务器来说很有意义，因为服务器上总会有大量TIME-WAIT状态的链接。<br><code>tcp_keepalive_time</code> 这个参数表示当keepalive启用时，TCP发送keepalive消息的频度。默认是2小时，若将其设置的小一些，可以更快的清理无效的链接。<br><code>tcp_fin_timeout</code> 这个参数表示当服务器主动关闭连接时，socket保持在FIN-WAIT-2状态的最大时间。<br><code>tcp_max_tw_buckets</code> 这个参数表示操作系统允许TIME-WAIT套接字数量的最大值，如果超过这个数字。</p>
+</blockquote>
+<h3 id="安装第三方yum源"><a href="#安装第三方yum源" class="headerlink" title="安装第三方yum源"></a>安装第三方yum源</h3><ul>
+<li>epel 对官方源的扩展<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> yum -y install epel-release</span></span><br></pre></td></tr></table></figure></li>
+<li>remi 包含各种php版本，省去编译安装的麻烦<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> wget http://rpms.famillecollet.com/enterprise/remi-release-7.rpm</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> rpm -ivh remi-release-7.rpm</span></span><br></pre></td></tr></table></figure></li>
+<li>rpmforge 强大的三方源，版本也比较新<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> wget ftp://ftp.pbone.net/mirror/ftp5.gwdg.de/pub/opensuse/repositories/home:/Kenzy:/packages/CentOS_7/x86_64/rpmforge-release-0.5.3-2.1.x86_64.rpm</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> rpm -ivh rpmforge-release-0.5.3-2.1.x86_64.rpm</span></span><br></pre></td></tr></table></figure></li>
+<li>mariadb mysql之父在mysql被收购后创建的分支，目前好多特性优于mysql<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> cat &lt;&lt; EOF &gt; /etc/yum.repos.d/CentOS-Maridb.repo</span></span><br><span class="line">[mariadb]</span><br><span class="line">name = MariaDB</span><br><span class="line">baseurl = http://yum.mariadb.org/10.0/centos7-amd64</span><br><span class="line">gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB</span><br><span class="line">gpgcheck=1</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="升级yum"><a href="#升级yum" class="headerlink" title="升级yum"></a>升级yum</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> yum -y upgrade</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="安装服务"><a href="#安装服务" class="headerlink" title="安装服务"></a>安装服务</h3><p>等待升级完，就可以开心的使用 <code>yum install nginx php7 MariaDB-server MariaDB-client</code>了。然后修改一下相应的配置文件，就可以作为服务器使用了。</p>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>server</tag>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+</search>

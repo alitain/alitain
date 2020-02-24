@@ -1,143 +1,51 @@
-<!doctype html>
-
-
-
-  
-
-
-<html class="theme-next mist use-motion" lang="zh-Hans">
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"alitain.tech","root":"/","scheme":"Mist","version":"7.7.1","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
 
-
-
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
-
-
-
-  
-  
-  
-  
-
-  
-    
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-    
-    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
-  
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
-
-<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="设计模式," />
-
-
-
-
-
-
-
-
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
-
-
-
-
-
-
-<meta name="description" content="最近利用空余时间，把《设计模式（可复用面向对象软件的基础）》这本书看了看，用 PHP 把23种设计模式重新实现了一遍。部分实现参考了DesignPatternsPHP上面的代码，虽然例子都很简单，但是也可以体现出来设计模式的思想。花费这么大时间和精力写一遍的目的，就是希望在使用的时候是够把所有的模式快速在脑海里回忆一遍，选择最佳的实现方式。">
-<meta name="keywords" content="设计模式">
+  <meta name="description" content="最近利用空余时间，把《设计模式（可复用面向对象软件的基础）》这本书看了看，用 PHP 把23种设计模式重新实现了一遍。部分实现参考了DesignPatternsPHP上面的代码，虽然例子都很简单，但是也可以体现出来设计模式的思想。花费这么大时间和精力写一遍的目的，就是希望在使用的时候是够把所有的模式快速在脑海里回忆一遍，选择最佳的实现方式。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PHP实现的23种设计模式">
 <meta property="og:url" content="http://alitain.tech/2018/05/05/design_pattern_in_php/index.html">
 <meta property="og:site_name" content="Alitain&#39;s Notes">
 <meta property="og:description" content="最近利用空余时间，把《设计模式（可复用面向对象软件的基础）》这本书看了看，用 PHP 把23种设计模式重新实现了一遍。部分实现参考了DesignPatternsPHP上面的代码，虽然例子都很简单，但是也可以体现出来设计模式的思想。花费这么大时间和精力写一遍的目的，就是希望在使用的时候是够把所有的模式快速在脑海里回忆一遍，选择最佳的实现方式。">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://static.alitain.tech/design_pattern_relationship.png">
-<meta property="og:updated_time" content="2019-01-10T12:32:54.457Z">
+<meta property="article:published_time" content="2018-05-05T05:10:24.000Z">
+<meta property="article:modified_time" content="2019-01-10T12:32:54.457Z">
+<meta property="article:author" content="Alitain">
+<meta property="article:tag" content="设计模式">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PHP实现的23种设计模式">
-<meta name="twitter:description" content="最近利用空余时间，把《设计模式（可复用面向对象软件的基础）》这本书看了看，用 PHP 把23种设计模式重新实现了一遍。部分实现参考了DesignPatternsPHP上面的代码，虽然例子都很简单，但是也可以体现出来设计模式的思想。花费这么大时间和精力写一遍的目的，就是希望在使用的时候是够把所有的模式快速在脑海里回忆一遍，选择最佳的实现方式。">
 <meta name="twitter:image" content="http://static.alitain.tech/design_pattern_relationship.png">
 
+<link rel="canonical" href="http://alitain.tech/2018/05/05/design_pattern_in_php/">
 
 
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Mist',
-    sidebar: {"position":"left","display":"post"},
-    fancybox: true,
-    motion: true,
-    duoshuo: {
-      userId: '0',
-      author: '博主'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
   };
 </script>
-
-
-
-  <link rel="canonical" href="http://alitain.tech/2018/05/05/design_pattern_in_php/"/>
-
-
-
-
 
   <title>PHP实现的23种设计模式 | Alitain's Notes</title>
   
@@ -147,220 +55,191 @@
 
 
 
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
-
-
-
-
-
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
-
-  
-  
-    
-  
-
-  <div class="container sidebar-position-left page-post-detail ">
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
-    
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
 
-    <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Alitain's Notes</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
-      
         <p class="site-subtitle">把简单的事情做好</p>
-      
   </div>
 
-  <div class="site-nav-toggle">
-    <button>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
   </div>
 </div>
 
+
 <nav class="site-nav">
   
-
-  
-    <ul id="menu" class="menu">
-      
-        
+  <ul id="menu" class="menu">
         <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
-            
-            首页
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-resources">
-          <a href="/resources" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-link"></i> <br />
-            
-            资源
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
-            
-            归档
-          </a>
-        </li>
-      
-        
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
         <li class="menu-item menu-item-about">
-          <a href="/about" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
-            
-            关于
-          </a>
-        </li>
-      
 
-      
-    </ul>
-  
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
 
-  
+  </li>
+        <li class="menu-item menu-item-resources">
+
+    <a href="/resources" rel="section"><i class="fa fa-fw fa-link"></i>资源</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
 </nav>
-
-
-
- </div>
+</div>
     </header>
 
-    <main id="main" class="main">
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
       <div class="main-inner">
         <div class="content-wrap">
-          <div id="content" class="content">
+          
+
+          <div class="content">
             
 
-  <div id="posts" class="posts-expand">
-    
-
-  
-
+  <div class="posts-expand">
+      
   
   
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://alitain.tech/2018/05/05/design_pattern_in_php/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Alitain">
-      <meta itemprop="description" content="">
       <meta itemprop="image" content="http://static.alitain.tech/avatar_cartoon">
+      <meta itemprop="name" content="Alitain">
+      <meta itemprop="description" content="phper linux mysql">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Alitain's Notes">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">PHP实现的23种设计模式</h1>
-        
+        <h1 class="post-title" itemprop="name headline">
+          PHP实现的23种设计模式
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-05T13:10:24+08:00">
-                2018-05-05
-              </time>
-            
+              <span class="post-meta-item-text">发表于</span>
 
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
+              <time title="创建时间：2018-05-05 13:10:24" itemprop="dateCreated datePublished" datetime="2018-05-05T13:10:24+08:00">2018-05-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-01-10 20:32:54" itemprop="dateModified" datetime="2019-01-10T20:32:54+08:00">2019-01-10</time>
+              </span>
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
+              <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/基础/" itemprop="url" rel="index">
-                    <span itemprop="name">基础</span>
-                  </a>
+                  <a href="/categories/%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">基础</span></a>
                 </span>
-
-                
-                
-              
             </span>
-          
 
           
-            
-          
-
-          
-          
-
-          
-            <span class="post-meta-divider">|</span>
-            <span class="page-pv"><i class="fa fa-eye"></i>&nbsp; 阅读量
-            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
             </span>
-          
-
-          
-
-          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/05/05/design_pattern_in_php/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/05/05/design_pattern_in_php/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
 
         </div>
       </header>
-    
 
+    
+    
+    
     <div class="post-body" itemprop="articleBody">
 
       
-      
-
-      
-        <p>最近利用空余时间，把《设计模式（可复用面向对象软件的基础）》这本书看了看，用 PHP 把23种设计模式重新实现了一遍。部分实现参考了<a href="https://github.com/domnikl/DesignPatternsPHP" target="_blank" rel="external">DesignPatternsPHP</a>上面的代码，虽然例子都很简单，但是也可以体现出来设计模式的思想。花费这么大时间和精力写一遍的目的，就是希望在使用的时候是够把所有的模式快速在脑海里回忆一遍，选择最佳的实现方式。</p>
+        <p>最近利用空余时间，把《设计模式（可复用面向对象软件的基础）》这本书看了看，用 PHP 把23种设计模式重新实现了一遍。部分实现参考了<a href="https://github.com/domnikl/DesignPatternsPHP" target="_blank" rel="noopener">DesignPatternsPHP</a>上面的代码，虽然例子都很简单，但是也可以体现出来设计模式的思想。花费这么大时间和精力写一遍的目的，就是希望在使用的时候是够把所有的模式快速在脑海里回忆一遍，选择最佳的实现方式。</p>
 <a id="more"></a>
+
 <p>设计模式的思想在工程软件和框架这些复杂的面向对象的系统上体现的比较突出，工程软件例如 IDE 等，框架就有很多了，比如 PHP 的 Laravel，Yii等。框架一般都会有一个应用实例和 IOC 容器，这就是单例模式的体现；框架中的事件机制大都是通过观察者模式实现的；Laravel 中的 MiddleWare 和 Yii 中的 Filter 都可以看作是责任链模式的实现；Laravel中的 Facade类其实就是外观模式的实现等等。注意，<em>框架中的AR（活动记录），DAO（数据访问对象），IOC（控制反转），Service Locator（服务定位器），MVC这些属于架构模式，不属于本文要讲的设计模式的范畴</em>。</p>
 <h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>关于设计模式的定义，在比较了书上和维基百科的定义后，还是把百度百科上的原话拿过来用了，比较通俗易懂：</p>
 <blockquote>
@@ -376,463 +255,295 @@
 </ul>
 <p>设计模式就是实现了这些原则，从而达到了代码复用、增加可维护性的目的。</p>
 <h3 id="基本模式"><a href="#基本模式" class="headerlink" title="基本模式"></a>基本模式</h3><h4 id="Creational-（创建型）"><a href="#Creational-（创建型）" class="headerlink" title="Creational （创建型）"></a>Creational （创建型）</h4><ul>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/creational/abstract_factory.md" target="_blank" rel="external">Abstract Factory （抽象工厂）</a>：提供一个创建一些类相关或相互依赖对象的接口，而无需指定它们具体的类。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/creational/builder.md" target="_blank" rel="external">Builder （生成器）</a>：将一个复杂对象的构建与它的表示分离，使得同样的构建构建过程可以创建不同的表示。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/creational/factory_method.md" target="_blank" rel="external">Factory Method （工厂方法）</a>：定一个用于创建对象的接口，让子类决定将哪一个类实例化。使得类的实例化延迟到子类。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/creational/prototype.md" target="_blank" rel="external">Prototype （原型）</a>：用原型实例指定创建对象的种类，并且通过拷贝这个原型来创建新的对象。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/creational/singleton.md" target="_blank" rel="external">Singleton （单例）</a>：保证一个类仅有一个实例，并提供一个访问它的全局访问点。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/creational/abstract_factory.md" target="_blank" rel="noopener">Abstract Factory （抽象工厂）</a>：提供一个创建一些类相关或相互依赖对象的接口，而无需指定它们具体的类。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/creational/builder.md" target="_blank" rel="noopener">Builder （生成器）</a>：将一个复杂对象的构建与它的表示分离，使得同样的构建构建过程可以创建不同的表示。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/creational/factory_method.md" target="_blank" rel="noopener">Factory Method （工厂方法）</a>：定一个用于创建对象的接口，让子类决定将哪一个类实例化。使得类的实例化延迟到子类。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/creational/prototype.md" target="_blank" rel="noopener">Prototype （原型）</a>：用原型实例指定创建对象的种类，并且通过拷贝这个原型来创建新的对象。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/creational/singleton.md" target="_blank" rel="noopener">Singleton （单例）</a>：保证一个类仅有一个实例，并提供一个访问它的全局访问点。</li>
 </ul>
 <h4 id="Structural-（结构型）"><a href="#Structural-（结构型）" class="headerlink" title="Structural （结构型）"></a>Structural （结构型）</h4><ul>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/adapter.md" target="_blank" rel="external">Adapter （适配器）</a>：将一个类的接口转换成客户希望的另外一个接口。适配器模式使得原有接口不兼容而不能在一起工作的类可以在一起工作。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/bridge.md" target="_blank" rel="external">Bridge （桥接）</a>：将抽象部分与实现部分分离，使它们都可以独立的变化。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/composite.md" target="_blank" rel="external">Composite （组合）</a>：将对象组合成树形结构以表示“整体-部分”的层次结构。组合模式使得对单个对象和复合对象的使用具有一致性。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/decorator.md" target="_blank" rel="external">Decorator （装饰）</a>：动态地给一个对象添加一些额外的职责。就扩展功能而言，装饰器模式比生成子类的方式更加灵活。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/facade.md" target="_blank" rel="external">Facade （外观）</a>：为子系统的一组接口提供一个一致的界面，外观模式定义了一个高层接口，使得这一系统更加容易使用。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/flyweight.md" target="_blank" rel="external">FlyWeight （享元）</a>：运用共享技术有效地支持大量细粒度的对象。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/proxy.md" target="_blank" rel="external">Proxy （代理）</a>：为其他对象提供一个代理以控制对这个对象的访问。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/adapter.md" target="_blank" rel="noopener">Adapter （适配器）</a>：将一个类的接口转换成客户希望的另外一个接口。适配器模式使得原有接口不兼容而不能在一起工作的类可以在一起工作。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/bridge.md" target="_blank" rel="noopener">Bridge （桥接）</a>：将抽象部分与实现部分分离，使它们都可以独立的变化。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/composite.md" target="_blank" rel="noopener">Composite （组合）</a>：将对象组合成树形结构以表示“整体-部分”的层次结构。组合模式使得对单个对象和复合对象的使用具有一致性。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/decorator.md" target="_blank" rel="noopener">Decorator （装饰）</a>：动态地给一个对象添加一些额外的职责。就扩展功能而言，装饰器模式比生成子类的方式更加灵活。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/facade.md" target="_blank" rel="noopener">Facade （外观）</a>：为子系统的一组接口提供一个一致的界面，外观模式定义了一个高层接口，使得这一系统更加容易使用。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/flyweight.md" target="_blank" rel="noopener">FlyWeight （享元）</a>：运用共享技术有效地支持大量细粒度的对象。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/structural/proxy.md" target="_blank" rel="noopener">Proxy （代理）</a>：为其他对象提供一个代理以控制对这个对象的访问。</li>
 </ul>
 <h4 id="Behavioral-（行为型）"><a href="#Behavioral-（行为型）" class="headerlink" title="Behavioral （行为型）"></a>Behavioral （行为型）</h4><ul>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/chain_of_responsibility.md" target="_blank" rel="external">Chain of responsibility （责任链）</a>：为解除请求的发送者和接受者之间的耦合，而使多个对象都有机会处理这个请求。将这些请求连城一条链，并沿着这条链传递该请求，直到有一个对象处理它。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/command.md" target="_blank" rel="external">Command （命令）</a>：将一个请求封装成一个对象，从而使你可用不同得请求对客户进行参数化；对请求排队或记录请求日志，以及支持可撤销的操作。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/interpreter.md" target="_blank" rel="external">Interpreter （解释器）</a>：给定一个语言，定义它的文法的一中表示，并一个一个解释器，该解释器使用该表示来解释语言中的句子。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/iterator.md" target="_blank" rel="external">Iterator （迭代器）</a>：提供一个方法顺序访问一个聚合对象中各个元素，而又不许暴露该对象的内部表示。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/mediator.md" target="_blank" rel="external">Mediator （中介）</a>：用一个中介对象来封装一些类的对象交互。中介者使各对象不需要显式地相互引用，从而使其耦合松散，而且可以独立地改变他们之间的交互。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/memento.md" target="_blank" rel="external">Memento （备忘录）</a>：在不破坏封装性的前体系，捕获一个对象的内部状态，并在该请求之外保存这个状态。这样以后就可以将该对象恢复到保存的状态。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/observer.md" target="_blank" rel="external">Observer （观察者）</a>：定义对象间的一种一对多的依赖关系，以便当一个对象的状态发生改变时，所有依赖于它的对象都得到通知并自动刷新。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/state.md" target="_blank" rel="external">State （状态）</a>：允许一个对象在其内部状态改变时改变它的行为。对象看起来似乎修改了它所属的类。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/strategy.md" target="_blank" rel="external">Strategy （策略）</a>：定义一系列的算法，把他们一个个封装起来，并且使它们可以相互替换。策略模式使得算法的变化可以独立于使用它们的客户端。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/template_method.md" target="_blank" rel="external">Template Method （模板方法）</a>：定一个操作中的算法的骨架，而将一些步骤延迟到子类中。模板方法使得子类可以不改变一个算法的结构即可重定义改算法的某些特定步骤。</li>
-<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/visitor.md" target="_blank" rel="external">Visitor （访问者）</a>：表示一个作用于某对象结构中的各元素的操作。它使你可以在不改变类的前提下定义作用于这些元素的操作。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/chain_of_responsibility.md" target="_blank" rel="noopener">Chain of responsibility （责任链）</a>：为解除请求的发送者和接受者之间的耦合，而使多个对象都有机会处理这个请求。将这些请求连城一条链，并沿着这条链传递该请求，直到有一个对象处理它。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/command.md" target="_blank" rel="noopener">Command （命令）</a>：将一个请求封装成一个对象，从而使你可用不同得请求对客户进行参数化；对请求排队或记录请求日志，以及支持可撤销的操作。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/interpreter.md" target="_blank" rel="noopener">Interpreter （解释器）</a>：给定一个语言，定义它的文法的一中表示，并一个一个解释器，该解释器使用该表示来解释语言中的句子。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/iterator.md" target="_blank" rel="noopener">Iterator （迭代器）</a>：提供一个方法顺序访问一个聚合对象中各个元素，而又不许暴露该对象的内部表示。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/mediator.md" target="_blank" rel="noopener">Mediator （中介）</a>：用一个中介对象来封装一些类的对象交互。中介者使各对象不需要显式地相互引用，从而使其耦合松散，而且可以独立地改变他们之间的交互。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/memento.md" target="_blank" rel="noopener">Memento （备忘录）</a>：在不破坏封装性的前体系，捕获一个对象的内部状态，并在该请求之外保存这个状态。这样以后就可以将该对象恢复到保存的状态。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/observer.md" target="_blank" rel="noopener">Observer （观察者）</a>：定义对象间的一种一对多的依赖关系，以便当一个对象的状态发生改变时，所有依赖于它的对象都得到通知并自动刷新。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/state.md" target="_blank" rel="noopener">State （状态）</a>：允许一个对象在其内部状态改变时改变它的行为。对象看起来似乎修改了它所属的类。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/strategy.md" target="_blank" rel="noopener">Strategy （策略）</a>：定义一系列的算法，把他们一个个封装起来，并且使它们可以相互替换。策略模式使得算法的变化可以独立于使用它们的客户端。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/template_method.md" target="_blank" rel="noopener">Template Method （模板方法）</a>：定一个操作中的算法的骨架，而将一些步骤延迟到子类中。模板方法使得子类可以不改变一个算法的结构即可重定义改算法的某些特定步骤。</li>
+<li><a href="https://github.com/alitain/design-pattern/blob/master/docs/behavioral/visitor.md" target="_blank" rel="noopener">Visitor （访问者）</a>：表示一个作用于某对象结构中的各元素的操作。它使你可以在不改变类的前提下定义作用于这些元素的操作。</li>
 </ul>
 <h3 id="关系图"><a href="#关系图" class="headerlink" title="关系图"></a>关系图</h3><p><img src="http://static.alitain.tech/design_pattern_relationship.png" alt="design_pattern_internal_relationship"></p>
-<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://baike.baidu.com/item/设计模式" target="_blank" rel="external">百度百科</a><br><a href="https://blog.csdn.net/lovelion/article/category/738450" target="_blank" rel="external">刘伟技术博客</a><br><a href="https://book.douban.com/subject/1052241/" target="_blank" rel="external">设计模式（可复用面向对象软件的基础）</a></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://baike.baidu.com/item/设计模式" target="_blank" rel="noopener">百度百科</a><br><a href="https://blog.csdn.net/lovelion/article/category/738450" target="_blank" rel="noopener">刘伟技术博客</a><br><a href="https://book.douban.com/subject/1052241/" target="_blank" rel="noopener">设计模式（可复用面向对象软件的基础）</a></p>
 
-      
     </div>
 
-    <div>
-      
-        
+    
+    
+    
 
-      
-    </div>
-
-    <div>
-      
-        
-
-      
-    </div>
-
-    <div>
-      
-        
-
-      
-    </div>
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2018/04/03/mac_proxy_skills/" rel="next" title="Mac下的科学上网">
-                <i class="fa fa-chevron-left"></i> Mac下的科学上网
-              </a>
-            
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"># 设计模式</a>
           </div>
 
-          <span class="post-nav-divider"></span>
+        
 
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/08/08/docker_install_lnmp_dev/" rel="prev" title="Docker LNMP 开发环境搭建">
-                Docker LNMP 开发环境搭建 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
 
-      
-      
-    </footer>
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/04/03/mac_proxy_skills/" rel="prev" title="Mac下的科学上网">
+      <i class="fa fa-chevron-left"></i> Mac下的科学上网
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/08/08/docker_install_lnmp_dev/" rel="next" title="Docker LNMP 开发环境搭建">
+      Docker LNMP 开发环境搭建 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
   </article>
+  
+  
+  
 
-
-
-    <div class="post-spread">
-      
-    </div>
   </div>
 
 
           </div>
           
+    <div class="comments" id="valine-comments"></div>
 
-
-          
-  <div class="comments" id="comments">
-    
-  <div onclick="showGitment()" id="gitment_title" class="gitment_title">显示 Gitment 评论</div>
-  <div id="container" style="display:none"></div>
-  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
-  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-  <script>
-  const myTheme = {
-    render(state, instance) {
-      const container = document.createElement('div');
-      container.lang = "en-US";
-      container.className = 'gitment-container gitment-root-container';
-      container.appendChild(instance.renderHeader(state, instance));
-      container.appendChild(instance.renderEditor(state, instance));
-      container.appendChild(instance.renderComments(state, instance));
-      container.appendChild(instance.renderFooter(state, instance));
-      return container;
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
     }
-  }
-  function showGitment() {
-    $("#gitment_title").attr("style", "display:none");
-    $("#container").attr("style", "").addClass("gitment_container");
-    var gitment = new Gitment({
-      id: window.location.pathname,
-      theme: myTheme,
-      owner: 'alitain',
-      repo: 'alitain.github.io',
-      oauth: {
-        client_id: 'b036a4f1692979a3b424',
-        client_secret: '7bbdfa2bf70ef9b01abf128f8c434a13c78a331d'
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
       }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
     });
-    gitment.render('container');
   }
-  </script>
-
+</script>
 
         </div>
-        
           
   
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
   </div>
 
-  <aside id="sidebar" class="sidebar">
+  <aside class="sidebar">
     <div class="sidebar-inner">
 
-      
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
 
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="http://static.alitain.tech/avatar_cartoon"
-               alt="Alitain" />
-          <p class="site-author-name" itemprop="name">Alitain</p>
-           
-              <p class="site-description motion-element" itemprop="description">phper linux mysql</p>
-          
-        </div>
-        <nav class="site-state motion-element">
-
-          
-            <div class="site-state-item site-state-posts">
-              <a href="/archives">
-                <span class="site-state-item-count">13</span>
-                <span class="site-state-item-name">日志</span>
-              </a>
-            </div>
-          
-
-          
-            
-            
-            <div class="site-state-item site-state-categories">
-              <a href="/categories/index.html">
-                <span class="site-state-item-count">8</span>
-                <span class="site-state-item-name">分类</span>
-              </a>
-            </div>
-          
-
-          
-            
-            
-            <div class="site-state-item site-state-tags">
-              <a href="/tags/index.html">
-                <span class="site-state-item-count">23</span>
-                <span class="site-state-item-name">标签</span>
-              </a>
-            </div>
-          
-
-        </nav>
-
-        
-
-        <div class="links-of-author motion-element">
-          
-        </div>
-
-        
-        
-
-        
-        
-
-        
-
-
-      </section>
-
-      
       <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原则"><span class="nav-number">2.</span> <span class="nav-text">原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本模式"><span class="nav-number">3.</span> <span class="nav-text">基本模式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Creational-（创建型）"><span class="nav-number">3.1.</span> <span class="nav-text">Creational （创建型）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Structural-（结构型）"><span class="nav-number">3.2.</span> <span class="nav-text">Structural （结构型）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Behavioral-（行为型）"><span class="nav-number">3.3.</span> <span class="nav-text">Behavioral （行为型）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关系图"><span class="nav-number">4.</span> <span class="nav-text">关系图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原则"><span class="nav-number">2.</span> <span class="nav-text">原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本模式"><span class="nav-number">3.</span> <span class="nav-text">基本模式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Creational-（创建型）"><span class="nav-number">3.1.</span> <span class="nav-text">Creational （创建型）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Structural-（结构型）"><span class="nav-number">3.2.</span> <span class="nav-text">Structural （结构型）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Behavioral-（行为型）"><span class="nav-number">3.3.</span> <span class="nav-text">Behavioral （行为型）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关系图"><span class="nav-number">4.</span> <span class="nav-text">关系图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
       <!--/noindex-->
-      
 
-      
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Alitain"
+      src="http://static.alitain.tech/avatar_cartoon">
+  <p class="site-author-name" itemprop="name">Alitain</p>
+  <div class="site-description" itemprop="description">phper linux mysql</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/alitain" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;alitain" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:alitain.dev@gmail.com" title="E-Mail → mailto:alitain.dev@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
 
     </div>
   </aside>
+  <div id="sidebar-dimmer"></div>
 
 
-        
       </div>
     </main>
 
-    <footer id="footer" class="footer">
+    <footer class="footer">
       <div class="footer-inner">
-        <div class="copyright" >
+        
+  <div class="beian"><a href="http://www.beian.miit.gov.cn/" rel="noopener" target="_blank">冀ICP备19000842号 </a>
+      <img src="http://www.beian.gov.cn/portal/download" style="display: inline-block;">
+  </div>
+
+<div class="copyright">
   
-  &copy; 
+  &copy; 2017 – 
   <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">Alitain</span>
 </div>
-
-
-<div class="powered-by">
-  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
-</div>
-
-<div class="theme-info powered-by">
-  主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
-    NexT.Mist
-  </a>
-</div>
-
-<div class="theme-info">
-  <a class="theme-link" target="_blank" href="http://www.beian.miit.gov.cn/">
-    冀ICP备19000842号
-  </a>
-</div>
-
-
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
-</script>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
 
         
 <div class="busuanzi-count">
-  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-  
-    <span class="site-uv">
-      <i class="fa fa-user"></i> 访问人数
-      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
-      人
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
     </span>
-  
-
-  
-    <span class="site-pv">
-      <i class="fa fa-eye"></i> 总访问量
-      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
-      次
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
     </span>
-  
 </div>
 
 
-        
+
+
+
+
+
+
       </div>
     </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
-
   </div>
 
   
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
 
-<script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : '6gpAGHNk5HEg3wkc2XrnYYF3-gzGzoHsz',
+      appKey     : 'TmqqM2b2F8EOTRV3W09qbrMF',
+      placeholder: "吐槽一下",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '5' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
 </script>
 
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-
-  
-  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
-
-
-
-  
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-
-  
 </body>
 </html>

@@ -1,142 +1,54 @@
-<!doctype html>
-
-
-
-  
-
-
-<html class="theme-next mist use-motion" lang="zh-Hans">
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"alitain.tech","root":"/","scheme":"Mist","version":"7.7.1","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
 
-
-
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
-
-
-
-  
-  
-  
-  
-
-  
-    
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-    
-    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
-  
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
-
-<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="PHP,Linux,MySQL" />
-
-
-
-
-
-
-
-
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
-
-
-
-
-
-
-<meta name="description" content="自己整理的了解或用过的资源。善于利用轮子，把精力放在业务上。 框架篇WEB应用类 Laravel-最流行的PHP框架，快速开发WEB应用 Yii-简单易用的PHP框架，快速开发WEB应用 Lumen-为速度而生的PHP微框架，简化版的Laravel，适合API开发 CodeIgniter-小巧而强大的PHP框架 Django-Python的王牌WEB框架 Ruby On Rails-ruby的WE">
+  <meta name="description" content="自己整理的了解或用过的资源。善于利用轮子，把精力放在业务上。 框架篇WEB应用类 Laravel-最流行的PHP框架，快速开发WEB应用 Yii-简单易用的PHP框架，快速开发WEB应用 Lumen-为速度而生的PHP微框架，简化版的Laravel，适合API开发 CodeIgniter-小巧而强大的PHP框架 Django-Python的王牌WEB框架 Ruby On Rails-ruby的WE">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Alitain&#39;s Notes">
 <meta property="og:url" content="http://alitain.tech/resources/index.html">
 <meta property="og:site_name" content="Alitain&#39;s Notes">
 <meta property="og:description" content="自己整理的了解或用过的资源。善于利用轮子，把精力放在业务上。 框架篇WEB应用类 Laravel-最流行的PHP框架，快速开发WEB应用 Yii-简单易用的PHP框架，快速开发WEB应用 Lumen-为速度而生的PHP微框架，简化版的Laravel，适合API开发 CodeIgniter-小巧而强大的PHP框架 Django-Python的王牌WEB框架 Ruby On Rails-ruby的WE">
-<meta property="og:updated_time" content="2018-02-10T09:38:00.619Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-02-10T09:38:00.624Z">
+<meta property="article:modified_time" content="2018-02-10T09:38:00.619Z">
+<meta property="article:author" content="Alitain">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="MySQL">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Alitain&#39;s Notes">
-<meta name="twitter:description" content="自己整理的了解或用过的资源。善于利用轮子，把精力放在业务上。 框架篇WEB应用类 Laravel-最流行的PHP框架，快速开发WEB应用 Yii-简单易用的PHP框架，快速开发WEB应用 Lumen-为速度而生的PHP微框架，简化版的Laravel，适合API开发 CodeIgniter-小巧而强大的PHP框架 Django-Python的王牌WEB框架 Ruby On Rails-ruby的WE">
+
+<link rel="canonical" href="http://alitain.tech/resources/">
 
 
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Mist',
-    sidebar: {"position":"left","display":"post"},
-    fancybox: true,
-    motion: true,
-    duoshuo: {
-      userId: '0',
-      author: '博主'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: false
   };
 </script>
 
-
-
-  <link rel="canonical" href="http://alitain.tech/resources/"/>
-
-
-
-
-
-  <title> | Alitain's Notes</title>
+  <title> | Alitain's Notes
+  </title>
   
 
 
@@ -144,581 +56,463 @@
 
 
 
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
-
-
-
-
-
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
 
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
-
-  
-  
-    
-  
-
-  <div class="container sidebar-position-left page-post-detail ">
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
-    
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
 
-    <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Alitain's Notes</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
-      
         <p class="site-subtitle">把简单的事情做好</p>
-      
   </div>
 
-  <div class="site-nav-toggle">
-    <button>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
   </div>
 </div>
 
+
 <nav class="site-nav">
   
-
-  
-    <ul id="menu" class="menu">
-      
-        
+  <ul id="menu" class="menu">
         <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
-            
-            首页
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-resources">
-          <a href="/resources" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-link"></i> <br />
-            
-            资源
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
-            
-            归档
-          </a>
-        </li>
-      
-        
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
         <li class="menu-item menu-item-about">
-          <a href="/about" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
-            
-            关于
-          </a>
-        </li>
-      
 
-      
-    </ul>
-  
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
 
-  
+  </li>
+        <li class="menu-item menu-item-resources">
+
+    <a href="/resources" rel="section"><i class="fa fa-fw fa-link"></i>资源</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
 </nav>
-
-
-
- </div>
+</div>
     </header>
 
-    <main id="main" class="main">
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
       <div class="main-inner">
         <div class="content-wrap">
-          <div id="content" class="content">
+          
+  
+  
+
+          <div class="content">
             
 
-  <div id="posts" class="posts-expand">
-  <header class="post-header">
+  <div class="posts-expand">
+    
+    
+    
+    <div class="post-block" lang="zh-CN">
+      <header class="post-header">
 
-	<h1 class="post-title" itemprop="name headline"></h1>
+<h1 class="post-title" itemprop="name headline">
+</h1>
 
+<div class="post-meta">
+  
 
+</div>
 
 </header>
 
-    
-    
-      <p>自己整理的了解或用过的资源。善于利用轮子，把精力放在业务上。</p>
+      
+      
+      
+      <div class="post-body">
+          <p>自己整理的了解或用过的资源。善于利用轮子，把精力放在业务上。</p>
 <h2 id="框架篇"><a href="#框架篇" class="headerlink" title="框架篇"></a>框架篇</h2><h3 id="WEB应用类"><a href="#WEB应用类" class="headerlink" title="WEB应用类"></a>WEB应用类</h3><ul>
-<li><a href="https://laravel.com" target="_blank" rel="external">Laravel-最流行的PHP框架，快速开发WEB应用</a></li>
-<li><a href="http://www.yiichina.com" target="_blank" rel="external">Yii-简单易用的PHP框架，快速开发WEB应用</a></li>
-<li><a href="https://lumen.laravel.com" target="_blank" rel="external">Lumen-为速度而生的PHP微框架，简化版的Laravel，适合API开发</a></li>
-<li><a href="https://codeigniter.org.cn" target="_blank" rel="external">CodeIgniter-小巧而强大的PHP框架</a></li>
-<li><a href="https://www.djangoproject.com" target="_blank" rel="external">Django-Python的王牌WEB框架</a></li>
-<li><a href="http://rubyonrails.org" target="_blank" rel="external">Ruby On Rails-ruby的WEB框架</a></li>
-<li><a href="https://koa.bootcss.com" target="_blank" rel="external">Koa-基于nodejs的下一代WEB框架</a></li>
+<li><a href="https://laravel.com" target="_blank" rel="noopener">Laravel-最流行的PHP框架，快速开发WEB应用</a></li>
+<li><a href="http://www.yiichina.com" target="_blank" rel="noopener">Yii-简单易用的PHP框架，快速开发WEB应用</a></li>
+<li><a href="https://lumen.laravel.com" target="_blank" rel="noopener">Lumen-为速度而生的PHP微框架，简化版的Laravel，适合API开发</a></li>
+<li><a href="https://codeigniter.org.cn" target="_blank" rel="noopener">CodeIgniter-小巧而强大的PHP框架</a></li>
+<li><a href="https://www.djangoproject.com" target="_blank" rel="noopener">Django-Python的王牌WEB框架</a></li>
+<li><a href="http://rubyonrails.org" target="_blank" rel="noopener">Ruby On Rails-ruby的WEB框架</a></li>
+<li><a href="https://koa.bootcss.com" target="_blank" rel="noopener">Koa-基于nodejs的下一代WEB框架</a></li>
 </ul>
 <h3 id="前端类"><a href="#前端类" class="headerlink" title="前端类"></a>前端类</h3><ul>
-<li><a href="https://reactjs.org" target="_blank" rel="external">React-排名第一的前端框架</a></li>
-<li><a href="https://cn.vuejs.org" target="_blank" rel="external">Vue-渐进式JS框架</a></li>
-<li><a href="https://angular.io" target="_blank" rel="external">Angular-最早流行的JS MVC框架</a></li>
-<li><a href="https://bulma.io" target="_blank" rel="external">Bulma-基于伸缩盒模型的CSS框架</a></li>
+<li><a href="https://reactjs.org" target="_blank" rel="noopener">React-排名第一的前端框架</a></li>
+<li><a href="https://cn.vuejs.org" target="_blank" rel="noopener">Vue-渐进式JS框架</a></li>
+<li><a href="https://angular.io" target="_blank" rel="noopener">Angular-最早流行的JS MVC框架</a></li>
+<li><a href="https://bulma.io" target="_blank" rel="noopener">Bulma-基于伸缩盒模型的CSS框架</a></li>
 </ul>
 <h3 id="爬虫类"><a href="#爬虫类" class="headerlink" title="爬虫类"></a>爬虫类</h3><ul>
-<li><a href="https://scrapy.org" target="_blank" rel="external">Scrapy-工业级爬虫框架</a></li>
+<li><a href="https://scrapy.org" target="_blank" rel="noopener">Scrapy-工业级爬虫框架</a></li>
 </ul>
 <h3 id="搜索类"><a href="#搜索类" class="headerlink" title="搜索类"></a>搜索类</h3><ul>
-<li><a href="https://www.elastic.co/products/elasticsearch" target="_blank" rel="external">ElasticSearch-分布式搜索引擎</a></li>
-<li><a href="http://sphinxsearch.com" target="_blank" rel="external">sphinx-基于文件的搜索引擎</a></li>
+<li><a href="https://www.elastic.co/products/elasticsearch" target="_blank" rel="noopener">ElasticSearch-分布式搜索引擎</a></li>
+<li><a href="http://sphinxsearch.com" target="_blank" rel="noopener">sphinx-基于文件的搜索引擎</a></li>
 </ul>
 <h3 id="大数据类"><a href="#大数据类" class="headerlink" title="大数据类"></a>大数据类</h3><ul>
-<li><a href="http://hadoop.apache.org" target="_blank" rel="external">hadoop-排名第一的分布式计算框架</a></li>
-<li><a href="https://spark.apache.org" target="_blank" rel="external">spark-轻量级分布式计算框架</a></li>
-<li><a href="https://hive.apache.org" target="_blank" rel="external">hive-基于hadoop的数据仓库</a></li>
+<li><a href="http://hadoop.apache.org" target="_blank" rel="noopener">hadoop-排名第一的分布式计算框架</a></li>
+<li><a href="https://spark.apache.org" target="_blank" rel="noopener">spark-轻量级分布式计算框架</a></li>
+<li><a href="https://hive.apache.org" target="_blank" rel="noopener">hive-基于hadoop的数据仓库</a></li>
 </ul>
 <h3 id="人工智能类"><a href="#人工智能类" class="headerlink" title="人工智能类"></a>人工智能类</h3><ul>
-<li><a href="https://www.tensorflow.org" target="_blank" rel="external">TensorFlow-排名第一的人工智能框架</a></li>
+<li><a href="https://www.tensorflow.org" target="_blank" rel="noopener">TensorFlow-排名第一的人工智能框架</a></li>
 </ul>
 <h2 id="资源篇"><a href="#资源篇" class="headerlink" title="资源篇"></a>资源篇</h2><h3 id="博客类"><a href="#博客类" class="headerlink" title="博客类"></a>博客类</h3><ul>
-<li><a href="https://www.liaoxuefeng.com/" target="_blank" rel="external">廖旭峰的官方网站-python,java,javascript,git教程</a></li>
-<li><a href="http://www.ruanyifeng.com/blog/" target="_blank" rel="external">阮一峰的网络日志-不仅限于技术</a></li>
-<li><a href="https://coolshell.cn" target="_blank" rel="external">酷壳-骨灰级程序员的博客</a></li>
-<li><a href="http://www.laruence.com" target="_blank" rel="external">风雪之隅-国内PHP第一人的博客</a></li>
-<li><a href="http://rango.swoole.com" target="_blank" rel="external">韩天峰(Rango)的博客-swoole作者的博客</a></li>
+<li><a href="https://www.liaoxuefeng.com/" target="_blank" rel="noopener">廖旭峰的官方网站-python,java,javascript,git教程</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/" target="_blank" rel="noopener">阮一峰的网络日志-不仅限于技术</a></li>
+<li><a href="https://coolshell.cn" target="_blank" rel="noopener">酷壳-骨灰级程序员的博客</a></li>
+<li><a href="http://www.laruence.com" target="_blank" rel="noopener">风雪之隅-国内PHP第一人的博客</a></li>
+<li><a href="http://rango.swoole.com" target="_blank" rel="noopener">韩天峰(Rango)的博客-swoole作者的博客</a></li>
 </ul>
 <h3 id="社区类"><a href="#社区类" class="headerlink" title="社区类"></a>社区类</h3><ul>
-<li><a href="https://stackoverflow.com" target="_blank" rel="external">stack-overflow-国际流行的技术问答社区</a></li>
-<li><a href="https://segmentfault.com" target="_blank" rel="external">SegmentFault-国内流行的技术问答社区</a></li>
+<li><a href="https://stackoverflow.com" target="_blank" rel="noopener">stack-overflow-国际流行的技术问答社区</a></li>
+<li><a href="https://segmentfault.com" target="_blank" rel="noopener">SegmentFault-国内流行的技术问答社区</a></li>
 </ul>
 <h3 id="聚合类"><a href="#聚合类" class="headerlink" title="聚合类"></a>聚合类</h3><ul>
-<li><a href="https://github.com/vhf/free-programming-books" target="_blank" rel="external">FreeProgrammingBook-全面免费的计算机手册</a></li>
-<li><a href="https://github.com/ziadoz/awesome-php" target="_blank" rel="external">AwesomePHP-包含了很多PHP的类库</a></li>
+<li><a href="https://github.com/vhf/free-programming-books" target="_blank" rel="noopener">FreeProgrammingBook-全面免费的计算机手册</a></li>
+<li><a href="https://github.com/ziadoz/awesome-php" target="_blank" rel="noopener">AwesomePHP-包含了很多PHP的类库</a></li>
 </ul>
 <h2 id="工具篇"><a href="#工具篇" class="headerlink" title="工具篇"></a>工具篇</h2><h3 id="开发类"><a href="#开发类" class="headerlink" title="开发类"></a>开发类</h3><ul>
-<li><a href="https://www.jetbrains.com" target="_blank" rel="external">JetBrains 系列-最强大的跨平台 IDE 没有之一</a></li>
-<li><a href="http://www.vim.org/" target="_blank" rel="external">Vim-强大的终端编辑器</a></li>
-<li><a href="http://www.sublimetext.com/" target="_blank" rel="external">Sublime Text-前端编辑利器</a></li>
-<li><a href="http://www.sequelpro.com/" target="_blank" rel="external">Sequel Pro-Mac上好用的 MySQL 客户端</a></li>
-<li><a href="https://www.vandyke.com/products/securecrt/index.html" target="_blank" rel="external">Secure CRT-跨平台的SSH客户端</a></li>
-<li><a href="https://robomongo.org" target="_blank" rel="external">Robo 3T-Mongo图形化客户端</a></li>
-<li><a href="https://kapeli.com/dash" target="_blank" rel="external">Dash-Mac上各种语言手册</a></li>
+<li><a href="https://www.jetbrains.com" target="_blank" rel="noopener">JetBrains 系列-最强大的跨平台 IDE 没有之一</a></li>
+<li><a href="http://www.vim.org/" target="_blank" rel="noopener">Vim-强大的终端编辑器</a></li>
+<li><a href="http://www.sublimetext.com/" target="_blank" rel="noopener">Sublime Text-前端编辑利器</a></li>
+<li><a href="http://www.sequelpro.com/" target="_blank" rel="noopener">Sequel Pro-Mac上好用的 MySQL 客户端</a></li>
+<li><a href="https://www.vandyke.com/products/securecrt/index.html" target="_blank" rel="noopener">Secure CRT-跨平台的SSH客户端</a></li>
+<li><a href="https://robomongo.org" target="_blank" rel="noopener">Robo 3T-Mongo图形化客户端</a></li>
+<li><a href="https://kapeli.com/dash" target="_blank" rel="noopener">Dash-Mac上各种语言手册</a></li>
 </ul>
 <h3 id="环境类"><a href="#环境类" class="headerlink" title="环境类"></a>环境类</h3><ul>
-<li><a href="https://www.docker.com" target="_blank" rel="external">Docker-最流行的容器类软件</a></li>
-<li><a href="https://www.vagrantup.com" target="_blank" rel="external">Vagrant-统一环境的虚拟机</a></li>
-<li><a href="https://www.parallels.com/cn/" target="_blank" rel="external">ParallelsDesktop-功能强大的付费虚拟机管理软件</a></li>
-<li><a href="https://www.virtualbox.org" target="_blank" rel="external">VirtualBox-免费开源的虚拟机管理软件</a></li>
+<li><a href="https://www.docker.com" target="_blank" rel="noopener">Docker-最流行的容器类软件</a></li>
+<li><a href="https://www.vagrantup.com" target="_blank" rel="noopener">Vagrant-统一环境的虚拟机</a></li>
+<li><a href="https://www.parallels.com/cn/" target="_blank" rel="noopener">ParallelsDesktop-功能强大的付费虚拟机管理软件</a></li>
+<li><a href="https://www.virtualbox.org" target="_blank" rel="noopener">VirtualBox-免费开源的虚拟机管理软件</a></li>
 </ul>
 <h3 id="调试类"><a href="#调试类" class="headerlink" title="调试类"></a>调试类</h3><ul>
-<li><a href="https://www.gocomposer.com" target="_blank" rel="external">Postman-接口调试利器</a></li>
-<li><a href="https://www.charlesproxy.com/" target="_blank" rel="external">Charles-强大的抓包工具</a></li>
-<li><a href="http://www.circlemud.org/jelson/software/tcpflow/tcpflow.1.html" target="_blank" rel="external">TcpFlow-命令行抓包工具</a></li>
+<li><a href="https://www.gocomposer.com" target="_blank" rel="noopener">Postman-接口调试利器</a></li>
+<li><a href="https://www.charlesproxy.com/" target="_blank" rel="noopener">Charles-强大的抓包工具</a></li>
+<li><a href="http://www.circlemud.org/jelson/software/tcpflow/tcpflow.1.html" target="_blank" rel="noopener">TcpFlow-命令行抓包工具</a></li>
 </ul>
 <h3 id="设计类"><a href="#设计类" class="headerlink" title="设计类"></a>设计类</h3><ul>
-<li><a href="https://www.omnigroup.com/omnigraffle" target="_blank" rel="external">Omnigraffle-Mac上的设计神器，流程图、UML类图等一网打尽</a></li>
+<li><a href="https://www.omnigroup.com/omnigraffle" target="_blank" rel="noopener">Omnigraffle-Mac上的设计神器，流程图、UML类图等一网打尽</a></li>
 <li>Office Visio-微软的流程图等设计工具</li>
 </ul>
 <h3 id="效率类"><a href="#效率类" class="headerlink" title="效率类"></a>效率类</h3><ul>
-<li><a href="https://www.alfredapp.com" target="_blank" rel="external">Alfred-Mac上的效率神器配合workflow爽翻天</a></li>
-<li><a href="http://pilotmoon.com/popclip/" target="_blank" rel="external">PopClip-Mac上的选中悬浮工具栏</a></li>
+<li><a href="https://www.alfredapp.com" target="_blank" rel="noopener">Alfred-Mac上的效率神器配合workflow爽翻天</a></li>
+<li><a href="http://pilotmoon.com/popclip/" target="_blank" rel="noopener">PopClip-Mac上的选中悬浮工具栏</a></li>
 </ul>
 <h3 id="管理类"><a href="#管理类" class="headerlink" title="管理类"></a>管理类</h3><ul>
-<li><a href="http://pilotmoon.com/popclip/" target="_blank" rel="external">Things-Apple上的代办事项管理工具</a></li>
-<li><a href="http://ibearmoney.com/cn/pro/guide.html" target="_blank" rel="external">Money Pro-Apple上好用的记账本</a></li>
+<li><a href="http://pilotmoon.com/popclip/" target="_blank" rel="noopener">Things-Apple上的代办事项管理工具</a></li>
+<li><a href="http://ibearmoney.com/cn/pro/guide.html" target="_blank" rel="noopener">Money Pro-Apple上好用的记账本</a></li>
 </ul>
 <h3 id="读写类"><a href="#读写类" class="headerlink" title="读写类"></a>读写类</h3><ul>
-<li><a href="http://reederapp.com" target="_blank" rel="external">Reeder-Apple上的Rss订阅器</a></li>
-<li><a href="http://zh.mweb.im" target="_blank" rel="external">Mweb-Mac上的Markdown书写工具</a></li>
-<li><a href="https://evernote.com/intl/zh-cn/" target="_blank" rel="external">Evernote-好用的云笔记</a></li>
+<li><a href="http://reederapp.com" target="_blank" rel="noopener">Reeder-Apple上的Rss订阅器</a></li>
+<li><a href="http://zh.mweb.im" target="_blank" rel="noopener">Mweb-Mac上的Markdown书写工具</a></li>
+<li><a href="https://evernote.com/intl/zh-cn/" target="_blank" rel="noopener">Evernote-好用的云笔记</a></li>
 </ul>
 <h3 id="安全类"><a href="#安全类" class="headerlink" title="安全类"></a>安全类</h3><ul>
-<li><a href="http://sqlmap.org" target="_blank" rel="external">Sqlmap-Sql注入工具</a></li>
-<li><a href="https://nmap.org/zenmap/" target="_blank" rel="external">Zenmap-端口嗅探工具</a></li>
-<li><a href="https://www.metasploit.com" target="_blank" rel="external">Metasploit-漏洞检测攻击工具</a></li>
+<li><a href="http://sqlmap.org" target="_blank" rel="noopener">Sqlmap-Sql注入工具</a></li>
+<li><a href="https://nmap.org/zenmap/" target="_blank" rel="noopener">Zenmap-端口嗅探工具</a></li>
+<li><a href="https://www.metasploit.com" target="_blank" rel="noopener">Metasploit-漏洞检测攻击工具</a></li>
 </ul>
 <h3 id="代理类"><a href="#代理类" class="headerlink" title="代理类"></a>代理类</h3><ul>
-<li><a href="https://itunes.apple.com/us/app/shadowrocket/id932747118?mt=8" target="_blank" rel="external">Shadowroket-IOS上的VPN管理工具（美国区）</a></li>
-<li><a href="https://github.com/shadowsocks" target="_blank" rel="external">shadowsocks-跨平台代理工具</a></li>
-<li><a href="http://www.tidalpool.ca/macproxy/" target="_blank" rel="external">MacProxy-Mac上的代理控制工具</a></li>
-<li><a href="https://github.com/rofl0r/proxychains-ng" target="_blank" rel="external">proxychains-终端翻墙工具</a></li>
+<li><a href="https://itunes.apple.com/us/app/shadowrocket/id932747118?mt=8" target="_blank" rel="noopener">Shadowroket-IOS上的VPN管理工具（美国区）</a></li>
+<li><a href="https://github.com/shadowsocks" target="_blank" rel="noopener">shadowsocks-跨平台代理工具</a></li>
+<li><a href="http://www.tidalpool.ca/macproxy/" target="_blank" rel="noopener">MacProxy-Mac上的代理控制工具</a></li>
+<li><a href="https://github.com/rofl0r/proxychains-ng" target="_blank" rel="noopener">proxychains-终端翻墙工具</a></li>
 </ul>
 
+      </div>
+      
+      
+      
+    </div>
+    
+
+    
+    
     
   </div>
 
 
           </div>
           
+    <div class="comments" id="valine-comments"></div>
 
-
-          
-  <div class="comments" id="comments">
-    
-  <div onclick="showGitment()" id="gitment_title" class="gitment_title">显示 Gitment 评论</div>
-  <div id="container" style="display:none"></div>
-  <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
-  <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-  <script>
-  const myTheme = {
-    render(state, instance) {
-      const container = document.createElement('div');
-      container.lang = "en-US";
-      container.className = 'gitment-container gitment-root-container';
-      container.appendChild(instance.renderHeader(state, instance));
-      container.appendChild(instance.renderEditor(state, instance));
-      container.appendChild(instance.renderComments(state, instance));
-      container.appendChild(instance.renderFooter(state, instance));
-      return container;
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
     }
-  }
-  function showGitment() {
-    $("#gitment_title").attr("style", "display:none");
-    $("#container").attr("style", "").addClass("gitment_container");
-    var gitment = new Gitment({
-      id: window.location.pathname,
-      theme: myTheme,
-      owner: 'alitain',
-      repo: 'alitain.github.io',
-      oauth: {
-        client_id: 'b036a4f1692979a3b424',
-        client_secret: '7bbdfa2bf70ef9b01abf128f8c434a13c78a331d'
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
       }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
     });
-    gitment.render('container');
   }
-  </script>
-
+</script>
 
         </div>
-        
           
   
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
   </div>
 
-  <aside id="sidebar" class="sidebar">
+  <aside class="sidebar">
     <div class="sidebar-inner">
 
-      
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
 
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="http://static.alitain.tech/avatar_cartoon"
-               alt="Alitain" />
-          <p class="site-author-name" itemprop="name">Alitain</p>
-           
-              <p class="site-description motion-element" itemprop="description">phper linux mysql</p>
-          
-        </div>
-        <nav class="site-state motion-element">
-
-          
-            <div class="site-state-item site-state-posts">
-              <a href="/archives">
-                <span class="site-state-item-count">13</span>
-                <span class="site-state-item-name">日志</span>
-              </a>
-            </div>
-          
-
-          
-            
-            
-            <div class="site-state-item site-state-categories">
-              <a href="/categories/index.html">
-                <span class="site-state-item-count">8</span>
-                <span class="site-state-item-name">分类</span>
-              </a>
-            </div>
-          
-
-          
-            
-            
-            <div class="site-state-item site-state-tags">
-              <a href="/tags/index.html">
-                <span class="site-state-item-count">23</span>
-                <span class="site-state-item-name">标签</span>
-              </a>
-            </div>
-          
-
-        </nav>
-
-        
-
-        <div class="links-of-author motion-element">
-          
-        </div>
-
-        
-        
-
-        
-        
-
-        
-
-
-      </section>
-
-      
       <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#框架篇"><span class="nav-number">1.</span> <span class="nav-text">框架篇</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#WEB应用类"><span class="nav-number">1.1.</span> <span class="nav-text">WEB应用类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前端类"><span class="nav-number">1.2.</span> <span class="nav-text">前端类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#爬虫类"><span class="nav-number">1.3.</span> <span class="nav-text">爬虫类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搜索类"><span class="nav-number">1.4.</span> <span class="nav-text">搜索类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#大数据类"><span class="nav-number">1.5.</span> <span class="nav-text">大数据类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#人工智能类"><span class="nav-number">1.6.</span> <span class="nav-text">人工智能类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#资源篇"><span class="nav-number">2.</span> <span class="nav-text">资源篇</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#博客类"><span class="nav-number">2.1.</span> <span class="nav-text">博客类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#社区类"><span class="nav-number">2.2.</span> <span class="nav-text">社区类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#聚合类"><span class="nav-number">2.3.</span> <span class="nav-text">聚合类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工具篇"><span class="nav-number">3.</span> <span class="nav-text">工具篇</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#开发类"><span class="nav-number">3.1.</span> <span class="nav-text">开发类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#环境类"><span class="nav-number">3.2.</span> <span class="nav-text">环境类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调试类"><span class="nav-number">3.3.</span> <span class="nav-text">调试类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设计类"><span class="nav-number">3.4.</span> <span class="nav-text">设计类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#效率类"><span class="nav-number">3.5.</span> <span class="nav-text">效率类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#管理类"><span class="nav-number">3.6.</span> <span class="nav-text">管理类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#读写类"><span class="nav-number">3.7.</span> <span class="nav-text">读写类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安全类"><span class="nav-number">3.8.</span> <span class="nav-text">安全类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代理类"><span class="nav-number">3.9.</span> <span class="nav-text">代理类</span></a></li></ol></li></ol></div>
-            
-
-          </div>
-        </section>
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#框架篇"><span class="nav-number">1.</span> <span class="nav-text">框架篇</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#WEB应用类"><span class="nav-number">1.1.</span> <span class="nav-text">WEB应用类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前端类"><span class="nav-number">1.2.</span> <span class="nav-text">前端类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#爬虫类"><span class="nav-number">1.3.</span> <span class="nav-text">爬虫类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搜索类"><span class="nav-number">1.4.</span> <span class="nav-text">搜索类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#大数据类"><span class="nav-number">1.5.</span> <span class="nav-text">大数据类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#人工智能类"><span class="nav-number">1.6.</span> <span class="nav-text">人工智能类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#资源篇"><span class="nav-number">2.</span> <span class="nav-text">资源篇</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#博客类"><span class="nav-number">2.1.</span> <span class="nav-text">博客类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#社区类"><span class="nav-number">2.2.</span> <span class="nav-text">社区类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#聚合类"><span class="nav-number">2.3.</span> <span class="nav-text">聚合类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工具篇"><span class="nav-number">3.</span> <span class="nav-text">工具篇</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#开发类"><span class="nav-number">3.1.</span> <span class="nav-text">开发类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#环境类"><span class="nav-number">3.2.</span> <span class="nav-text">环境类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调试类"><span class="nav-number">3.3.</span> <span class="nav-text">调试类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设计类"><span class="nav-number">3.4.</span> <span class="nav-text">设计类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#效率类"><span class="nav-number">3.5.</span> <span class="nav-text">效率类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#管理类"><span class="nav-number">3.6.</span> <span class="nav-text">管理类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#读写类"><span class="nav-number">3.7.</span> <span class="nav-text">读写类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安全类"><span class="nav-number">3.8.</span> <span class="nav-text">安全类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代理类"><span class="nav-number">3.9.</span> <span class="nav-text">代理类</span></a></li></ol></li></ol></div>
+      </div>
       <!--/noindex-->
-      
 
-      
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Alitain"
+      src="http://static.alitain.tech/avatar_cartoon">
+  <p class="site-author-name" itemprop="name">Alitain</p>
+  <div class="site-description" itemprop="description">phper linux mysql</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/alitain" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;alitain" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:alitain.dev@gmail.com" title="E-Mail → mailto:alitain.dev@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
 
     </div>
   </aside>
+  <div id="sidebar-dimmer"></div>
 
 
-        
       </div>
     </main>
 
-    <footer id="footer" class="footer">
+    <footer class="footer">
       <div class="footer-inner">
-        <div class="copyright" >
+        
+  <div class="beian"><a href="http://www.beian.miit.gov.cn/" rel="noopener" target="_blank">冀ICP备19000842号 </a>
+      <img src="http://www.beian.gov.cn/portal/download" style="display: inline-block;">
+  </div>
+
+<div class="copyright">
   
-  &copy; 
+  &copy; 2017 – 
   <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">Alitain</span>
 </div>
-
-
-<div class="powered-by">
-  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
-</div>
-
-<div class="theme-info powered-by">
-  主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
-    NexT.Mist
-  </a>
-</div>
-
-<div class="theme-info">
-  <a class="theme-link" target="_blank" href="http://www.beian.miit.gov.cn/">
-    冀ICP备19000842号
-  </a>
-</div>
-
-
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
-</script>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
 
         
 <div class="busuanzi-count">
-  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-  
-    <span class="site-uv">
-      <i class="fa fa-user"></i> 访问人数
-      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
-      人
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
     </span>
-  
-
-  
-    <span class="site-pv">
-      <i class="fa fa-eye"></i> 总访问量
-      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
-      次
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
     </span>
-  
 </div>
 
 
-        
+
+
+
+
+
+
       </div>
     </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
-
   </div>
 
   
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
 
-<script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : '6gpAGHNk5HEg3wkc2XrnYYF3-gzGzoHsz',
+      appKey     : 'TmqqM2b2F8EOTRV3W09qbrMF',
+      placeholder: "吐槽一下",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '5' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
 </script>
 
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-
-  
-  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
-
-
-
-  
-  
-
-  
-    <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
-
-  
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
-
-
-
-  
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-
-  
 </body>
 </html>
