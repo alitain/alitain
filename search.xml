@@ -1,6 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Composer-PHP依赖管理工具</title>
+    <url>/2020/05/29/php_composer/</url>
+    <content><![CDATA[<p>对于 phper 们来说，Composer 再熟悉不过了，几乎每天都会用到。但是经常使用并不代表我们熟悉它的原理，以致于我们遇到问题就从网上找答案解决，甚至有时候搭一个 php 运行环境或者装一个包要耗费很长时间。本文尝试简单介绍下什么是 composer，它是如何工作的，如何自己写一个 composer package 并发布到 <a href="https://packagist.org" target="_blank" rel="noopener">packagist</a>，以及我们如何搭建一个 private repository。同时我们也会探索，对于容器化的场景如何通过 composer proxy 来加速环境安装。</p>
+<a id="more"></a>
+
+<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>Composer 是 PHP 的一个依赖管理工具，本质是一个 php 的命令行项目，通过执行命令可以解析 composer.json 文件，获取安装 composer.json 中声明的依赖。Composer 的最大作用就是实现了代码的复用。我们最常接触的有下面几个部分</p>
+<ul>
+<li><code>composer.json</code> 定义一个包，声明包的依赖。跟 composer.json 同级的文件都属于这个包，注意项目（root包）是一个特殊的没有名称的包。</li>
+<li><code>Repository</code> 包仓库。存放包声明（packages.json)和包定义（{package}.json）的仓库。</li>
+<li><code>composer.lock</code> Composer 请求 Repository 来获取依赖包的定义以及源码的特定版本及存放位置，解析完所有的依赖会把这些信息写入到这个文件</li>
+<li><code>vendor</code> Composer 下载下来的源码存放的目录</li>
+</ul>
+<p>我们使用依赖包的时候，只需要 <code>require &#39;vendor/autoload.php&#39;;</code>，就可以通过命名空间来调用依赖包的功能。Composer 已经为我们完成了自动加载。</p>
+<p>更多介绍请访问<a href="https://docs.phpcomposer.com/00-intro.html" target="_blank" rel="noopener">官方文档</a></p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><h4 id="Composer-install-的简单执行流程"><a href="#Composer-install-的简单执行流程" class="headerlink" title="Composer install 的简单执行流程"></a>Composer install 的简单执行流程</h4><p><img src="http://static.alitain.tech/blog/20200528/15906782411290.png" alt="composer_instal"></p>
+<blockquote>
+<p>调试 composer 源码时，需要将入口文件里 <code>unset($xdebug);</code> 的代码注释掉，否则无法调试。</p>
+</blockquote>
+<h4 id="Composer-SAT-Solver"><a href="#Composer-SAT-Solver" class="headerlink" title="Composer SAT Solver"></a>Composer SAT Solver</h4><p>Composer 将依赖解析的问题转换了成了一个布尔可满足性问题（Boolean satisfiability problem；SAT），SAT 简单来说就是存在一个组输入，使得输出为真。</p>
+<p>例如:</p>
+<ul>
+<li>(A ∩ B) 是可满足的，当 A=TRUE 并且 B=TRUE 可以使的结果为真</li>
+<li>(A ∩ B ∩ ￢A) 是不可满足的，因为 A 不能同时为 TURE 和 FALSE</li>
+</ul>
+<p>每个包的每个版本都是一个元素<br>Install A-1.0 (A-1.0)<br>Remove A-1.0 (¬A-1.0)<br>A-1.0 requires B-1.0 (¬A-1.0 ∪ B-1.0)<br>A-1.0 conflicts with B-1.0 (¬A-1.0 ∪ ¬B-1.0)<br>C-1.0 provides B-1.0, A-1.0 requires B-1.0 (¬A-1.0 ∪ B-1.0 ∪ C-1.0)<br>C-1.0 replaces B-1.0, A-1.0 requires B-1.0 (¬C-1.0 ∪ ¬B-1.0) ∩ (¬A-1.0 ∨ B-1.0 ∪ C-1.0)</p>
+<p>Composer SAT Solver 实现了以 Ο(n²)复杂度的依赖解析。</p>
+<h3 id="定义并发布一个-Composer-Package"><a href="#定义并发布一个-Composer-Package" class="headerlink" title="定义并发布一个 Composer Package"></a>定义并发布一个 Composer Package</h3><p>定一个 Composer Package 很简单，我们通过下面的步骤就可以很方便的搭建好一个 package 的框架，下面以 <code>alitain/demo/EchoService::hello()</code> 为例，当调用时会输出 “hello world!”</p>
+<ol>
+<li>进入一个空目录，执行 <code>composer init</code></li>
+<li>通过交互式的方式填入包的名称，<code>alitain/demo</code>，包的作者信息、描述、依赖包等。这里不依赖其他包，一路回车就可以生成一个包定义的 composer.json 文件。</li>
+<li>如果依赖了其他包需要执行 <code>composer install</code> 安装依赖</li>
+<li>新建一个 src 目录，用户存放包源码。我们使用 psr4 的规范来完成自动加载</li>
+<li>写好代码后，执行 <code>composer dump-autoload</code> 生成 autoload.php</li>
+<li>将代码上传到 github，登录 <a href="https://packagist.org/" target="_blank" rel="noopener">packagist</a>，提交 git仓库地址，packagist 会定期获取文件</li>
+<li>未发布版本的代码，只能通过源码的方式进行安装。发布版本，比如： v0.0.1，则即可通过 <code>composer require alitain/demo:v0.0.1</code> 进行安装</li>
+</ol>
+<p>最终目录结构为</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;</span><br><span class="line">   src&#x2F;</span><br><span class="line">      EchoService.php</span><br><span class="line">   composer.json</span><br><span class="line">   vendor&#x2F;*</span><br><span class="line">   index.php</span><br></pre></td></tr></table></figure>
+
+<p>EchoService.php</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">alitain</span>\<span class="title">demo</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EchoService</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">hello</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"hello world!"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>index.php</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">$loader = <span class="keyword">require</span> <span class="keyword">__DIR__</span> . <span class="string">'/vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">alitain</span>\<span class="title">demo</span>\<span class="title">EchoService</span>;</span><br><span class="line"></span><br><span class="line">EchoService::hello();</span><br></pre></td></tr></table></figure>
+
+<p>composer.json</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"name"</span>: <span class="string">"alitain/demo"</span>,</span><br><span class="line">    <span class="attr">"description"</span>: <span class="string">"a demo package"</span>,</span><br><span class="line">    <span class="attr">"type"</span>: <span class="string">"library"</span>,</span><br><span class="line">    <span class="attr">"authors"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"name"</span>: <span class="string">"alitain"</span>,</span><br><span class="line">            <span class="attr">"email"</span>: <span class="string">"alitain.dev@gmail.com"</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">"require"</span>: &#123;&#125;,</span><br><span class="line">    <span class="attr">"autoload"</span>: &#123;</span><br><span class="line">        <span class="attr">"psr-4"</span>: &#123;</span><br><span class="line">            <span class="attr">"alitain\\demo\\"</span>: <span class="string">"src"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="私有包"><a href="#私有包" class="headerlink" title="私有包"></a>私有包</h3><p>有时候，我们不希望源码上传到 github 进行公开，因为我们的源码可能是业务相关性比较大，只适合在公司内容进行复用。我们可以定义一个包上传到公司内部的 gitlab 或者其他 vcs。只需要在 composer.json 中 repositories 中指定 type 为 git ，url 为仓库地址即可。</p>
+<h3 id="composer-proxy"><a href="#composer-proxy" class="headerlink" title="composer proxy"></a>composer proxy</h3><p>我们在日常使用 composer 的时候，可能会经常遇到安装缓慢或者安装失败的问题，即便是已经使用了国内的镜像代理服务器。可能的原因有：</p>
+<ul>
+<li>国内镜像服务不稳定，访问包定义文件时 404</li>
+<li>访问 packagist 网络环境不好</li>
+<li>达到 github api 访问限制</li>
+<li>源配置不合理，比如安装 yii 时，没有配置 asset-repository</li>
+<li>容器环境无法利用本地 cache，composer 更新不及时</li>
+</ul>
+<p>同时，我们如果我们经常使用私有包，也会遇到一些问题：</p>
+<ul>
+<li>开发环境需要各个项目的代码 check 权限</li>
+<li>多个包，需要配置多个 git 地址</li>
+<li>每次从源码安装比较慢</li>
+</ul>
+<p>为了解决上面这些问题，找了一些解决方案，如下：<br><strong>satis</strong></p>
+<p>Composer 组织开发维护的一个轻量级的私有包仓库，用来管理私有包。缺点是没法解决公有包安装慢的问题。</p>
+<p><strong>Private.Packagist</strong></p>
+<p>官方推荐的功能齐全的收费的仓库服务，几乎可以满足所有的需求。缺点是需要花钱。</p>
+<p><strong>toran-proxy</strong></p>
+<p>在 Private.Packagist 退出之前使用比较多的一个代理服务器，现在官方已经不维护了，但是原有的功能基本上可以满足我们的需求。所以，最终采用了这个方案，安装使用也很方便，有人做了一个 docker 镜像出来。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --name toran-proxy -d -p &lt;your-port&gt;:80 -v /opt/toran-proxy:/data/toran-proxy -e <span class="string">"TORAN_HOST=&lt;your-domain&gt;"</span> -e <span class="string">"PHP_TIMEZONE=Asia/Shanghai"</span> -e <span class="string">"TORAN_CRON_TIMER=half"</span> -e <span class="string">"TORAN_TOKEN_GITHUB=your-token"</span> cedvan/toran-proxy:latest</span><br></pre></td></tr></table></figure>
+
+<p>toran-proxy 可以设置上游服务器地址，例如我们可以指定阿里云镜像。开启缓存功能以后，第一次安装从会上游服务器拉取包定义文件和源码，第二次安装就可以从 toran-proxy 安装，除首次安装比较慢，大大加快了 composer 的安装速度。</p>
+<p>同时，可以设置私有包，首先需要让 toran-proxy 获取代码 check 权限，然后添加自定义包的 git 地址即可。我们使用 composer 的时候只需要配置特定的源，其他的设置交由 toran-proxy 去配置。</p>
+<p>最终通过 toran-porxy 完成了公有包的安装加速和私有包的统一管理。</p>
+]]></content>
+      <categories>
+        <category>工具</category>
+      </categories>
+      <tags>
+        <tag>php</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>使用 owncloud 搭建企业云盘系统</title>
     <url>/2020/02/11/owncloud/</url>
     <content><![CDATA[<p>owncloud 是国外一款有比较有名气的开源云盘系统，旨在为企业提供文件安全存储、便捷访问、高效管理的数据使用方式。这篇文章会简单介绍一下 owncloud 的特性，如何快速搭建系统，备份文件，以及接入企业内部登录认证。</p>
