@@ -3,7 +3,7 @@
   <entry>
     <title>Composer-PHP依赖管理工具</title>
     <url>/2020/05/29/php_composer/</url>
-    <content><![CDATA[<p>对于 phper 们来说，Composer 再熟悉不过了，几乎每天都会用到。但是经常使用并不代表我们熟悉它的原理，以致于我们遇到问题就从网上找答案解决，甚至有时候搭一个 php 运行环境或者装一个包要耗费很长时间。本文尝试简单介绍下什么是 composer，它是如何工作的，如何自己写一个 composer package 并发布到 <a href="https://packagist.org" target="_blank" rel="noopener">packagist</a>，以及我们如何搭建一个 private repository。同时我们也会探索，对于容器化的场景如何通过 composer proxy 来加速环境安装。</p>
+    <content><![CDATA[<p>对于 phper 们来说，Composer 再熟悉不过了，几乎每天都会用到。但是经常使用并不代表我们熟悉它的原理，以致于遇到问题就从网上找答案解决，甚至有时候搭一个 php 运行环境或者装一个包要耗费很长时间。本文尝试简单介绍下什么是 composer，它是如何工作的，如何自己写一个 composer package 并发布到 <a href="https://packagist.org" target="_blank" rel="noopener">packagist</a>，以及我们如何搭建一个 private repository。同时我们也会探索，对于容器化的场景如何通过 composer proxy 来加速环境安装。</p>
 <a id="more"></a>
 
 <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>Composer 是 PHP 的一个依赖管理工具，本质是一个 php 的命令行项目，通过执行命令可以解析 composer.json 文件，获取安装 composer.json 中声明的依赖。Composer 的最大作用就是实现了代码的复用。我们最常接触的有下面几个部分</p>
@@ -19,10 +19,10 @@
 <blockquote>
 <p>调试 composer 源码时，需要将入口文件里 <code>unset($xdebug);</code> 的代码注释掉，否则无法调试。</p>
 </blockquote>
-<h4 id="Composer-SAT-Solver"><a href="#Composer-SAT-Solver" class="headerlink" title="Composer SAT Solver"></a>Composer SAT Solver</h4><p>Composer 将依赖解析的问题转换了成了一个布尔可满足性问题（Boolean satisfiability problem；SAT），SAT 简单来说就是存在一个组输入，使得输出为真。</p>
+<h4 id="Composer-SAT-Solver"><a href="#Composer-SAT-Solver" class="headerlink" title="Composer SAT Solver"></a>Composer SAT Solver</h4><p>Composer 将依赖解析的问题转换了成了一个布尔可满足性问题（Boolean satisfiability problem；SAT），SAT 简单来说就是存在一组输入，使得输出为真。</p>
 <p>例如:</p>
 <ul>
-<li>(A ∩ B) 是可满足的，当 A=TRUE 并且 B=TRUE 可以使的结果为真</li>
+<li>(A ∩ B) 是可满足的，当 A=TRUE 并且 B=TRUE 使得结果为真</li>
 <li>(A ∩ B ∩ ￢A) 是不可满足的，因为 A 不能同时为 TURE 和 FALSE</li>
 </ul>
 <p>每个包的每个版本都是一个元素<br>Install A-1.0 (A-1.0)<br>Remove A-1.0 (¬A-1.0)<br>A-1.0 requires B-1.0 (¬A-1.0 ∪ B-1.0)<br>A-1.0 conflicts with B-1.0 (¬A-1.0 ∪ ¬B-1.0)<br>C-1.0 provides B-1.0, A-1.0 requires B-1.0 (¬A-1.0 ∪ B-1.0 ∪ C-1.0)<br>C-1.0 replaces B-1.0, A-1.0 requires B-1.0 (¬C-1.0 ∪ ¬B-1.0) ∩ (¬A-1.0 ∨ B-1.0 ∪ C-1.0)</p>
