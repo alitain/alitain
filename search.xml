@@ -1,6 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>从零开始快速部署一个高可用 kubernetes 集群（Vultr VPS）</title>
+    <url>/2020/06/22/kubenetes_cluster_setup/</url>
+    <content><![CDATA[<p>前段时间为了科学上网注册了一个 vultr 的账号，还参与了一个<a href="https://www.vultr.com/?ref=8589002-6G" target="_blank" rel="noopener">充10美元送100美元</a>的活动。不过这100美元有一个30天的使用时限，马上就要到期了，就想着在到期之前用 vultr 来搭建一个 k8s 集群。 虽然 docker 的桌面客户端已经集成了单节点的 k8s，但是从头开始搭建一个高可用的集群还是有一些难度的，于是便有了这篇博客。使用国外的 vps 的好处，我们不需要担心网络环境的问题，如果没有条件可以借助 Kubeasz 这个工具在国内部署很方便。另外，本篇内容只适用 Vultr，因为利用了 Vultr 的一些特性，其他云服务器厂商也有类似的工具。</p>
+<a id="more"></a>
+
+<blockquote>
+<p>这个搭建的方式仅使用实验目的，不可作为生产环境。生产环境还需要避免如下几点：</p>
+<ol>
+<li>为了简化操作，各个节点使用公网IP，并且关闭了防火墙</li>
+<li>kubeapi server 负载均衡器使用了固定IP，官方教程推荐使用 DNS</li>
+</ol>
+</blockquote>
+<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><h4 id="集群拓扑"><a href="#集群拓扑" class="headerlink" title="集群拓扑"></a>集群拓扑</h4><p>搭建之前，首先规划一下集群最终的拓扑结构。共6个节点（ 1个load balancer 节点 + 3个 controll plane 节点 + 2 worker 节点）<br><img src="http://static.alitain.tech/blog/20200622/k8s-cluster-topo.png" alt="k8s-cluster-topo"></p>
+<h4 id="节点初始化"><a href="#节点初始化" class="headerlink" title="节点初始化"></a>节点初始化</h4><p><strong>添加集群节点</strong></p>
+<p>为了简化操作，把安装容器运行时（docker）和 kubeadm，kubectl，kubelet 的安装都放到了一个脚本里，节点初始化完成自动执行。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># (Install Docker CE)</span></span><br><span class="line"><span class="comment">## Set up the repository</span></span><br><span class="line"><span class="comment">### Install required packages</span></span><br><span class="line">yum install -y yum-utils device-mapper-persistent-data lvm2</span><br><span class="line"></span><br><span class="line"><span class="comment">## Add the Docker repository</span></span><br><span class="line">yum-config-manager --add-repo \</span><br><span class="line">  https://download.docker.com/linux/centos/docker-ce.repo</span><br><span class="line"></span><br><span class="line"><span class="comment"># Install Docker CE</span></span><br><span class="line">yum update -y &amp;&amp; yum install -y \</span><br><span class="line">  containerd.io-1.2.13 \</span><br><span class="line">  docker-ce-19.03.11 \</span><br><span class="line">  docker-ce-cli-19.03.11</span><br><span class="line"></span><br><span class="line"><span class="comment">## Create /etc/docker</span></span><br><span class="line">mkdir /etc/docker</span><br><span class="line"></span><br><span class="line"><span class="comment"># Set up the Docker daemon</span></span><br><span class="line">cat &gt; /etc/docker/daemon.json &lt;&lt;EOF</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"exec-opts"</span>: [<span class="string">"native.cgroupdriver=systemd"</span>],</span><br><span class="line">  <span class="string">"log-driver"</span>: <span class="string">"json-file"</span>,</span><br><span class="line">  <span class="string">"log-opts"</span>: &#123;</span><br><span class="line">    <span class="string">"max-size"</span>: <span class="string">"100m"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">"storage-driver"</span>: <span class="string">"overlay2"</span>,</span><br><span class="line">  <span class="string">"storage-opts"</span>: [</span><br><span class="line">    <span class="string">"overlay2.override_kernel_check=true"</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line">mkdir -p /etc/systemd/system/docker.service.d</span><br><span class="line"></span><br><span class="line"><span class="comment"># Restart Docker</span></span><br><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl restart docker</span><br><span class="line">systemctl <span class="built_in">enable</span> docker</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装kubeadm,kubelet,kubectl</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## Disable Swap</span></span><br><span class="line">sed -i <span class="string">'/swap/d'</span> /etc/fstab</span><br><span class="line">swapoff -a</span><br><span class="line"></span><br><span class="line"><span class="comment">## Disable Firewall</span></span><br><span class="line">systemctl <span class="built_in">disable</span> firewalld</span><br><span class="line">systemctl stop firewalld</span><br><span class="line"></span><br><span class="line"><span class="comment">## Update Iptables</span></span><br><span class="line">cat &lt;&lt;EOF &gt; /etc/sysctl.d/k8s.conf</span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">EOF</span><br><span class="line">sysctl --system</span><br><span class="line"></span><br><span class="line"><span class="comment">## 设置源、开始安装</span></span><br><span class="line">cat &lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo</span><br><span class="line">[kubernetes]</span><br><span class="line">name=Kubernetes</span><br><span class="line">baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">repo_gpgcheck=1</span><br><span class="line">gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line"><span class="comment"># Set SELinux in permissive mode (effectively disabling it)</span></span><br><span class="line">setenforce 0</span><br><span class="line"></span><br><span class="line">sed -i <span class="string">'s/^SELINUX=enforcing$/SELINUX=permissive/'</span> /etc/selinux/config</span><br><span class="line"></span><br><span class="line">yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes</span><br><span class="line"></span><br><span class="line">systemctl <span class="built_in">enable</span> --now kubelet</span><br></pre></td></tr></table></figure>
+
+<p>详细步骤如下：</p>
+<ol>
+<li><p>在 Vultr 控制面板点击 “+”，Deploy New Server</p>
+</li>
+<li><p>Choose Server: 选择默认 Cloud Compute</p>
+</li>
+<li><p>Server Location: 选择日本或者韩国（注意要和 load balance 节点选择同一个区域）</p>
+</li>
+<li><p>Server Type: 选择 CentOS 7 x86 Without SELinux</p>
+</li>
+<li><p>Server Size: 选择至少”2 CPU/4G Memory”<img src="http://static.alitain.tech/blog/20200622/%E6%88%AA%E5%B1%8F2020-06-21%20%E4%B8%8B%E5%8D%884.08.13.png" alt="截屏2020-06-21 下午4.08.13"></p>
+</li>
+<li><p>Start Script: 选择添加新的脚本，把上面的脚本粘贴进去。然后选择新添加的脚本，这里脚本命名为 k8s-node-init</p>
+</li>
+<li><p>SSH Keys: 选择自己的公钥方便登录<img src="http://static.alitain.tech/blog/20200622/%E6%88%AA%E5%B1%8F2020-06-21%20%E4%B8%8B%E5%8D%884.08.27.png" alt="截屏2020-06-21 下午4.08.27"></p>
+</li>
+<li><p>Server Hostname &amp; Label: 如下，名称随意。点击左下角的 + 号可以增加节点数量<img src="http://static.alitain.tech/blog/20200622/%E6%88%AA%E5%B1%8F2020-06-21%20%E4%B8%8B%E5%8D%884.08.38.png" alt="截屏2020-06-21 下午4.08.38"></p>
+</li>
+<li><p>点击部署</p>
+</li>
+</ol>
+<p><strong>添加负载均衡器</strong></p>
+<ol>
+<li>选择 Load Balance 标签，点击 + 号添加负载均衡器</li>
+<li>选择与上面的节点相同的地域</li>
+<li>配置负载均衡，设置转发规则和健康检测，如下所示<img src="http://static.alitain.tech/blog/20200622/%E6%88%AA%E5%B1%8F2020-06-22%20%E4%B8%8A%E5%8D%8812.32.07.png" alt="截屏2020-06-22 上午12.32.07"></li>
+<li>记录下来负载均衡器的 ip 和 设置的端口，例如：141.164.49.152:43</li>
+</ol>
+<h3 id="使用kubeadm-部署集群"><a href="#使用kubeadm-部署集群" class="headerlink" title="使用kubeadm 部署集群"></a>使用kubeadm 部署集群</h3><h4 id="初始化主节点"><a href="#初始化主节点" class="headerlink" title="初始化主节点"></a>初始化主节点</h4><p>1.在负载均衡器面板，点击 Attach，选择 k8s-master-01 节点，使负载均衡器的可以代理这个节点(目前还不可以代理其他 master 节点)<br>2.登录到 k8s-master-01</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-01 ~]<span class="comment"># kubeadm init --control-plane-endpoint "141.164.49.152:43" --upload-certs</span></span><br><span class="line"></span><br><span class="line">You should now deploy a pod network to the cluster.</span><br><span class="line">Run <span class="string">"kubectl apply -f [podnetwork].yaml"</span> with one of the options listed at:</span><br><span class="line">https://kubernetes.io/docs/concepts/cluster-administration/addons/</span><br><span class="line"></span><br><span class="line">You can now join any number of the control-plane node running the following <span class="built_in">command</span> on each as root:</span><br><span class="line">kubeadm join 141.164.49.152:43 --token 3il8rw.12u0wd0gdalsw3g3 \</span><br><span class="line">--discovery-token-ca-cert-hash sha256:aae75ca90283a58164e05e1625716b272c4a6ecb16a32ce9cf65a5175861e25d \</span><br><span class="line">--control-plane --certificate-key fc3ddd0dd2b92f692fdc0b11a00930c32bab0c91bcf1fa277f52f9e7c2f5f590</span><br><span class="line"></span><br><span class="line">Please note that the certificate-key gives access to cluster sensitive data, keep it secret!</span><br><span class="line"></span><br><span class="line">As a safeguard, uploaded-certs will be deleted <span class="keyword">in</span> two hours; If necessary, you can use</span><br><span class="line"><span class="string">"kubeadm init phase upload-certs --upload-certs"</span> to reload certs afterward.</span><br><span class="line"></span><br><span class="line">Then you can join any number of worker nodes by running the following on each as root:</span><br><span class="line">kubeadm join 141.164.49.152:43 --token 3il8rw.12u0wd0gdalsw3g3 \</span><br><span class="line">--discovery-token-ca-cert-hash sha256:aae75ca90283a58164e05e1625716b272c4a6ecb16a32ce9cf65a5175861e25d</span><br></pre></td></tr></table></figure>
+
+<h4 id="把其他节点加入到集群"><a href="#把其他节点加入到集群" class="headerlink" title="把其他节点加入到集群"></a>把其他节点加入到集群</h4><p>1.分别登录 k8s-master-02 和 k8s-master-03，执行 </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">kubeadm join 141.164.49.152:43 --token 3il8rw.12u0wd0gdalsw3g3 --discovery-token-ca-cert-hash sha256:aae75ca90283a58164e05e1625716b272c4a6ecb16a32ce9cf65a5175861e25d --control-plane --certificate-key fc3ddd0dd2b92f692fdc0b11a00930c32bab0c91bcf1fa277f52f9e7c2f5f590</span><br></pre></td></tr></table></figure>
+
+<p>2.分别登录 k8s-worker-01 和 k8s-worker-02，执行 </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">kubeadm join 141.164.49.152:43 --token 3il8rw.12u0wd0gdalsw3g3 --discovery-token-ca-cert-hash sha256:aae75ca90283a58164e05e1625716b272c4a6ecb16a32ce9cf65a5175861e25d</span><br></pre></td></tr></table></figure>
+
+<p>3.修改负载均衡配置，把 k8s-master-02 和 k8s-master-03 也加入到代理中</p>
+<h4 id="添加使用用户"><a href="#添加使用用户" class="headerlink" title="添加使用用户"></a>添加使用用户</h4><p>1.登录到任意节点，添加 kube 用户并赋予 sudo 权限</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">useradd kube</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"kube ALL=(ALL) NOPASSWD: ALL"</span> &gt;&gt; /etc/sudoers</span><br></pre></td></tr></table></figure>
+
+<p>2.切换到 kube 用户，初始化 k8s 配置</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mkdir -p <span class="variable">$HOME</span>/.kube</span><br><span class="line">sudo cp -i /etc/kubernetes/admin.conf <span class="variable">$HOME</span>/.kube/config</span><br><span class="line">sudo chown $(id -u):$(id -g) <span class="variable">$HOME</span>/.kube/config</span><br></pre></td></tr></table></figure>
+
+<p>3.执行 <code>kubectl get nodes</code> 查看节点信息</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[kube@k8s-master-01 root]$ kubectl get nodes</span><br><span class="line">NAME            STATUS   ROLES    AGE     VERSION</span><br><span class="line">k8s-master-01   Ready    master   44m     v1.18.4</span><br><span class="line">k8s-master-02   Ready    master   8m24s   v1.18.4</span><br><span class="line">k8s-master-03   Ready    master   6m29s   v1.18.4</span><br><span class="line">k8s-worker-01   Ready    &lt;none&gt;   118s    v1.18.4</span><br><span class="line">k8s-worker-02   Ready    &lt;none&gt;   68s     v1.18.4</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>整个过程由于 vultr 的 load balance 很不稳定，经常需要修改配置生效后才可用，比较坑。所以推荐大家自己搭建 haproxy 或者 Nginx 在作为 kube-apiserver 的负载均衡。</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://kubernetes.io/docs/setup/production-environment/" target="_blank" rel="noopener">kubenetes.io</a><br><a href="https://www.vultr.com/docs/deploy-kubernetes-with-kubeadm-on-centos-7" target="_blank" rel="noopener">vulter docs</a></p>
+]]></content>
+      <categories>
+        <category>cloud native</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Composer-PHP依赖管理工具</title>
     <url>/2020/05/29/php_composer/</url>
     <content><![CDATA[<p>对于 phper 们来说，Composer 再熟悉不过了，几乎每天都会用到。但是经常使用并不代表我们熟悉它的原理，以致于遇到问题就从网上找答案解决，甚至有时候搭一个 php 运行环境或者装一个包要耗费很长时间。本文尝试简单介绍下什么是 composer，它是如何工作的，如何自己写一个 composer package 并发布到 <a href="https://packagist.org" target="_blank" rel="noopener">packagist</a>，以及我们如何搭建一个 private repository。同时我们也会探索，对于容器化的场景如何通过 composer proxy 来加速环境安装。</p>
