@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>从零开始快速部署一个高可用 kubernetes 集群（Vultr VPS）</title>
+    <title>使用 Vultr 快速部署一个高可用的 kubernetes 集群</title>
     <url>/2020/06/22/kubenetes_cluster_setup/</url>
     <content><![CDATA[<p>前段时间为了科学上网注册了一个 vultr 的账号，还参与了一个<a href="https://www.vultr.com/?ref=8589002-6G" target="_blank" rel="noopener">充10美元送100美元</a>的活动。不过这100美元有一个30天的使用时限，马上就要到期了，就想着在到期之前用 vultr 来搭建一个 k8s 集群。 虽然 docker 的桌面客户端已经集成了单节点的 k8s，但是从头开始搭建一个高可用的集群还是有一些难度的，于是便有了这篇博客。使用国外的 vps 的好处，我们不需要担心网络环境的问题，如果没有条件可以借助 Kubeasz 这个工具在国内部署很方便。另外，本篇内容只适用 Vultr，因为利用了 Vultr 的一些特性，其他云服务器厂商也有类似的工具。</p>
 <a id="more"></a>
