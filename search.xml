@@ -3,7 +3,7 @@
   <entry>
     <title>使用 Vultr 快速部署一个高可用的 kubernetes 集群</title>
     <url>/2020/06/22/kubenetes_cluster_setup/</url>
-    <content><![CDATA[<p>前段时间为了科学上网注册了一个 vultr 的账号，还参与了一个<a href="https://www.vultr.com/?ref=8589002-6G" target="_blank" rel="noopener">充10美元送100美元</a>的活动。不过这100美元有一个30天的使用时限，马上就要到期了，就想着在到期之前用 vultr 来搭建一个 k8s 集群。 虽然 docker 的桌面客户端已经集成了单节点的 k8s，但是从头开始搭建一个高可用的集群还是有一些难度的，于是便有了这篇博客。使用国外的 vps 的好处，我们不需要担心网络环境的问题，如果没有条件可以借助 Kubeasz 这个工具在国内部署很方便。另外，本篇内容只适用 Vultr，因为利用了 Vultr 的一些特性，其他云服务器厂商也有类似的工具。</p>
+    <content><![CDATA[<p>前段时间注册了一个 vultr 的账号，还参与了一个<a href="https://www.vultr.com/?ref=8589002-6G" target="_blank" rel="noopener">充10美元送100美元</a>的活动。不过这100美元有一个30天的使用时限，马上就要到期了，就想着在到期之前用 vultr 来搭建一个 k8s 集群。 虽然 docker 的桌面客户端已经集成了单节点的 k8s，但是从头开始搭建一个高可用的集群还是有一些难度的，于是便有了这篇博客。使用国外的 vps 的好处，我们不需要担心网络环境的问题，如果没有条件可以借助 Kubeasz 这个工具在国内部署很方便。另外，本篇内容只适用 Vultr，因为利用了 Vultr 的一些特性，其他云服务器厂商也有类似的工具。</p>
 <a id="more"></a>
 
 <blockquote>
@@ -232,7 +232,7 @@
 <p><img src="http://static.alitain.tech/blog/xdebug/phpstorm_server_setting.png" alt="phpstorm_server_setting"></p>
 <p>之后点击确定。DEBUG 的配置保持默认，注意监听 <code>9000</code> 端口。</p>
 <p>然后，打开 <code>RUN</code> &gt; <code>Edit Configurations</code>，点击 <strong>+</strong> 号选择 <code>PHP Remote Debug</code> ，选择刚才配置好的 server ，IDEKEY 填入 <code>PHPSTORM</code> 跟 xdebug 的配置保持一致。如下：<br><img src="http://static.alitain.tech/blog/xdebug/phpstorm_remote_debug_setting.png" alt="phpstorm_remote_debug_setting"><br>之后点击 DEBUG 开始监听，在程序合适的地方打上断点。</p>
-<h3 id="浏览器-DEBUG"><a href="#浏览器-DEBUG" class="headerlink" title="浏览器 DEBUG"></a>浏览器 DEBUG</h3><p>浏览器当然会选 Chrome ，通过科学上网安装 <code>Xdebug Helper</code>扩展，如果你是 Mac 用户可以通过 <a href="/2018/04/03/mac_proxy_skills/">Mac 下的科学上网</a> 开查看如何配置科学上网。安装完以后，右击刚安装好的浏览器上方的小虫子，配置 IDE key，IDE 选择 PHPSTORM，key 填入 <code>PHPSTORM</code> 点击 save。如下</p>
+<h3 id="浏览器-DEBUG"><a href="#浏览器-DEBUG" class="headerlink" title="浏览器 DEBUG"></a>浏览器 DEBUG</h3><p>浏览器当然会选 Chrome ，安装 <code>Xdebug Helper</code>扩展。安装完以后，右击刚安装好的浏览器上方的小虫子，配置 IDE key，IDE 选择 PHPSTORM，key 填入 <code>PHPSTORM</code> 点击 save。如下</p>
 <p><img src="http://static.alitain.tech/blog/xdebug/chrome_xdebug_setting.png" alt="chrome_xdebug_setting"></p>
 <p>点击小虫子，选择 DEBUG，这时候小虫子会变绿。然后点击访问，顺利的话，你的 IDE 会自动切换到你的面前，停留在断点的位置。</p>
 <p><img src="http://static.alitain.tech/blog/xdebug/phpstorm_begin_debug.png" alt="phpstorm_begin_debug"></p>
@@ -258,7 +258,7 @@
     <content><![CDATA[<p>准确的说，使用 docker 搭建的 LNMP 环境已经不算是 LNMP 了，因为 nginx、mysql、php 并不是运行在 linux 上，而是运行在 docker 平台上（实际上是运行在本机系统独立的进程空间里），而 docker 平台可以运行在个人笔记本、服务器、公有云等几乎所有的设备上，并且是跨操作系统的。下面一起来搭建一个 DNMP 环境，并将镜像推送到私有镜像服务器。Github代码 <a href="https://github.com/alitain/dnmp" target="_blank" rel="noopener">alitain/dnmp</a>。</p>
 <a id="more"></a>
 
-<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><p>首先，我们要根据自己的操作系统，安装对应的 docker。下面以 Mac 为例，下载 <a href="https://store.docker.com/editions/community/docker-ce-desktop-mac" target="_blank" rel="noopener">Docker For Mac</a> 安装，成功之后从偏好设置中修改 Deamon 的设置添加中国镜像地址（否则需要翻墙）。例如 docker中国，daocloud，阿里云等镜像地址，以docker中国为例，填入 <code>https://registry.docker-cn.com</code>后，应用重启。</p>
+<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><p>首先，我们要根据自己的操作系统，安装对应的 docker。下面以 Mac 为例，下载 <a href="https://store.docker.com/editions/community/docker-ce-desktop-mac" target="_blank" rel="noopener">Docker For Mac</a> 安装，成功之后从偏好设置中修改 Deamon 的设置添加中国镜像地址。例如 docker中国，daocloud，阿里云等镜像地址，以docker中国为例，填入 <code>https://registry.docker-cn.com</code>后，应用重启。</p>
 <p>我们可以在命令行执行 <code>docker pull library/registry</code> 查看镜像加速是否配置成功。</p>
 <h2 id="编写-Dockerfile"><a href="#编写-Dockerfile" class="headerlink" title="编写 Dockerfile"></a>编写 Dockerfile</h2><p>在<a href="https://store.docker.com" target="_blank" rel="noopener">docker 商店</a>中已经提供了很多官方镜像和社区镜像，但是并不一定会满足我们的需求，所以我们要基于官方镜像进行修改。考虑到 php 版本的兼容性，这里会同时部署php5，和php7两个版本。nginx 和 mysql 也会分别基于官方镜像进行修改，除此之外还会添加一个专门用于映射代码和在容器之间同步代码的一个镜像。</p>
 <p>下面以 php7 为例，简单介绍一下镜像构建流程</p>
@@ -345,46 +345,6 @@
       </categories>
       <tags>
         <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mac下的科学上网</title>
-    <url>/2018/04/03/mac_proxy_skills/</url>
-    <content><![CDATA[<p>相信每个程序猿都和 GWF 有过一段小故事。上大学的时候，想要翻墙大都是用 GoAgent 和 Chrome 的代理扩展，免费的 GoAgent 盛行一时。最近几乎看不到它的身影了，现在是 Shadowsocks 的天下了。本文记录了自己在 Mac 下的一些翻墙技巧，部分对其他系统也使用，希望大家都可以变得身手矫捷。</p>
-<a id="more"></a>
-
-<blockquote>
-<p>本文假设你已经有了一个外网的 vpn 账号，否则下面的都是扯犊子。获取 vpn 账号的方式有很多，购买账号，自己在外网搭建服务器，使用公司的账号等等。</p>
-</blockquote>
-<h3 id="代理工具"><a href="#代理工具" class="headerlink" title="代理工具"></a>代理工具</h3><p>大多数的童鞋可能都用的 Shadowsocks 的 GUI 客户端，方便快捷，开启全局代理其他应用也可以很容易翻墙，没毛病。今天，我要给大家介绍的是命令行的翻墙工具，Mac 下安装、配置、启动都很简单，让你忘记翻墙的过程。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">brew install shadowsocks-libev <span class="comment"># 安装</span></span><br><span class="line">vi /usr/<span class="built_in">local</span>/etc/shadowsocks-libev.json <span class="comment"># 编辑配置文件</span></span><br><span class="line">brew services <span class="built_in">enable</span> shadowsocks-libev <span class="comment"># 开机启动</span></span><br><span class="line">brew services start shadowsocks-libev <span class="comment"># 启动</span></span><br></pre></td></tr></table></figure>
-
-<p>编辑配置文件填入服务器 ip，密码，加密方式，本地地址，本地端口。本地端口可以设置1080， 本地地址不设置默认 127.0.0.1。</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"server"</span>:<span class="string">"your.vpn.server"</span>,</span><br><span class="line">    <span class="attr">"server_port"</span>:<span class="string">"your.vpn.server.port"</span>,</span><br><span class="line">    <span class="attr">"local_port"</span>:<span class="number">1080</span>,</span><br><span class="line">    <span class="attr">"password"</span>:<span class="string">"your.vpn.server.password"</span>,</span><br><span class="line">    <span class="attr">"timeout"</span>:<span class="number">600</span>,</span><br><span class="line">    <span class="attr">"method"</span>:<span class="string">"your.vpn.server.method"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>编辑完成后可以直接启动，然后继续下面的步骤。</p>
-<h3 id="浏览器测试"><a href="#浏览器测试" class="headerlink" title="浏览器测试"></a>浏览器测试</h3><p>由于 Chrome 的代理扩展也需要翻墙才能下载，所以我们先可以用 Firefox 直接设置 Socks5 代理。打开首选项&gt;网络代理&gt;设置&gt; 然后选择 Socks 主机，ip 填入127.0.0.1，端口填入 1080。最后点击确定。然后访问 <a href="http://www.google.com" target="_blank" rel="noopener">www.google.com</a> 如果访问不成功，检查配置哪里有问题。</p>
-<h3 id="其他软件翻墙"><a href="#其他软件翻墙" class="headerlink" title="其他软件翻墙"></a>其他软件翻墙</h3><p>除了通过Mac 的网络设置，在网卡上设置全局代理之外。有一款软件可以提供应用级别的代理设置，叫做 <a href="http://www.tidalpool.ca/macproxy/" target="_blank" rel="noopener">MacProxy</a>，需要翻墙下载。可惜的是这是一款付费的软件，不过我很辛苦地找到了一个破解的虚拟机。<a href="https://pan.baidu.com/s/1Jr-al3_g107sfAk8ywKjPQ" target="_blank" rel="noopener">下载地址</a>  密码:smz2，注意仅供学习交流。设置界面如图所示：<br><img src="http://www.tidalpool.ca/macproxy/images/screenshots/rules.png" alt="blog_macproxy"></p>
-<p>举个例子，想让 twitter翻墙，就只需要添加一条规则，让他走我们设置好的代理。也可以 host的规则，例如设置 safari 访问 *.google.com 的时候走代理。看，是不是很方便！</p>
-<h3 id="控制台翻墙"><a href="#控制台翻墙" class="headerlink" title="控制台翻墙"></a>控制台翻墙</h3><p>想在命令行翻墙下载东西怎么办？我推荐通过 proxychains，Mac 下安装。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">brew install proxychains4 <span class="comment"># 安装</span></span><br><span class="line">vi /usr/<span class="built_in">local</span>/etc/proxychains.json <span class="comment"># 在配置文件最后添加 socks5 127.0.0.1 1080 即可</span></span><br></pre></td></tr></table></figure>
-
-<p>然后在要执行的操作前，加 proxychains4 比如说下载 google 主页，git克隆一个国内比较慢的项目。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">proxychains4 wget www.google.com</span><br><span class="line">proxychains4 git <span class="built_in">clone</span> https://github.com/xxx/xxx</span><br></pre></td></tr></table></figure>
-
-<h3 id="虚拟机（linux控制台）翻墙"><a href="#虚拟机（linux控制台）翻墙" class="headerlink" title="虚拟机（linux控制台）翻墙"></a>虚拟机（linux控制台）翻墙</h3><ul>
-<li>其实虚拟机翻墙很容易。首先搞清楚用虚拟机和宿主机之间用的什么网络模式，一般桥接和共享物理网络比较多，NAT暂时没有试过。</li>
-<li>通过虚拟机的网络设置或者 ifconfig 查看宿主机和虚拟机相通的宿主 ip 是什么，比如 宿主机有一个网卡的 ip是 10.111.20.12，虚拟机的 ip 是 10.111.20.13。</li>
-<li>同样在虚拟机上安装 proxychains，如果虚拟机是 ubuntu 的话，直接使用 <code>sudo apt-get install proxychains</code> 就可以。打开配置文件在最后添加 <code>socks5 10.111.20.12 1080</code>。</li>
-<li>最后最重要的一步，修改宿主机上的 shadowsocks-libev的配置文件，设置 local_address的 ip 为 <em>0.0.0.0</em>，然后重启 shadowsocks-libev。其实就是接收本机上任意网卡上的数据。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>工具</category>
-      </categories>
-      <tags>
-        <tag>Mac</tag>
-        <tag>翻墙</tag>
       </tags>
   </entry>
   <entry>
@@ -730,7 +690,7 @@
     <url>/2017/02/14/ubuntn-desktop-env/</url>
     <content><![CDATA[<p><img src="http://static.alitain.tech/ubuntu_desktop_dev.png" alt="ubuntu desktop"></p>
 <a id="more"></a>
-<p>我的本子是11年的，i5第二代处理器、4G内存，不想加固态硬盘、内存条，又没有钱换 <code>mac</code>，在 <code>windows</code> 下开发又有些吃力，所以想搭一套 <code>linux</code> 开发环境。开发环境必须具备的软件工具，像聊天工具、IDE、浏览器、翻墙工具和测试服务器环境。最好的组合应该是 <code>gentoo</code> + <code>xface</code>，可定制化高、够轻量级，但是花费的时间要久些。初步想装一个 <code>centos7</code> 的 <code>gnome</code> 版，折腾了好几天也没有装上 QQ，再加上有一些三方源需要翻墙才可以，我住的地方有运营商网络限制，所以也放弃了。之后又把目光投向ubuntu上，现在用起来得心应手。先奉上一张图（如上）。</p>
+<p>我的本子是11年的，i5第二代处理器、4G内存，不想加固态硬盘、内存条，又没有钱换 <code>mac</code>，在 <code>windows</code> 下开发又有些吃力，所以想搭一套 <code>linux</code> 开发环境。开发环境必须具备的软件工具，像聊天工具、IDE、浏览器和测试服务器环境。最好的组合应该是 <code>gentoo</code> + <code>xface</code>，可定制化高、够轻量级，但是花费的时间要久些。初步想装一个 <code>centos7</code> 的 <code>gnome</code> 版，折腾了好几天也没有装上 QQ，我住的地方有运营商网络限制，所以也放弃了。之后又把目光投向ubuntu上，现在用起来得心应手。先奉上一张图（如上）。</p>
 <h3 id="系统安装"><a href="#系统安装" class="headerlink" title="系统安装"></a>系统安装</h3><p>我安装的版本是<a href="http://www.ubuntukylin.com/downloads/" target="_blank" rel="noopener">ubuntu kylin 16.10</a>，可以直接到官网下载，刻录到U盘。</p>
 <blockquote>
 <p>先说一下，我踩过的一个坑。刚开始我是用老毛桃来装的，把ISO文件放到U盘上，直接加载ISO。结果一直报错，重装了好几次都没有安装成功，使用Utrliso把镜像刻录到U盘才安装上。</p>
@@ -774,9 +734,6 @@
 
 <p>稍作配置，LNMP的测试环境就搭好了，方便快捷。</p>
 <h3 id="安装PHPStorm等开发工具"><a href="#安装PHPStorm等开发工具" class="headerlink" title="安装PHPStorm等开发工具"></a>安装PHPStorm等开发工具</h3><p>像PHPStorm，Chrome，Team View，SecureCRT等这些工具都可以找到官方的deb包，然后 <code>sudo dpkg -i 包名.deb</code>安装就可以了。遇到依赖问题，<code>sudo apt-get install -f</code> 自动解决依赖就可以了。</p>
-<h3 id="安装翻墙工具"><a href="#安装翻墙工具" class="headerlink" title="安装翻墙工具"></a>安装翻墙工具</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get install openssl shadowsocks-libv-dev</span><br></pre></td></tr></table></figure>
-<p>装完之后使用 <code>ss-local</code> 指定自己的配置问题（服务器地址，密码和本地端口等）。</p>
-<p><code>chrome</code> 想要翻墙，必须得翻墙出去下一个proxy的扩展。&gt;_&lt;，先有鸡还是先有蛋的问题…。但是火狐浏览器，可以直接在设置里，设置sock5代理。翻墙成功，然后再去下载一个翻墙的crt扩展安装文件，打开 <code>chrome</code> 应用商店页面，把下载好的文件拖进去，扩展就安装好了。</p>
 <h3 id="安装mbuntu主题"><a href="#安装mbuntu主题" class="headerlink" title="安装mbuntu主题"></a>安装mbuntu主题</h3><p>网上有很多教程，不过 <code>mbuntu-v8</code> 版本没法修改开机画面和登录画面了。强迫症患者表示有点受不了…</p>
 ]]></content>
       <categories>
